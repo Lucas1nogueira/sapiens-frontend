@@ -1,4 +1,4 @@
-import { User } from "@contexts/authContext";
+import { User } from "types/user";
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
@@ -27,9 +27,10 @@ export function Login() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto w-full h-screen p-4 flex justify-center items-center gap-10">
-      <div className="hidden md:block md:w-1/2">
-        <img src={logo} alt="Sapiens Logo." />
+    <div className="max-w-3xl mx-auto w-full h-screen p-4 flex justify-center items-center gap-16">
+      <div className="hidden md:block md:w-1/2 text-center">
+        <img src={logo} alt="Sapiens Logo." className="drop-shadow-2xl" />
+        <h1 className="text-4xl font-bold ">Sapiens Educação</h1>
       </div>
       <div className="w-1/2">
         <div className="mb-10">

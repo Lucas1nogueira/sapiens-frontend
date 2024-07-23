@@ -10,19 +10,20 @@ import {
   DropdownItem,
 } from "@nextui-org/react";
 import { ModalType } from "types/modal";
+import { Logo } from "@components/Logo/Logo";
 
 interface Props {
   useDisclosure: ModalType;
 }
 
-export const Header = ({ useDisclosure }: Props) => {
+export function Header({ useDisclosure }: Props) {
   const { user, handleLogout } = useAuth();
 
   return (
     <Navbar aria-label="Main navigation">
       <NavbarContent justify="start">
         <NavbarBrand>
-          <p>LOGO</p>
+          <Logo className="w-10 h-10" />
         </NavbarBrand>
       </NavbarContent>
 
@@ -33,16 +34,21 @@ export const Header = ({ useDisclosure }: Props) => {
           </DropdownTrigger>
 
           <DropdownMenu aria-label="Profile actions">
-            <DropdownItem key="profile" aria-label="Profile">
+            <DropdownItem
+              key="userEmail"
+              aria-label="E-mail do Usuário"
+              color="primary"
+            >
               <p className="font-semibold">Entrou como</p>
               <p className="font-semibold">{user?.email}</p>
             </DropdownItem>
             <DropdownItem
-              key="settings"
-              aria-label="Settings"
+              key="profile"
+              aria-label="Meu Perfil"
+              color="primary"
               onClick={useDisclosure.onOpenChange}
             >
-              Configurações
+              Meu Perfil
             </DropdownItem>
             <DropdownItem color="danger" onClick={handleLogout}>
               Sair
@@ -52,4 +58,4 @@ export const Header = ({ useDisclosure }: Props) => {
       </NavbarContent>
     </Navbar>
   );
-};
+}

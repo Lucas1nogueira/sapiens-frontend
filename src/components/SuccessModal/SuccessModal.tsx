@@ -10,23 +10,23 @@ import { ModalType } from "types/modal";
 
 interface Props {
   useDisclosure: ModalType;
-  errorMessage: string;
+  successMessage: string;
 }
 
-export function ErrorModal({ useDisclosure, errorMessage }: Props) {
+export function SuccessModal({ useDisclosure, successMessage }: Props) {
   const { isOpen, onOpenChange } = useDisclosure;
 
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <ModalContent>
         <ModalHeader>
-          <h1>Ocorreu um Erro</h1>
+          <h1>A Operação foi Concluída com Sucesso</h1>
         </ModalHeader>
         <ModalBody>
-          <p>{errorMessage}</p>
+          <p>{successMessage}</p>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={onOpenChange} color="danger">
+          <Button onClick={onOpenChange} color="success">
             Ok
           </Button>
         </ModalFooter>
