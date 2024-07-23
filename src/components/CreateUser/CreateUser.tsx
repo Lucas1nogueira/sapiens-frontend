@@ -1,12 +1,14 @@
 import { ErrorModal } from "@components/ErrorModal/ErrorModal";
+import { SuccessModal } from "@components/SuccessModal/SuccessModal";
 import {
   Button,
+  Card,
   Input,
   Select,
   SelectItem,
   useDisclosure,
 } from "@nextui-org/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { api } from "services/api";
 
 const roles = [
@@ -32,12 +34,40 @@ export function CreateUser() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [password, setPassword] = useState(generatePassword());
   const [erroMessage, setErrorMessage] = useState("");
-  const password = generatePassword();
   const disclosure = useDisclosure();
+  const successDisclosure = useDisclosure();
+
+  const isNameInvalid = useMemo(() => {
+    if (name === "") return false;
+    if (name.trim().length === 0) return true;
+
+    return false;
+  }, [name]);
+
+  const isEmailInvalid = useMemo(() => {
+    if (email === "") return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return !emailRegex.test(email);
+  }, [email]);
+
+  const isRoleInvalid = useMemo(() => {
+    if (role === "") return false;
+
+    if (!roles.some((r) => r.key === role)) return true;
+
+    return false;
+  }, [role]);
 
   const handleCreateUser = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    // TODO: add crate to each role
+    if (role !== "STUDENT") return;
+
+    if (!password) setPassword(generatePassword());
+
     const newUser = { name, email, password, role };
 
     const endpoint = roleToEndpoint[role];
@@ -48,6 +78,8 @@ export function CreateUser() {
         setName("");
         setEmail("");
         setRole("");
+
+        successDisclosure.onOpenChange();
         return response.data;
       })
       .catch((error) => {
@@ -57,8 +89,8 @@ export function CreateUser() {
   };
 
   return (
-    <div className="flex justify-center items-center w-screen p-10">
-      <div className="w-1/2">
+    <div className="flex justify-center items-center">
+      <Card className="w-full p-4">
         <h1 className="text-center text-2xl font-bold">
           Criar um Novo Usuário
         </h1>
@@ -68,6 +100,7 @@ export function CreateUser() {
             type="text"
             value={name}
             onValueChange={setName}
+            isInvalid={isNameInvalid}
             placeholder="Insira seu nome"
             errorMessage="Insira um nome válido"
             isRequired
@@ -77,6 +110,7 @@ export function CreateUser() {
             type="email"
             value={email}
             onValueChange={setEmail}
+            isInvalid={isEmailInvalid}
             placeholder="Insira seu email"
             errorMessage="Insira um email válido"
             isRequired
@@ -93,6 +127,7 @@ export function CreateUser() {
           <Select
             items={roles}
             selectedKeys={[role]}
+            isInvalid={isRoleInvalid}
             onChange={(e) => setRole(e.target.value)}
             label="Tipo de Usuário"
             placeholder="Selecione o tipo de Usuário"
@@ -105,8 +140,12 @@ export function CreateUser() {
           </Button>
         </form>
 
+        <SuccessModal
+          useDisclosure={successDisclosure}
+          successMessage="Usuário criado!"
+        />
         <ErrorModal useDisclosure={disclosure} errorMessage={erroMessage} />
-      </div>
+      </Card>
     </div>
   );
 }
