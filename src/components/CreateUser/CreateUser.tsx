@@ -2,7 +2,6 @@ import { ErrorModal } from "@components/ErrorModal/ErrorModal";
 import { SuccessModal } from "@components/SuccessModal/SuccessModal";
 import {
   Button,
-  Card,
   Input,
   Select,
   SelectItem,
@@ -64,7 +63,7 @@ export function CreateUser() {
     event.preventDefault();
 
     // TODO: add crate to each role
-    if (role !== "STUDENT") return;
+    if (role === "GUARDIAN" || role === "CORDINATOR") return;
 
     if (!password) setPassword(generatePassword());
 
@@ -90,7 +89,7 @@ export function CreateUser() {
 
   return (
     <div className="flex justify-center items-center">
-      <Card className="w-full p-4">
+      <div className="w-full p-4">
         <h1 className="text-center text-2xl font-bold">
           Criar um Novo Usuário
         </h1>
@@ -145,7 +144,7 @@ export function CreateUser() {
           successMessage="Usuário criado!"
         />
         <ErrorModal useDisclosure={disclosure} errorMessage={erroMessage} />
-      </Card>
+      </div>
     </div>
   );
 }
