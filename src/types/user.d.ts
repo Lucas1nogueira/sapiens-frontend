@@ -5,6 +5,7 @@ export type User = {
   password: string;
   token: string;
   role: UserRole;
+  firstLogin: boolean;
 };
 
 export type UserRole =

@@ -1,9 +1,11 @@
 import { useAuth } from "@hooks/useAuth";
+import { Spinner } from "@nextui-org/react";
 import { HomeAdmin } from "@pages/HomeAdmin";
 import { HomeCordinator } from "@pages/HomeCordinator";
 import { HomeGuardian } from "@pages/HomeGuardian";
 import { HomeStudent } from "@pages/HomeStudent";
 import { HomeTeacher } from "@pages/HomeTeacher";
+import { InitialPasswordChange } from "@pages/InitialPasswordChange";
 import { LandingPage } from "@pages/LandingPage";
 import { Login } from "@pages/Login";
 import { NotFound } from "@pages/NotFound";
@@ -28,8 +30,15 @@ const routesIfNotAuthenticated = (
 export function AppRoutes() {
   const { isAuthenticated, loading, user } = useAuth();
 
-  // TODO: create a loading page with a spinner
-  if (loading) return <p>Carregando...</p>;
+  if (loading) {
+    return (
+      <div className="w-screen h-screen flex justify-center items-center">
+        <Spinner size="lg" color="primary" label="Carregando..." />
+      </div>
+    );
+  }
+
+  if (user?.firstLogin) return <InitialPasswordChange />;
 
   const homePage = user?.role ? homes[user.role] : <LandingPage />;
 
