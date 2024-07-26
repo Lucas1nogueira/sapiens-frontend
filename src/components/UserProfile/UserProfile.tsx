@@ -1,4 +1,3 @@
-import { UpdateStudentProfile } from "@components/UpdateStudentProfile/UpdateStudentProfile";
 import {
   Accordion,
   AccordionItem,
@@ -13,9 +12,10 @@ import { ModalType } from "types/modal";
 
 type Props = {
   updateDisclosure: ModalType;
+  updateProfile: JSX.Element;
 };
 
-export function UserProfile({ updateDisclosure }: Props) {
+export function UserProfile({ updateDisclosure, updateProfile }: Props) {
   return (
     <Modal
       isOpen={updateDisclosure.isOpen}
@@ -33,7 +33,7 @@ export function UserProfile({ updateDisclosure }: Props) {
               aria-label="Alterar Dados"
               title="Alterar Dados"
             >
-              <UpdateStudentProfile />
+              {updateProfile}
             </AccordionItem>
             <AccordionItem
               key="2"
