@@ -1,5 +1,5 @@
 import { Header } from "@components/Header/Header";
-import { UpdateStudentProfile } from "@components/UpdateStudentProfile/UpdateStudentProfile";
+import { StudentProfile } from "@components/StudentProfile/StudentProfile";
 import { UserProfile } from "@components/UserProfile/UserProfile";
 import { useDisclosure } from "@nextui-org/react";
 
@@ -11,7 +11,7 @@ export function HomeStudent() {
       <Header useDisclosure={disclosure} />
       <UserProfile
         updateDisclosure={disclosure}
-        updateProfile={<UpdateStudentProfile />}
+        updateProfile={<StudentProfile />}
       />
     </div>
   );
