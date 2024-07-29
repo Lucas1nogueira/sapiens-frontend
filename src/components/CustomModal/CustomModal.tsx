@@ -13,14 +13,19 @@ interface Props {
 }
 
 export function CustomModal({ useDisclosure, content }: Props) {
-  const { isOpen, onOpenChange } = useDisclosure;
+  const { isOpen, onOpenChange, onClose } = useDisclosure;
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="5xl">
+    <Modal
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      onClose={onClose}
+      size="5xl"
+    >
       <ModalContent>
         <ModalBody>{content}</ModalBody>
         <ModalFooter>
-          <Button onClick={onOpenChange} color="danger">
+          <Button onClick={onClose} color="danger">
             Cancelar
           </Button>
         </ModalFooter>

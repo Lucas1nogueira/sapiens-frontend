@@ -10,13 +10,13 @@ import { useState } from "react";
 
 export function HomeAdmin() {
   const disclosure = useDisclosure();
-  const customModal = useDisclosure();
+  const customModalDisclosure = useDisclosure();
   const [content, setContent] = useState<JSX.Element>(<CreateUser />);
   const [filterValue, setFilterValue] = useState("");
 
   const openModal = (content: JSX.Element) => {
     setContent(content);
-    customModal.onOpenChange();
+    customModalDisclosure.onOpenChange();
   };
 
   return (
@@ -40,7 +40,10 @@ export function HomeAdmin() {
               onClear={() => setFilterValue("")}
               onSearchChange={(value) => setFilterValue(value)}
             />
-            <TableUsers filterValue={filterValue} />
+            <TableUsers
+              filterValue={filterValue}
+              customModalDisclosure={customModalDisclosure}
+            />
           </Tab>
           <Tab key="discipline" title="Disciplinas">
             <TableHeader
@@ -50,11 +53,14 @@ export function HomeAdmin() {
               onClear={() => setFilterValue("")}
               onSearchChange={(value) => setFilterValue(value)}
             />
-            <TableDiscipline filterValue={filterValue} />
+            <TableDiscipline
+              filterValue={filterValue}
+              customModalDisclosure={customModalDisclosure}
+            />
           </Tab>
         </Tabs>
 
-        <CustomModal useDisclosure={customModal} content={content} />
+        <CustomModal useDisclosure={customModalDisclosure} content={content} />
       </div>
     </div>
   );
