@@ -8,6 +8,7 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
+import { ModalType } from "types/modal";
 import { User } from "types/user";
 
 const columns = [
@@ -18,16 +19,17 @@ const columns = [
 
 type Props = {
   filterValue: string;
+  customModalDisclosure: ModalType;
 };
 
-export function TableUsers({ filterValue }: Props) {
+export function TableUsers({ filterValue, customModalDisclosure }: Props) {
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
     api.get<User[]>("admin/all").then((response) => setUsers(response.data));
 
     return () => {};
-  }, []);
+  }, [customModalDisclosure]);
 
   const items = useMemo(() => {
     if (!filterValue) {

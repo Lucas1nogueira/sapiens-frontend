@@ -9,24 +9,28 @@ import {
 } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { api } from "services/api";
+import { generateCode, generatePassword } from "utils/generateValues";
+import { roles, rolesEnum, roleToEndpoint } from "utils/roles";
 
-const roles = [
-  { key: "ADMIN", label: "Administrador" },
-  { key: "TEACHER", label: "Professor" },
-  { key: "STUDENT", label: "Aluno" },
-  { key: "GUARDIAN", label: "Responsável" },
-  { key: "CORDINATOR", label: "Coordenador" },
-];
-
-const generatePassword = (): string => {
-  return Math.random().toString(36).toLocaleUpperCase().slice(2, 10);
+const isStudentOrTeacher = (role: string) => {
+  return role === "STUDENT" || role === "TEACHER";
 };
 
-const roleToEndpoint: Record<string, string> = {
-  TEACHER: "teacher/save",
-  STUDENT: "student/save",
-  GUARDIAN: "guardian/save",
-  CORDINATOR: "cordinator/save",
+type SpecificFields = {
+  [key: string]: { [key: string]: string };
+};
+
+const getUserCodeFieldIfExists = (role: string, code: string) => {
+  const roleSpecificFields: SpecificFields = {
+    [rolesEnum.STUDENT]: { matriculation: code },
+    [rolesEnum.TEACHER]: { teacherCode: code },
+  };
+
+  return roleSpecificFields[role];
+};
+
+const getCodeLabel = (role: string) => {
+  return role === rolesEnum.STUDENT ? "Matrícula" : "Código do Professor";
 };
 
 export function CreateUser() {
@@ -37,6 +41,8 @@ export function CreateUser() {
   const [erroMessage, setErrorMessage] = useState("");
   const disclosure = useDisclosure();
   const successDisclosure = useDisclosure();
+
+  const [code, setCode] = useState(generateCode());
 
   const isNameInvalid = useMemo(() => {
     if (name === "") return false;
@@ -66,8 +72,15 @@ export function CreateUser() {
     if (role === "GUARDIAN" || role === "CORDINATOR") return;
 
     if (!password) setPassword(generatePassword());
+    if (!code) setCode(generateCode());
 
-    const newUser = { name, email, password, role };
+    const newUser = {
+      name,
+      email,
+      password,
+      role,
+      ...getUserCodeFieldIfExists(role, code),
+    };
 
     const endpoint = roleToEndpoint[role];
 
@@ -133,6 +146,15 @@ export function CreateUser() {
           >
             {(role) => <SelectItem key={role.key}>{role.label}</SelectItem>}
           </Select>
+
+          {isStudentOrTeacher(role) && (
+            <Input
+              label={getCodeLabel(role)}
+              type="text"
+              value={code}
+              disabled
+            />
+          )}
 
           <Button type="submit" color="primary" className="w-full rounded-md">
             Criar
