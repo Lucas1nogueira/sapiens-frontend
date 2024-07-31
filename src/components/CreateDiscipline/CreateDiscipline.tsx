@@ -21,7 +21,12 @@ export function CreateDiscipline() {
 
     api
       .post("discipline/save", discipline)
-      .then(() => successDisclosure.onOpenChange())
+      .then(() => {
+        setDisciplineCode("");
+        setName("");
+
+        successDisclosure.onOpenChange();
+      })
       .catch((error) => {
         setErrorMessage(error.response.data);
         disclosure.onOpenChange();

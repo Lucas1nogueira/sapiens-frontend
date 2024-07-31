@@ -1,3 +1,4 @@
+import { ChangePassword } from "@components/ChangePassword/ChangePassword";
 import {
   Accordion,
   AccordionItem,
@@ -40,7 +41,7 @@ export function UserProfile({ updateDisclosure, updateProfile }: Props) {
               aria-label="Alterar Senha"
               title="Alterar Senha"
             >
-              <p>Em breve...</p>
+              <ChangePassword />
             </AccordionItem>
           </Accordion>
         </ModalBody>
