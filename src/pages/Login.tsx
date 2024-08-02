@@ -1,11 +1,11 @@
-import { User } from "types/user";
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { api } from "services/api";
 import logo from "@assets/logo.png";
+import { isEmailValid, isPasswordValid } from "utils/validations";
+import { auth } from "services/authService";
 
 export function Login() {
   const { handleLogin } = useAuth();
@@ -14,12 +14,24 @@ export function Login() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  const emailIsValid = useMemo(() => {
+    if (email === "") return false;
+    return !isEmailValid(email);
+  }, [email]);
+
+  const passwordIsValid = useMemo(() => {
+    if (password === "") return false;
+    return !isPasswordValid(password);
+  }, [password]);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    api
-      .post<User>("auth/login", { email, password })
-      .then((response) => handleLogin(response.data))
+    auth
+      .login(email, password)
+      .then((response) => {
+        handleLogin(response.data);
+      })
       .catch((error) => {
         setErrorMessage(error.response.data);
         disclosure.onOpenChange();
@@ -44,6 +56,7 @@ export function Login() {
             placeholder="Insira seu email"
             onValueChange={setEmail}
             errorMessage="Insira um email válido"
+            isInvalid={emailIsValid}
             isRequired
           />
           <Input
@@ -52,6 +65,7 @@ export function Login() {
             placeholder="Insira sua senha"
             onValueChange={setPassword}
             errorMessage="Deve conter ao menos 6 dígitos"
+            isInvalid={passwordIsValid}
             isRequired
           />
           <Link

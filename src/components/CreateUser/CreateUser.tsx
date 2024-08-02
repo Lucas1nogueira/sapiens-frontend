@@ -8,9 +8,11 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useMemo, useState } from "react";
-import { api } from "services/api";
+import { auth } from "services/authService";
+import { User } from "types/user";
 import { generateCode, generatePassword } from "utils/generateValues";
-import { roles, rolesEnum, roleToEndpoint } from "utils/roles";
+import { roles, rolesEnum } from "utils/roles";
+import { isEmailValid, isNameValid, isRolevalid } from "utils/validations";
 
 const isStudentOrTeacher = (role: string) => {
   return role === "STUDENT" || role === "TEACHER";
@@ -46,21 +48,17 @@ export function CreateUser() {
 
   const isNameInvalid = useMemo(() => {
     if (name === "") return false;
-    if (name.trim().length === 0) return true;
-
-    return false;
+    return !isNameValid(name);
   }, [name]);
 
   const isEmailInvalid = useMemo(() => {
     if (email === "") return false;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return !emailRegex.test(email);
+    return !isEmailValid(email);
   }, [email]);
 
   const isRoleInvalid = useMemo(() => {
     if (role === "") return false;
-
-    if (!roles.some((r) => r.key === role)) return true;
+    if (!isRolevalid(role)) return true;
 
     return false;
   }, [role]);
@@ -82,17 +80,14 @@ export function CreateUser() {
       ...getUserCodeFieldIfExists(role, code),
     };
 
-    const endpoint = roleToEndpoint[role];
-
-    api
-      .post(endpoint, newUser)
-      .then((response) => {
+    auth
+      .register(newUser as User)
+      .then(() => {
         setName("");
         setEmail("");
         setRole("");
 
         successDisclosure.onOpenChange();
-        return response.data;
       })
       .catch((error) => {
         setErrorMessage(error.response.data);

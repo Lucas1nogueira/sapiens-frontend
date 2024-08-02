@@ -2,7 +2,7 @@ import { ErrorModal } from "@components/ErrorModal/ErrorModal";
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
 import { useMemo, useState } from "react";
-import { api } from "services/api";
+import { auth } from "services/authService";
 
 export function InitialPasswordChange() {
   const disclosure = useDisclosure();
@@ -30,14 +30,8 @@ export function InitialPasswordChange() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const userPassword = {
-      email: user?.email,
-      password: password,
-      newPassword: confirmPassword,
-    };
-
-    api
-      .post("auth/change-password", userPassword)
+    auth
+      .changePassword(user?.email as string, password, confirmPassword)
       .then((response) => {
         setErrorMessage("");
         setConfirmPassword("");
