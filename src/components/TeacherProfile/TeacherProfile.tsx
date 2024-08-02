@@ -26,6 +26,7 @@ export function TeacherProfile() {
   const [name, setName] = useState(teacher?.name ?? "");
   const [email, setEmail] = useState(teacher?.email ?? "");
   const [age, setAge] = useState(teacher?.age ?? 0);
+  const [teacherCode, setTeacherCode] = useState(teacher?.teacherCode ?? "");
 
   const [errorMessage, setErrorMessage] = useState("");
   const [isFirstLoad, setIsFirstLoad] = useState(true);
@@ -37,6 +38,7 @@ export function TeacherProfile() {
     setName(teacher?.name ?? "");
     setEmail(teacher?.email ?? "");
     setAge(teacher?.age ?? 0);
+    setTeacherCode(teacher?.teacherCode ?? "");
   }, [teacher]);
 
   useEffect(() => {
@@ -44,7 +46,9 @@ export function TeacherProfile() {
       api
         .get<Teacher>(`teacher/email/${user.email}`)
         .then((response) => {
-          const { id, name, email, age, sex, password } = response.data;
+          const { id, name, email, age, sex, password, teacherCode } =
+            response.data;
+
           setTeacher({
             ...user,
             id,
@@ -53,6 +57,7 @@ export function TeacherProfile() {
             age,
             sex,
             password,
+            teacherCode,
           } as Teacher);
         })
         .catch((error) => {
@@ -125,12 +130,7 @@ export function TeacherProfile() {
         value={String(age)}
         onValueChange={(value) => setAge(Number(value))}
       />
-      <Input
-        label="Código"
-        color="warning"
-        value={teacher?.teacherCode ?? ""}
-        disabled
-      />
+      <Input label="Código" color="warning" value={teacherCode} disabled />
       <Button color="primary" onClick={handleUpdateData}>
         Atualizar Informações
       </Button>

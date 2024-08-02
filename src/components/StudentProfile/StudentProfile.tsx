@@ -21,6 +21,9 @@ const sexTypes = [
 export function StudentProfile() {
   const { user } = useAuth();
   const [student, setStudent] = useState({} as Student);
+  const [matriculation, setMatriculation] = useState(
+    student?.matriculation ?? ""
+  );
   const [sex, setSex] = useState(student?.sex ?? "BLANK");
   const [name, setName] = useState(student?.name ?? "");
   const [email, setEmail] = useState(student?.email ?? "");
@@ -35,6 +38,7 @@ export function StudentProfile() {
     setName(student?.name ?? "");
     setEmail(student?.email ?? "");
     setAge(student?.age ?? 0);
+    setMatriculation(student?.matriculation ?? "");
   }, [student]);
 
   useEffect(() => {
@@ -42,7 +46,8 @@ export function StudentProfile() {
       api
         .get<Student>(`student/email/${user.email}`)
         .then((response) => {
-          const { id, name, email, age, sex, password } = response.data;
+          const { id, name, email, age, sex, password, matriculation } =
+            response.data;
           setStudent({
             ...user,
             id,
@@ -51,6 +56,7 @@ export function StudentProfile() {
             age,
             sex,
             password,
+            matriculation,
           } as Student);
         })
         .catch((error) => {
@@ -69,7 +75,8 @@ export function StudentProfile() {
     api
       .put(`student/update`, newStudent)
       .then((response) => {
-        const { id, name, email, age, sex, password } = response.data;
+        const { id, name, email, age, sex, password, matriculation } =
+          response.data;
         setStudent({
           ...user,
           id,
@@ -78,6 +85,7 @@ export function StudentProfile() {
           age,
           sex,
           password,
+          matriculation,
         } as Student);
 
         successDisclosure.onOpenChange();
@@ -120,12 +128,7 @@ export function StudentProfile() {
         value={String(age)}
         onValueChange={(value) => setAge(Number(value))}
       />
-      <Input
-        label="Matricula"
-        color="warning"
-        value={student?.matriculation ?? ""}
-        disabled
-      />
+      <Input label="Matricula" color="warning" value={matriculation} disabled />
       <Button color="primary" onClick={handleUpdateData}>
         Atualizar Informações
       </Button>

@@ -3,14 +3,13 @@ import { SuccessModal } from "@components/SuccessModal/SuccessModal";
 import { useAuth } from "@hooks/useAuth";
 import { Button, Card, Input, useDisclosure } from "@nextui-org/react";
 import { useMemo, useState } from "react";
-import { api } from "services/api";
+import { auth } from "services/authService";
 import { isPasswordValid } from "utils/validations";
 
 export function ChangePassword() {
   const { user } = useAuth();
   const errorDisclosure = useDisclosure();
   const successDisclosure = useDisclosure();
-
   const [errorMessage, setErrorMessage] = useState("");
   const [lastPassword, setLastPassword] = useState("");
   const [password, setPassword] = useState("");
@@ -37,14 +36,8 @@ export function ChangePassword() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const changePassword = {
-      email: user?.email,
-      password: lastPassword,
-      newPassword: password,
-    };
-
-    api
-      .post("auth/change-password", changePassword)
+    auth
+      .changePassword(user?.email as string, lastPassword, password)
       .then(() => {
         setLastPassword("");
         setPassword("");
