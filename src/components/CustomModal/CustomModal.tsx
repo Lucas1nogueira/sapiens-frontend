@@ -26,7 +26,7 @@ export function CustomModal({ useDisclosure, content }: Props) {
         <ModalBody>{content}</ModalBody>
         <ModalFooter>
           <Button onClick={onClose} color="danger">
-            Cancelar
+            Fechar
           </Button>
         </ModalFooter>
       </ModalContent>

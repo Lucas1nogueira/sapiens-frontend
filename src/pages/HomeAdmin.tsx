@@ -1,9 +1,11 @@
 import { CreateDiscipline } from "@components/CreateDiscipline/CreateDiscipline";
+import { CreateGroupCollege } from "@components/CreateGroupCollege/CreateGroupCollege";
 import { CreateUser } from "@components/CreateUser/CreateUser";
 import { CustomModal } from "@components/CustomModal/CustomModal";
 import { TableHeader } from "@components/CustomTableHeader/CustomTableHeader";
 import { Header } from "@components/Header/Header";
 import { TableDiscipline } from "@components/TableDiscipline/TableDiscipline";
+import { TableGroupCollege } from "@components/TableGroupCollege/TableGroupCollege";
 import { TableUsers } from "@components/TableUsers/TableUsers";
 import { Tab, Tabs, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
@@ -54,6 +56,19 @@ export function HomeAdmin() {
               onSearchChange={(value) => setFilterValue(value)}
             />
             <TableDiscipline
+              filterValue={filterValue}
+              customModalDisclosure={customModalDisclosure}
+            />
+          </Tab>
+          <Tab key="groupCollege" title="Turmas">
+            <TableHeader
+              openModal={openModal}
+              content={<CreateGroupCollege />}
+              filterValue={filterValue}
+              onClear={() => setFilterValue("")}
+              onSearchChange={(value) => setFilterValue(value)}
+            />
+            <TableGroupCollege
               filterValue={filterValue}
               customModalDisclosure={customModalDisclosure}
             />
