@@ -1,15 +1,14 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
-import { Button, Input, useDisclosure } from "@nextui-org/react";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { api } from "services/api";
 
 export function CreateDiscipline() {
   const [disciplineCode, setDisciplineCode] = useState("");
   const [name, setName] = useState("");
-  const [erroMessage, setErrorMessage] = useState("");
-  const disclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,11 +24,10 @@ export function CreateDiscipline() {
         setDisciplineCode("");
         setName("");
 
-        successDisclosure.onOpenChange();
+        setSuccess("Disciplina criada com sucesso!");
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
-        disclosure.onOpenChange();
+        setError(error.response.data);
       });
   };
 
@@ -62,12 +60,6 @@ export function CreateDiscipline() {
             Criar
           </Button>
         </form>
-
-        <SuccessModal
-          useDisclosure={successDisclosure}
-          successMessage="Disciplina criada!"
-        />
-        <ErrorModal useDisclosure={disclosure} errorMessage={erroMessage} />
       </div>
     </div>
   );

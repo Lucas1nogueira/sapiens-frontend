@@ -1,3 +1,4 @@
+import { useError } from "@hooks/useError";
 import {
   Button,
   Modal,
@@ -6,18 +7,12 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
-import { ModalType } from "types/modal";
 
-interface Props {
-  useDisclosure: ModalType;
-  errorMessage: string;
-}
-
-export function ErrorModal({ useDisclosure, errorMessage }: Props) {
-  const { isOpen, onOpenChange } = useDisclosure;
+export function ErrorModal() {
+  const { errorMessage, clearError } = useError();
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={!!errorMessage} onOpenChange={clearError}>
       <ModalContent>
         <ModalHeader>
           <h1>Ocorreu um Erro</h1>
@@ -26,7 +21,7 @@ export function ErrorModal({ useDisclosure, errorMessage }: Props) {
           <p>{errorMessage}</p>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={onOpenChange} color="danger">
+          <Button onClick={clearError} color="danger">
             Ok
           </Button>
         </ModalFooter>

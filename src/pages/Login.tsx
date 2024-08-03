@@ -2,17 +2,18 @@ import { useAuth } from "@hooks/useAuth";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
 import logo from "@assets/logo.png";
 import { isEmailValid, isPasswordValid } from "utils/validations";
 import { auth } from "services/authService";
+import { useError } from "@hooks/useError";
 
 export function Login() {
   const { handleLogin } = useAuth();
+  const { setError } = useError();
+
   const disclosure = useDisclosure();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   const emailIsValid = useMemo(() => {
     if (email === "") return false;
@@ -33,7 +34,7 @@ export function Login() {
         handleLogin(response.data);
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
+        setError(error.response.data);
         disclosure.onOpenChange();
       });
   };
@@ -79,7 +80,6 @@ export function Login() {
           </Button>
         </form>
       </div>
-      <ErrorModal useDisclosure={disclosure} errorMessage={errorMessage} />
     </div>
   );
 }

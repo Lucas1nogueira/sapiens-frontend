@@ -1,12 +1,6 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
-import {
-  Button,
-  Input,
-  Select,
-  SelectItem,
-  useDisclosure,
-} from "@nextui-org/react";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { auth } from "services/authService";
 import { User } from "types/user";
@@ -40,10 +34,8 @@ export function CreateUser() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [password, setPassword] = useState(generatePassword());
-  const [erroMessage, setErrorMessage] = useState("");
-  const disclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
-
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
   const [code, setCode] = useState(generateCode());
 
   const isNameInvalid = useMemo(() => {
@@ -87,11 +79,10 @@ export function CreateUser() {
         setEmail("");
         setRole("");
 
-        successDisclosure.onOpenChange();
+        setSuccess("Usuário criado com sucesso!");
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
-        disclosure.onOpenChange();
+        setError(error.response.data);
       });
   };
 
@@ -155,12 +146,6 @@ export function CreateUser() {
             Criar
           </Button>
         </form>
-
-        <SuccessModal
-          useDisclosure={successDisclosure}
-          successMessage="Usuário criado!"
-        />
-        <ErrorModal useDisclosure={disclosure} errorMessage={erroMessage} />
       </div>
     </div>
   );

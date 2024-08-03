@@ -1,13 +1,7 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
 import { useAuth } from "@hooks/useAuth";
-import {
-  Button,
-  Input,
-  Select,
-  SelectItem,
-  useDisclosure,
-} from "@nextui-org/react";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { api } from "services/api";
 import { Teacher } from "types/teacher";
@@ -20,18 +14,16 @@ const sexTypes = [
 
 export function TeacherProfile() {
   const { user } = useAuth();
-  const [teacher, setTeacher] = useState({} as Teacher);
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
 
+  const [teacher, setTeacher] = useState({} as Teacher);
   const [sex, setSex] = useState(teacher?.sex ?? "BLANK");
   const [name, setName] = useState(teacher?.name ?? "");
   const [email, setEmail] = useState(teacher?.email ?? "");
   const [age, setAge] = useState(teacher?.age ?? 0);
   const [teacherCode, setTeacherCode] = useState(teacher?.teacherCode ?? "");
-
-  const [errorMessage, setErrorMessage] = useState("");
   const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const errorDisclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
 
   useEffect(() => {
     setSex(teacher?.sex ?? "BLANK");
@@ -61,14 +53,13 @@ export function TeacherProfile() {
           } as Teacher);
         })
         .catch((error) => {
-          setErrorMessage(error.response.data);
-          errorDisclosure.onOpenChange();
+          setError(error.response.data);
         })
         .finally(() => {
           setIsFirstLoad(false);
         });
     }
-  }, [user, errorDisclosure, isFirstLoad]);
+  }, [user, setError, isFirstLoad]);
 
   const handleUpdateData = () => {
     const newTeacher = { ...teacher, name, email, age, sex };
@@ -88,13 +79,10 @@ export function TeacherProfile() {
           password,
         } as Teacher);
 
-        successDisclosure.onOpenChange();
+        setSuccess("Informações atualizadas com sucesso!");
       })
       .catch((error) => {
-        console.log(error);
-
-        setErrorMessage(error.response.data);
-        errorDisclosure.onOpenChange();
+        setError(error.response.data);
       });
   };
 
@@ -134,12 +122,6 @@ export function TeacherProfile() {
       <Button color="primary" onClick={handleUpdateData}>
         Atualizar Informações
       </Button>
-
-      <SuccessModal
-        useDisclosure={successDisclosure}
-        successMessage="Informações Atualizadas com Sucesso"
-      />
-      <ErrorModal useDisclosure={errorDisclosure} errorMessage={errorMessage} />
     </div>
   );
 }

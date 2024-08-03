@@ -1,13 +1,7 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
 import { useAuth } from "@hooks/useAuth";
-import {
-  Button,
-  Input,
-  Select,
-  SelectItem,
-  useDisclosure,
-} from "@nextui-org/react";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { api } from "services/api";
 import { Student } from "types/student";
@@ -20,6 +14,9 @@ const sexTypes = [
 
 export function StudentProfile() {
   const { user } = useAuth();
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
+
   const [student, setStudent] = useState({} as Student);
   const [matriculation, setMatriculation] = useState(
     student?.matriculation ?? ""
@@ -28,10 +25,7 @@ export function StudentProfile() {
   const [name, setName] = useState(student?.name ?? "");
   const [email, setEmail] = useState(student?.email ?? "");
   const [age, setAge] = useState(student?.age ?? 0);
-  const [errorMessage, setErrorMessage] = useState("");
   const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const errorDisclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
 
   useEffect(() => {
     setSex(student?.sex ?? "BLANK");
@@ -60,14 +54,13 @@ export function StudentProfile() {
           } as Student);
         })
         .catch((error) => {
-          setErrorMessage(error.response.data);
-          errorDisclosure.onOpenChange();
+          setError(error.response.data);
         })
         .finally(() => {
           setIsFirstLoad(false);
         });
     }
-  }, [user, errorDisclosure, isFirstLoad]);
+  }, [user, isFirstLoad, setError]);
 
   const handleUpdateData = () => {
     const newStudent = { ...student, name, email, age, sex };
@@ -88,11 +81,10 @@ export function StudentProfile() {
           matriculation,
         } as Student);
 
-        successDisclosure.onOpenChange();
+        setSuccess("Informações atualizadas com sucesso!");
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
-        errorDisclosure.onOpenChange();
+        setError(error.response.data);
       });
   };
 
@@ -132,12 +124,6 @@ export function StudentProfile() {
       <Button color="primary" onClick={handleUpdateData}>
         Atualizar Informações
       </Button>
-
-      <SuccessModal
-        useDisclosure={successDisclosure}
-        successMessage="Informações Atualizadas com Sucesso"
-      />
-      <ErrorModal useDisclosure={errorDisclosure} errorMessage={errorMessage} />
     </div>
   );
 }

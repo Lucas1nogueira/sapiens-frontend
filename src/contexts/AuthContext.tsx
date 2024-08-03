@@ -9,4 +9,4 @@ export interface AuthContextType {
   loading: boolean;
 }
 
-export const authContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
