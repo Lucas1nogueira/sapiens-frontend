@@ -1,14 +1,12 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
-import { Button, Input, useDisclosure } from "@nextui-org/react";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { saveGroupCollege } from "services/groupCollegeService";
 
 export function CreateGroupCollege() {
-  const [erroMessage, setErrorMessage] = useState("");
-  const disclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
-
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
   const [groupCode, setGroupCode] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -22,11 +20,10 @@ export function CreateGroupCollege() {
 
     saveGroupCollege(groupCollege)
       .then(() => {
-        successDisclosure.onOpenChange();
+        setSuccess("Turma criada com sucesso!");
       })
       .catch((error) => {
-        setErrorMessage(error.response.data.message);
-        disclosure.onOpenChange();
+        setError(error.response.data.message);
       });
   };
 
@@ -49,12 +46,6 @@ export function CreateGroupCollege() {
             Criar
           </Button>
         </form>
-
-        <SuccessModal
-          useDisclosure={successDisclosure}
-          successMessage="Turma criada!"
-        />
-        <ErrorModal useDisclosure={disclosure} errorMessage={erroMessage} />
       </div>
     </div>
   );

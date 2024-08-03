@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren, useEffect, useState } from "react";
-import { authContext } from "./authContext";
+import { AuthContext } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
 import { User } from "types/user";
 
@@ -42,7 +42,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [navigate]);
 
   return (
-    <authContext.Provider
+    <AuthContext.Provider
       value={{
         isAuthenticated: !!user,
         user,
@@ -52,6 +52,6 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
       }}
     >
       {children}
-    </authContext.Provider>
+    </AuthContext.Provider>
   );
 };

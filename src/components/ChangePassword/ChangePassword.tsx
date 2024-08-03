@@ -1,16 +1,16 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
 import { useAuth } from "@hooks/useAuth";
-import { Button, Card, Input, useDisclosure } from "@nextui-org/react";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Button, Card, Input } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { auth } from "services/authService";
 import { isPasswordValid } from "utils/validations";
 
 export function ChangePassword() {
   const { user } = useAuth();
-  const errorDisclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
-  const [errorMessage, setErrorMessage] = useState("");
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
+
   const [lastPassword, setLastPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,11 +42,11 @@ export function ChangePassword() {
         setLastPassword("");
         setPassword("");
         setConfirmPassword("");
-        successDisclosure.onOpenChange();
+
+        setSuccess("Senha alterada com sucesso!");
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
-        errorDisclosure.onOpenChange();
+        setError(error.response.data);
       });
   };
 
@@ -90,12 +90,6 @@ export function ChangePassword() {
           Alterar Senha
         </Button>
       </form>
-
-      <SuccessModal
-        useDisclosure={successDisclosure}
-        successMessage="Senha alterada com sucesso"
-      />
-      <ErrorModal useDisclosure={errorDisclosure} errorMessage={errorMessage} />
     </Card>
   );
 }

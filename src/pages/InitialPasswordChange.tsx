@@ -1,17 +1,16 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
 import { useAuth } from "@hooks/useAuth";
-import { Button, Input, useDisclosure } from "@nextui-org/react";
+import { useError } from "@hooks/useError";
+import { Button, Input } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { auth } from "services/authService";
 
 export function InitialPasswordChange() {
-  const disclosure = useDisclosure();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [ErrorMessage, setErrorMessage] = useState("");
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const { user, handleLogin } = useAuth();
+  const { setError } = useError();
 
   const isPasswordInvalid = useMemo(() => {
     if (passwordTouched === false) return false;
@@ -33,15 +32,13 @@ export function InitialPasswordChange() {
     auth
       .changePassword(user?.email as string, password, confirmPassword)
       .then((response) => {
-        setErrorMessage("");
         setConfirmPassword("");
         setPassword("");
 
         handleLogin({ ...user, ...response.data });
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
-        disclosure.onOpenChange();
+        setError(error.response.data);
       });
   };
 
@@ -90,7 +87,6 @@ export function InitialPasswordChange() {
           Alterar Senha
         </Button>
       </form>
-      <ErrorModal useDisclosure={disclosure} errorMessage={ErrorMessage} />
     </div>
   );
 }

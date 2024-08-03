@@ -1,3 +1,4 @@
+import { useSuccess } from "@hooks/useSuccess";
 import {
   Button,
   Modal,
@@ -6,18 +7,12 @@ import {
   ModalFooter,
   ModalHeader,
 } from "@nextui-org/react";
-import { ModalType } from "types/modal";
 
-interface Props {
-  useDisclosure: ModalType;
-  successMessage: string;
-}
-
-export function SuccessModal({ useDisclosure, successMessage }: Props) {
-  const { isOpen, onOpenChange } = useDisclosure;
+export function SuccessModal() {
+  const { successMessage, clearSuccess } = useSuccess();
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+    <Modal isOpen={!!successMessage} onOpenChange={clearSuccess}>
       <ModalContent>
         <ModalHeader>
           <h1>A Operação foi Concluída com Sucesso</h1>
@@ -26,7 +21,7 @@ export function SuccessModal({ useDisclosure, successMessage }: Props) {
           <p>{successMessage}</p>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={onOpenChange} color="success">
+          <Button onClick={clearSuccess} color="success">
             Ok
           </Button>
         </ModalFooter>
