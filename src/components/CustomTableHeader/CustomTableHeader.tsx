@@ -9,7 +9,7 @@ type Props = {
   onClear: () => void;
 };
 
-export function TableHeader({
+export function CustomTableHeader({
   openModal,
   content,
   filterValue,
