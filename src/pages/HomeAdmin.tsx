@@ -2,7 +2,7 @@ import { CreateDiscipline } from "@components/CreateDiscipline/CreateDiscipline"
 import { CreateGroupCollege } from "@components/CreateGroupCollege/CreateGroupCollege";
 import { CreateUser } from "@components/CreateUser/CreateUser";
 import { CustomModal } from "@components/CustomModal/CustomModal";
-import { TableHeader } from "@components/CustomTableHeader/CustomTableHeader";
+import { CustomTableHeader } from "@components/CustomTableHeader/CustomTableHeader";
 import { Header } from "@components/Header/Header";
 import { TableDiscipline } from "@components/TableDiscipline/TableDiscipline";
 import { TableGroupCollege } from "@components/TableGroupCollege/TableGroupCollege";
@@ -35,7 +35,7 @@ export function HomeAdmin() {
           onSelectionChange={() => setFilterValue("")}
         >
           <Tab key="newUser" title="Usuários">
-            <TableHeader
+            <CustomTableHeader
               openModal={openModal}
               content={<CreateUser />}
               filterValue={filterValue}
@@ -48,7 +48,7 @@ export function HomeAdmin() {
             />
           </Tab>
           <Tab key="discipline" title="Disciplinas">
-            <TableHeader
+            <CustomTableHeader
               openModal={openModal}
               content={<CreateDiscipline />}
               filterValue={filterValue}
@@ -61,7 +61,7 @@ export function HomeAdmin() {
             />
           </Tab>
           <Tab key="groupCollege" title="Turmas">
-            <TableHeader
+            <CustomTableHeader
               openModal={openModal}
               content={<CreateGroupCollege />}
               filterValue={filterValue}
