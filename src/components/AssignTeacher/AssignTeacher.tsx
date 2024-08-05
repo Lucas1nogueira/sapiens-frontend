@@ -1,7 +1,19 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
-import { Button, Select, SelectItem, useDisclosure } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { PaginationTable } from "@components/PaginationTable/PaginationTable";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import {
+  Button,
+  Input,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/react";
+import { LoadingPage } from "@pages/LoadingPage";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
 import { Discipline } from "types/discipline";
 import { Teacher } from "types/teacher";
@@ -11,17 +23,37 @@ type Props = {
 };
 
 export function AssignTeacher({ discipline }: Props) {
-  const [errorMessage, setErrorMessage] = useState("");
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [teacherId, setTeacherId] = useState("");
+  const [page, setPage] = useState(1);
+  const [filterValue, setFilterValue] = useState("");
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
+  const rowsPerPage = 25;
 
-  const errorDisclosure = useDisclosure();
-  const successDisclosure = useDisclosure();
+  const totalPages = useMemo(() => {
+    return Math.ceil(teachers.length / rowsPerPage);
+  }, [teachers]);
+
+  const items = useMemo(() => {
+    if (!teachers) return [];
+
+    const start = (page - 1) * rowsPerPage;
+    const end = page * rowsPerPage;
+
+    if (!filterValue) return teachers.slice(start, end);
+
+    return teachers
+      .filter((teacher) => {
+        return teacher.name.toLowerCase().includes(filterValue.toLowerCase());
+      })
+      .slice(start, end);
+  }, [teachers, page, filterValue]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!teacherId) return setError("Selecione um professor.");
 
     const newDiscipline = {
       ...discipline,
@@ -33,31 +65,25 @@ export function AssignTeacher({ discipline }: Props) {
     api
       .put("discipline/update", newDiscipline)
       .then(() => {
-        successDisclosure.onOpenChange();
+        setSuccess("Professor atribuido com sucesso!");
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
-        errorDisclosure.onOpenChange();
+        setError(error.response.data);
       });
   };
 
-  const handleSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setTeacherId(e.target.value);
-  };
-
   useEffect(() => {
-    if (isFirstLoad) {
-      api
-        .get<Teacher[]>("teacher/all")
-        .then((response) => setTeachers(response.data))
-        .catch((error) => {
-          setErrorMessage(error.response.data);
-          errorDisclosure.onOpenChange();
-        })
-        .finally(() => setIsFirstLoad(false));
-    }
-    return () => {};
-  }, [errorDisclosure, isFirstLoad]);
+    api
+      .get<Teacher[]>("teacher/all")
+      .then((response) => {
+        setTeachers(response.data);
+      })
+      .catch((error) => {
+        setError(error.response.data);
+      });
+  }, [setError]);
+
+  if (teachers.length === 0) return <LoadingPage />;
 
   return (
     <div className="flex justify-center items-center">
@@ -67,34 +93,57 @@ export function AssignTeacher({ discipline }: Props) {
         </h1>
         <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
           <p>
-            <strong>Disciplina:</strong> {discipline.name}
+            <strong>Disciplina: {discipline.name} </strong>
           </p>
 
-          <Select
-            onChange={handleSelectionChange}
-            label="Professor a Atribuir"
-            placeholder="Selecione o professor"
+          <Table
+            aria-label="Tabble with all college groups"
+            className="min-h-96"
+            topContent={
+              <Input
+                type="text"
+                color="default"
+                label="Pesquisar Professor"
+                value={filterValue}
+                onValueChange={setFilterValue}
+              />
+            }
+            bottomContent={
+              <PaginationTable
+                page={page}
+                setPage={setPage}
+                totalPages={totalPages}
+              />
+            }
+            color="primary"
+            selectionMode="single"
+            selectionBehavior="toggle"
+            onSelectionChange={(keys) => {
+              const [value] = keys;
+              const id = value?.toString() || "";
+              setTeacherId(id);
+            }}
           >
-            {teachers.map((teacher) => (
-              <SelectItem key={teacher.id} textValue={teacher.name}>
-                {teacher.name}
-              </SelectItem>
-            ))}
-          </Select>
+            <TableHeader>
+              <TableColumn key="name">Nome</TableColumn>
+              <TableColumn key="toggle">Selecionar Linha</TableColumn>
+            </TableHeader>
+            <TableBody items={items}>
+              {(teacher) => (
+                <TableRow key={teacher.id}>
+                  <TableCell>{teacher.name}</TableCell>
+                  <TableCell>
+                    <Icon icon="ic:round-check-box" width={30} />
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
 
           <Button type="submit" color="primary" className="w-full rounded-md">
             Atribuir
           </Button>
         </form>
-
-        <SuccessModal
-          useDisclosure={successDisclosure}
-          successMessage="Professor atribuído com sucesso!"
-        />
-        <ErrorModal
-          useDisclosure={errorDisclosure}
-          errorMessage={errorMessage}
-        />
       </div>
     </div>
   );
