@@ -47,7 +47,7 @@ export function UserProfile({ updateDisclosure, updateProfile }: Props) {
         </ModalBody>
         <ModalFooter>
           <Button color="danger" onClick={updateDisclosure.onClose}>
-            Sair
+            Voltar
           </Button>
         </ModalFooter>
       </ModalContent>

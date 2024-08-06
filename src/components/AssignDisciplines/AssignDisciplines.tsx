@@ -12,7 +12,6 @@ import {
   TableRow,
   Selection as SelectionType,
 } from "@nextui-org/react";
-import { LoadingPage } from "@pages/LoadingPage";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
 import { Discipline } from "types/discipline";
@@ -94,8 +93,6 @@ export function AssignDisciplines({ groupCollege }: Props) {
         setError(error.response.data);
       });
   }, [setError]);
-
-  if (disciplines.length === 0) return <LoadingPage />;
 
   return (
     <div className="flex justify-center items-center">

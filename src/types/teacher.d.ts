@@ -1,4 +1,5 @@
 import { Discipline } from "./discipline";
+import { GroupCollege } from "./groupCollege";
 import { User } from "./user";
 
 export type Teacher = User & {
@@ -6,4 +7,5 @@ export type Teacher = User & {
   age: number;
   sex: string;
   disciplines: Discipline[];
+  groupColleges: GroupCollege[];
 };
