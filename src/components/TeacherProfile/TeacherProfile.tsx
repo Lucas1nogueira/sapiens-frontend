@@ -67,7 +67,8 @@ export function TeacherProfile() {
     api
       .put("teacher/update", newTeacher)
       .then((response) => {
-        const { id, name, email, age, sex, password } = response.data;
+        const { id, name, email, age, sex, password, teacherCode } =
+          response.data;
 
         setTeacher({
           ...user,
@@ -77,6 +78,7 @@ export function TeacherProfile() {
           age,
           sex,
           password,
+          teacherCode,
         } as Teacher);
 
         setSuccess("Informações atualizadas com sucesso!");
