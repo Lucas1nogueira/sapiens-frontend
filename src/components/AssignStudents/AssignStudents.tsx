@@ -12,7 +12,6 @@ import {
   TableRow,
   Selection as SelectionType,
 } from "@nextui-org/react";
-import { LoadingPage } from "@pages/LoadingPage";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
 import { GroupCollege } from "types/groupCollege";
@@ -70,7 +69,7 @@ export function AssignStudents({ groupCollege }: Props) {
     });
 
     const newGroupCollege = {
-      groupCode: groupCollege.groupCode,
+      ...groupCollege,
       studentAmount: students.length,
       students: students,
     };
@@ -95,8 +94,6 @@ export function AssignStudents({ groupCollege }: Props) {
         setError(error.response.data);
       });
   }, [setError]);
-
-  if (students.length === 0) return <LoadingPage />;
 
   return (
     <div className="flex justify-center items-center">
