@@ -14,21 +14,20 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
+import { updateSchoolClass } from "services/schoolClassService";
 import { Discipline } from "types/discipline";
-import { GroupCollege } from "types/groupCollege";
+import { SchoolClass } from "types/schoolClass";
 
 type Props = {
-  groupCollege: GroupCollege;
+  schoolClass: SchoolClass;
 };
 
-export function AssignDisciplines({ groupCollege }: Props) {
+export function AssignDisciplines({ schoolClass }: Props) {
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
-
   const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set([]));
-
   const { setError } = useError();
   const { setSuccess } = useSuccess();
 
@@ -60,21 +59,20 @@ export function AssignDisciplines({ groupCollege }: Props) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const disciplines: { disciplineCode: string }[] = [];
+    const disciplines: Discipline[] = [];
 
     getSelectedValues()?.forEach((key) => {
       disciplines.push({
         disciplineCode: key as string,
-      });
+      } as Discipline);
     });
 
-    const newGroupCollege = {
-      ...groupCollege,
+    const newSchoolClass = {
+      ...schoolClass,
       disciplines: disciplines,
     };
 
-    api
-      .put("groupCollege/update", newGroupCollege)
+    updateSchoolClass(newSchoolClass)
       .then(() => {
         setSuccess("Turma atualizada com sucesso!");
       })
@@ -87,12 +85,19 @@ export function AssignDisciplines({ groupCollege }: Props) {
     api
       .get<Discipline[]>("discipline/all")
       .then((response) => {
+        const initiallySelected = new Set(
+          schoolClass.disciplines.map(
+            (discipline: Discipline) => discipline.disciplineCode
+          )
+        );
+
+        setSelectedKeys(initiallySelected);
         setDisciplines(response.data);
       })
       .catch((error) => {
         setError(error.response.data);
       });
-  }, [setError]);
+  }, [setError, schoolClass.disciplines]);
 
   return (
     <div className="flex justify-center items-center">
@@ -102,7 +107,7 @@ export function AssignDisciplines({ groupCollege }: Props) {
         </h1>
         <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
           <p>
-            <strong>Turma: {groupCollege.groupCode} </strong>
+            <strong>Turma: {schoolClass.code} </strong>
           </p>
 
           <Table

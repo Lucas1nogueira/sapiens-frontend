@@ -1,10 +1,7 @@
-import { AssignDisciplines } from "@components/AssignDisciplines/AssignDisciplines";
-import { AssignStudents } from "@components/AssignStudents/AssignStudents";
-import { AssignTeachers } from "@components/AssignTeachers/AssignTeachers";
+import { AssignDisciplines } from "@components/SchoolClass/AssignDisciplines/AssignDisciplines";
+import { AssignStudents } from "@components/SchoolClass/AssignStudents/AssignStudents";
+import { AssignTeachers } from "@components/SchoolClass/AssignTeachers/AssignTeachers";
 import { CustomModal } from "@components/CustomModal/CustomModal";
-import { TableGroupCollegeDisciplines } from "@components/TableGroupCollegeDisciplines/TableGroupCollegeDisciplines";
-import { TableGroupCollegeStudents } from "@components/TableGroupCollegeStudents/TableGroupCollegeStudents";
-import { TableGroupCollegeTeachers } from "@components/TableGroupCollegeTeachers/TableGroupCollegeTeachers";
 import { Icon } from "@iconify/react";
 import {
   Button,
@@ -18,11 +15,14 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
-import { GroupCollege } from "types/groupCollege";
 import { ModalType } from "types/modal";
+import { SchoolClass } from "types/schoolClass";
+import { SchoolClassStudents } from "../SchoolClassStudents/SchoolClassStudents";
+import { SchoolClassDisciplines } from "../SchoolClassDisciplines/SchoolClassDisciplines";
+import { SchoolClassTeachers } from "../SchoolClassTeachers/SchoolClassTeachers";
 
 const columns = [
-  { key: "groupCode", label: "Código" },
+  { key: "code", label: "Código" },
   { key: "students", label: "Alunos" },
   { key: "disciplines", label: "Disciplinas" },
   { key: "teachers", label: "Professores" },
@@ -36,13 +36,13 @@ type Props = {
   customModalDisclosure: ModalType;
 };
 
-export function TableGroupCollege({
+export function TableSchoolClass({
   filterValue,
   customModalDisclosure,
 }: Props) {
-  const [groupsCollege, setGroupsCollege] = useState<GroupCollege[]>([]);
-  const [groupCollege, setGroupCollege] = useState<GroupCollege>(
-    {} as GroupCollege
+  const [schoolClasses, setSchoolClasses] = useState<SchoolClass[]>([]);
+  const [schoolClass, setSchoolClass] = useState<SchoolClass>(
+    {} as SchoolClass
   );
 
   const showStudentsDisclosure = useDisclosure();
@@ -55,8 +55,8 @@ export function TableGroupCollege({
 
   useEffect(() => {
     api
-      .get<GroupCollege[]>("groupCollege/all")
-      .then((response) => setGroupsCollege(response.data));
+      .get<SchoolClass[]>("school-classes/all")
+      .then((response) => setSchoolClasses(response.data));
     return () => {};
   }, [
     customModalDisclosure.isOpen,
@@ -67,44 +67,42 @@ export function TableGroupCollege({
 
   const items = useMemo(() => {
     if (!filterValue) {
-      return groupsCollege;
+      return schoolClasses;
     }
 
-    return groupsCollege.filter((groupCollege) => {
-      return groupCollege.groupCode
-        .toLowerCase()
-        .includes(filterValue.toLowerCase());
+    return schoolClasses.filter((schoolClass) => {
+      return schoolClass.code.toLowerCase().includes(filterValue.toLowerCase());
     });
-  }, [groupsCollege, filterValue]);
+  }, [schoolClasses, filterValue]);
 
-  const handleShowStudents = (groupCollege: GroupCollege) => {
+  const handleShowStudents = (schoolClass: SchoolClass) => {
     showStudentsDisclosure.onOpenChange();
-    setGroupCollege(groupCollege);
+    setSchoolClass(schoolClass);
   };
 
-  const handleShowDisciplines = (groupCollege: GroupCollege) => {
+  const handleShowDisciplines = (schoolClass: SchoolClass) => {
     showDisciplinesDisclosure.onOpenChange();
-    setGroupCollege(groupCollege);
+    setSchoolClass(schoolClass);
   };
 
-  const handleAssignDiscipline = (groupCollege: GroupCollege) => {
+  const handleAssignDiscipline = (schoolClass: SchoolClass) => {
     disciplineDisclosure.onOpenChange();
-    setGroupCollege(groupCollege);
+    setSchoolClass(schoolClass);
   };
 
-  const handleAssignStudents = (groupCollege: GroupCollege) => {
+  const handleAssignStudents = (schoolClass: SchoolClass) => {
     studentsDisclosure.onOpenChange();
-    setGroupCollege(groupCollege);
+    setSchoolClass(schoolClass);
   };
 
-  const handleShowTeachers = (groupCollege: GroupCollege) => {
+  const handleShowTeachers = (schoolClass: SchoolClass) => {
     showTeachersDisclosure.onOpenChange();
-    setGroupCollege(groupCollege);
+    setSchoolClass(schoolClass);
   };
 
-  const handleAssignTeachers = (groupCollege: GroupCollege) => {
+  const handleAssignTeachers = (schoolClass: SchoolClass) => {
     teachersDisclosure.onOpenChange();
-    setGroupCollege(groupCollege);
+    setSchoolClass(schoolClass);
   };
 
   return (
@@ -116,14 +114,14 @@ export function TableGroupCollege({
           )}
         </TableHeader>
         <TableBody items={items}>
-          {(groupCollege) => (
-            <TableRow key={groupCollege.groupCode}>
-              <TableCell>{groupCollege.groupCode}</TableCell>
+          {(schoolClass) => (
+            <TableRow key={schoolClass.code}>
+              <TableCell>{schoolClass.code}</TableCell>
               <TableCell>
                 <Button
                   color="primary"
                   variant="ghost"
-                  onClick={() => handleShowStudents(groupCollege)}
+                  onClick={() => handleShowStudents(schoolClass)}
                   isIconOnly
                 >
                   <Icon icon="ph:student-bold" width={22} />
@@ -133,7 +131,7 @@ export function TableGroupCollege({
                 <Button
                   color="primary"
                   variant="ghost"
-                  onClick={() => handleShowDisciplines(groupCollege)}
+                  onClick={() => handleShowDisciplines(schoolClass)}
                   isIconOnly
                 >
                   <Icon icon="ic:baseline-class" width={22} />
@@ -143,7 +141,7 @@ export function TableGroupCollege({
                 <Button
                   color="primary"
                   variant="ghost"
-                  onClick={() => handleShowTeachers(groupCollege)}
+                  onClick={() => handleShowTeachers(schoolClass)}
                   isIconOnly
                 >
                   <Icon icon="ic:baseline-class" width={22} />
@@ -153,7 +151,7 @@ export function TableGroupCollege({
                 <Button
                   color="primary"
                   variant="ghost"
-                  onClick={() => handleAssignStudents(groupCollege)}
+                  onClick={() => handleAssignStudents(schoolClass)}
                   isIconOnly
                 >
                   <Icon icon="material-symbols:add" width={22} />
@@ -163,7 +161,7 @@ export function TableGroupCollege({
                 <Button
                   color="primary"
                   variant="ghost"
-                  onClick={() => handleAssignDiscipline(groupCollege)}
+                  onClick={() => handleAssignDiscipline(schoolClass)}
                   isIconOnly
                 >
                   <Icon icon="material-symbols:add" width={22} />
@@ -173,7 +171,7 @@ export function TableGroupCollege({
                 <Button
                   color="primary"
                   variant="ghost"
-                  onClick={() => handleAssignTeachers(groupCollege)}
+                  onClick={() => handleAssignTeachers(schoolClass)}
                   isIconOnly
                 >
                   <Icon icon="material-symbols:add" width={22} />
@@ -186,32 +184,32 @@ export function TableGroupCollege({
 
       <CustomModal
         useDisclosure={showStudentsDisclosure}
-        content={<TableGroupCollegeStudents groupCollege={groupCollege} />}
+        content={<SchoolClassStudents schoolClass={schoolClass} />}
       />
 
       <CustomModal
         useDisclosure={showDisciplinesDisclosure}
-        content={<TableGroupCollegeDisciplines groupCollege={groupCollege} />}
+        content={<SchoolClassDisciplines schoolClass={schoolClass} />}
       />
 
       <CustomModal
         useDisclosure={showTeachersDisclosure}
-        content={<TableGroupCollegeTeachers groupCollege={groupCollege} />}
+        content={<SchoolClassTeachers schoolClass={schoolClass} />}
       />
 
       <CustomModal
         useDisclosure={teachersDisclosure}
-        content={<AssignTeachers groupCollege={groupCollege} />}
+        content={<AssignTeachers schoolClass={schoolClass} />}
       />
 
       <CustomModal
         useDisclosure={studentsDisclosure}
-        content={<AssignStudents groupCollege={groupCollege} />}
+        content={<AssignStudents schoolClass={schoolClass} />}
       />
 
       <CustomModal
         useDisclosure={disciplineDisclosure}
-        content={<AssignDisciplines groupCollege={groupCollege} />}
+        content={<AssignDisciplines schoolClass={schoolClass} />}
       />
     </>
   );

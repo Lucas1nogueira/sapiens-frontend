@@ -2,23 +2,25 @@ import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
-import { saveGroupCollege } from "services/groupCollegeService";
+import { saveSchoolClass } from "services/schoolClassService";
+import { SchoolClass } from "types/schoolClass";
 
-export function CreateGroupCollege() {
+export function CreateSchoolClass() {
   const { setError } = useError();
   const { setSuccess } = useSuccess();
-  const [groupCode, setGroupCode] = useState("");
+  const [code, setCode] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const groupCollege = {
-      groupCode,
-      studentAmount: 0,
+    const schoolClass: SchoolClass = {
+      code,
       students: [],
+      teachers: [],
+      disciplines: [],
     };
 
-    saveGroupCollege(groupCollege)
+    saveSchoolClass(schoolClass)
       .then(() => {
         setSuccess("Turma criada com sucesso!");
       })
@@ -35,8 +37,8 @@ export function CreateGroupCollege() {
           <Input
             label="Código da Turma"
             type="text"
-            value={groupCode}
-            onValueChange={setGroupCode}
+            value={code}
+            onValueChange={setCode}
             placeholder="Insira o código da Turma"
             errorMessage="Insira um código válido"
             isRequired

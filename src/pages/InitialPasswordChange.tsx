@@ -3,28 +3,25 @@ import { useError } from "@hooks/useError";
 import { Button, Input } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { auth } from "services/authService";
+import { isPasswordValid } from "utils/validations";
 
 export function InitialPasswordChange() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordTouched, setPasswordTouched] = useState(false);
-  const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
   const { user, handleLogin } = useAuth();
   const { setError } = useError();
 
   const isPasswordInvalid = useMemo(() => {
-    if (passwordTouched === false) return false;
+    if (password === "") return false;
 
-    if (password === "") return true;
-
-    return password.trim().length < 8;
-  }, [password, passwordTouched]);
+    return !isPasswordValid(password);
+  }, [password]);
 
   const isConfirmPasswordInvalid = useMemo(() => {
-    if (confirmPasswordTouched === false) return false;
+    if (confirmPassword === "" && password === "") return false;
 
     return password !== confirmPassword;
-  }, [confirmPassword, password, confirmPasswordTouched]);
+  }, [confirmPassword, password]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,22 +53,16 @@ export function InitialPasswordChange() {
         <Input
           type="password"
           value={password}
-          onValueChange={(value) => {
-            setPasswordTouched(true);
-            setPassword(value);
-          }}
+          onValueChange={setPassword}
           isInvalid={isPasswordInvalid}
           label="Nova Senha"
           placeholder="Insira sua nova senha"
-          errorMessage="A senha deve ter pelo menos 8 caracteres"
+          errorMessage="A senha deve ter pelo menos 6 caracteres"
         />
         <Input
           type="password"
           value={confirmPassword}
-          onValueChange={(value) => {
-            setConfirmPasswordTouched(true);
-            setConfirmPassword(value);
-          }}
+          onValueChange={setConfirmPassword}
           isInvalid={isConfirmPasswordInvalid}
           label="Confirmar Senha"
           placeholder="Confirme sua nova senha"

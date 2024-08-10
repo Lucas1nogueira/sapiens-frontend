@@ -97,7 +97,7 @@ export function AssignTeacher({ discipline }: Props) {
           </p>
 
           <Table
-            aria-label="Tabble with all college groups"
+            aria-label="Tabble with all teachers"
             className="min-h-96"
             topContent={
               <Input

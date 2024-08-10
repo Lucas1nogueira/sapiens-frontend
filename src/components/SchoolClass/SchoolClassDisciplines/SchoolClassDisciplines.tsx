@@ -6,10 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/react";
-import { GroupCollege } from "types/groupCollege";
+import { SchoolClass } from "types/schoolClass";
 
 type Props = {
-  groupCollege: GroupCollege;
+  schoolClass: SchoolClass;
 };
 
 const columns = [
@@ -17,17 +17,17 @@ const columns = [
   { key: "disciplineCode", label: "Código" },
 ];
 
-export function TableGroupCollegeDisciplines({ groupCollege }: Props) {
+export function SchoolClassDisciplines({ schoolClass }: Props) {
   return (
     <>
-      <h1>Disciplinas da Turma: {groupCollege.groupCode}</h1>
+      <h1>Disciplinas da Turma: {schoolClass.code}</h1>
       <Table aria-label="Tabble with all disciplines">
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>
           )}
         </TableHeader>
-        <TableBody items={groupCollege.disciplines}>
+        <TableBody items={schoolClass.disciplines}>
           {(discipline) => (
             <TableRow key={discipline.disciplineCode}>
               <TableCell>{discipline.name}</TableCell>

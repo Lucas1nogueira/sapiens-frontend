@@ -1,6 +1,6 @@
 import { Header } from "@components/Header/Header";
-import { TableTeacherGroupCollege } from "@components/TableTeacherGroupCollege/TableTeacherGroupCollege";
 import { TeacherProfile } from "@components/TeacherProfile/TeacherProfile";
+import { TeacherSchoolClass } from "@components/TeacherSchoolClass/TeacherSchoolClass";
 import { UserProfile } from "@components/UserProfile/UserProfile";
 import { Tab, Tabs, useDisclosure } from "@nextui-org/react";
 
@@ -24,7 +24,7 @@ export function HomeTeacher() {
           }}
         >
           <Tab key="myGroupColleges" title="Minhas Turmas">
-            <TableTeacherGroupCollege />
+            <TeacherSchoolClass />
           </Tab>
         </Tabs>
       </div>

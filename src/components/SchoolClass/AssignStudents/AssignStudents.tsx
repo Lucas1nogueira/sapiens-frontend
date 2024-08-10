@@ -14,19 +14,19 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
-import { GroupCollege } from "types/groupCollege";
+import { updateSchoolClass } from "services/schoolClassService";
+import { SchoolClass } from "types/schoolClass";
 import { Student } from "types/student";
 
 type Props = {
-  groupCollege: GroupCollege;
+  schoolClass: SchoolClass;
 };
 
-export function AssignStudents({ groupCollege }: Props) {
+export function AssignStudents({ schoolClass }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
-
   const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set([]));
 
   const { setError } = useError();
@@ -60,22 +60,21 @@ export function AssignStudents({ groupCollege }: Props) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const students: { id: string }[] = [];
+    const students: Student[] = [];
 
     getSelectedValues()?.forEach((key) => {
       students.push({
         id: key as string,
-      });
+      } as Student);
     });
 
-    const newGroupCollege = {
-      ...groupCollege,
+    const newSchoolClass = {
+      ...schoolClass,
       studentAmount: students.length,
       students: students,
     };
 
-    api
-      .put("groupCollege/update", newGroupCollege)
+    updateSchoolClass(newSchoolClass)
       .then(() => {
         setSuccess("Turma atualizada com sucesso!");
       })
@@ -88,12 +87,17 @@ export function AssignStudents({ groupCollege }: Props) {
     api
       .get<Student[]>("student/all")
       .then((response) => {
+        const initiallySelected = new Set(
+          schoolClass.students.map((student) => student.id.toString())
+        );
+
+        setSelectedKeys(initiallySelected);
         setStudents(response.data);
       })
       .catch((error) => {
         setError(error.response.data);
       });
-  }, [setError]);
+  }, [setError, schoolClass.students]);
 
   return (
     <div className="flex justify-center items-center">
@@ -103,7 +107,7 @@ export function AssignStudents({ groupCollege }: Props) {
         </h1>
         <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
           <p>
-            <strong>Turma: {groupCollege.groupCode} </strong>
+            <strong>Turma: {schoolClass.code} </strong>
           </p>
 
           <Table
