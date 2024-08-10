@@ -63,7 +63,7 @@ export function AssignDisciplines({ schoolClass }: Props) {
 
     getSelectedValues()?.forEach((key) => {
       disciplines.push({
-        disciplineCode: key as string,
+        code: key as string,
       } as Discipline);
     });
 
@@ -87,7 +87,7 @@ export function AssignDisciplines({ schoolClass }: Props) {
       .then((response) => {
         const initiallySelected = new Set(
           schoolClass.disciplines.map(
-            (discipline: Discipline) => discipline.disciplineCode
+            (discipline: Discipline) => discipline.code
           )
         );
 
@@ -139,7 +139,7 @@ export function AssignDisciplines({ schoolClass }: Props) {
             </TableHeader>
             <TableBody items={items}>
               {(discipline) => (
-                <TableRow key={discipline.disciplineCode}>
+                <TableRow key={discipline.code}>
                   <TableCell>{discipline.name}</TableCell>
                 </TableRow>
               )}

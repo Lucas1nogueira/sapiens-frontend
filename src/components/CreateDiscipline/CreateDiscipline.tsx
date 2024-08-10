@@ -3,9 +3,12 @@ import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { api } from "services/api";
+import { Discipline } from "types/discipline";
+import { SchoolClass } from "types/schoolClass";
+import { Teacher } from "types/teacher";
 
 export function CreateDiscipline() {
-  const [disciplineCode, setDisciplineCode] = useState("");
+  const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const { setError } = useError();
   const { setSuccess } = useSuccess();
@@ -13,15 +16,17 @@ export function CreateDiscipline() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const discipline = {
-      disciplineCode,
+    const discipline: Discipline = {
+      code,
       name,
+      teacher: null as unknown as Teacher,
+      schoolClass: null as unknown as SchoolClass,
     };
 
     api
       .post("discipline/save", discipline)
       .then(() => {
-        setDisciplineCode("");
+        setCode("");
         setName("");
 
         setSuccess("Disciplina criada com sucesso!");
@@ -41,8 +46,8 @@ export function CreateDiscipline() {
           <Input
             label="Código da Disciplina"
             type="text"
-            value={disciplineCode}
-            onValueChange={setDisciplineCode}
+            value={code}
+            onValueChange={setCode}
             placeholder="Insira o código da disciplina"
             errorMessage="Insira um código válido"
             isRequired

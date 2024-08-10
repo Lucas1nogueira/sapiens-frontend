@@ -1,8 +1,8 @@
 import { ErrorModal } from "@components/ErrorModal/ErrorModal";
 import { SuccessModal } from "@components/SuccessModal/SuccessModal";
-import { AuthProvider } from "@contexts/AuthProvider";
-import { ErrorProvider } from "@contexts/ErrorProvider";
-import { SuccessProvider } from "@contexts/SuccessProvider";
+import { AuthProvider } from "@contexts/AuthContext";
+import { ErrorProvider } from "@contexts/ErrorContext";
+import { SuccessProvider } from "@contexts/SuccessContext";
 import { AppRoutes } from "AppRoutes";
 import { BrowserRouter } from "react-router-dom";
 

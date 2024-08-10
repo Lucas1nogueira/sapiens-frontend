@@ -65,9 +65,9 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
         </TableHeader>
         <TableBody items={items}>
           {(discipline) => (
-            <TableRow key={discipline.disciplineCode}>
+            <TableRow key={discipline.code}>
               <TableCell>{discipline.name}</TableCell>
-              <TableCell>{discipline.disciplineCode}</TableCell>
+              <TableCell>{discipline.code}</TableCell>
               <TableCell>
                 {discipline.teacher?.name ?? "Sem Professor"}
               </TableCell>

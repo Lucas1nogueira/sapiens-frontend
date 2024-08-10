@@ -1,9 +1,9 @@
 import { SchoolClass } from "./schoolClass";
-import { User } from "./user";
+import { Teacher } from "./teacher";
 
 export type Discipline = {
-  disciplineCode: string;
+  code: string;
   name: string;
-  teacher: User;
+  teacher: Teacher;
   schoolClass: SchoolClass;
 };

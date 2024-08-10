@@ -55,7 +55,7 @@ export function TableSchoolClass({
 
   useEffect(() => {
     api
-      .get<SchoolClass[]>("school-classes/all")
+      .get<SchoolClass[]>("school-class/all")
       .then((response) => setSchoolClasses(response.data));
     return () => {};
   }, [
