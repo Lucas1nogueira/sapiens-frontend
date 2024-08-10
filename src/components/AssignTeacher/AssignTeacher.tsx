@@ -83,7 +83,7 @@ export function AssignTeacher({ discipline }: Props) {
       });
   }, [setError]);
 
-  if (teachers.length === 0) return <LoadingPage />;
+  if (!teachers) return <LoadingPage />;
 
   return (
     <div className="flex justify-center items-center">

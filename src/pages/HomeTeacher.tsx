@@ -23,7 +23,7 @@ export function HomeTeacher() {
             tabList: "overflow-x-visible",
           }}
         >
-          <Tab key="myGroupColleges" title="Minhas Turmas">
+          <Tab key="schoolClasses" title="Minhas Turmas">
             <TeacherSchoolClass />
           </Tab>
         </Tabs>
