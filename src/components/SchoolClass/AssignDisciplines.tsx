@@ -29,7 +29,7 @@ export function AssignDisciplines({ schoolClass }: Props) {
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
-  const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set([]));
+  const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set());
   const { setError } = useError();
   const { setSuccess } = useSuccess();
 
@@ -52,18 +52,12 @@ export function AssignDisciplines({ schoolClass }: Props) {
       .slice(start, end);
   }, [disciplines, page, filterValue]);
 
-  const getSelectedValues = () => {
-    if (selectedKeys === "all") return [];
-    if (typeof selectedKeys === "object") return Array.from(selectedKeys);
-    return [];
-  };
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const disciplinesOfClass = disciplines.filter((discipline) => {
-      return getSelectedValues().includes(discipline.code);
-    });
+    const disciplinesOfClass = disciplines.filter((discipline) =>
+      selectedKeys instanceof Set ? selectedKeys.has(discipline.code) : false
+    );
 
     const newSchoolClass: SchoolClass = {
       ...schoolClass,

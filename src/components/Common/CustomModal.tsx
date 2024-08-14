@@ -22,6 +22,7 @@ export function CustomModal({ useDisclosure, content, size = "5xl" }: Props) {
       onOpenChange={onOpenChange}
       onClose={onClose}
       size={size}
+      disableAnimation
     >
       <ModalContent>
         <ModalBody>{content}</ModalBody>

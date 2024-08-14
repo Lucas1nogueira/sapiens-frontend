@@ -12,7 +12,7 @@ export function ErrorModal() {
   const { errorMessage, clearError } = useError();
 
   return (
-    <Modal isOpen={!!errorMessage} onOpenChange={clearError}>
+    <Modal isOpen={!!errorMessage} onOpenChange={clearError} disableAnimation>
       <ModalContent>
         <ModalHeader>
           <h1>Ocorreu um Erro</h1>

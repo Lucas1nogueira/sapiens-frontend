@@ -12,7 +12,11 @@ export function SuccessModal() {
   const { successMessage, clearSuccess } = useSuccess();
 
   return (
-    <Modal isOpen={!!successMessage} onOpenChange={clearSuccess}>
+    <Modal
+      isOpen={!!successMessage}
+      onOpenChange={clearSuccess}
+      disableAnimation
+    >
       <ModalContent>
         <ModalHeader>
           <h1>A Operação foi Concluída com Sucesso</h1>

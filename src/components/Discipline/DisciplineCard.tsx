@@ -1,14 +1,10 @@
+import { useError } from "@hooks/useError";
 import { Avatar, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { api } from "services/api";
 import { Discipline } from "types/discipline";
+import { Evaluation } from "types/evaluation";
 import { SchoolClass } from "types/schoolClass";
-
-const evaluations: { key: string; label: string }[] = [
-  { key: "personas", label: "Atividade de Personas" },
-  { key: "discipline", label: "Atividade de Disciplina" },
-  { key: "independence", label: "Independência" },
-  { key: "social", label: "Social" },
-  { key: "communication", label: "Comunicação" },
-];
 
 type Props = {
   discipline: Discipline;
@@ -23,6 +19,16 @@ export function DisciplineCard({
   setDiscipline,
   setSchoolClass,
 }: Props) {
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const { setError } = useError();
+
+  useEffect(() => {
+    api
+      .get<Evaluation[]>(`evaluation/discipline/${discipline.code}`)
+      .then((response) => setEvaluations(response.data))
+      .catch((error) => setError(error.response.data));
+  }, [discipline.code, setError]);
+
   return (
     <Card className="py-4" key={discipline.code}>
       <CardHeader
@@ -45,8 +51,8 @@ export function DisciplineCard({
       <CardBody className="overflow-visible py-2">
         <Divider />
         {evaluations.slice(0, 3).map((evaluation) => (
-          <p key={evaluation.key} className="text-xs">
-            {evaluation.label}
+          <p key={evaluation.id} className="text-xs">
+            {evaluation.name}
           </p>
         ))}
         {evaluations.length > 3 && <p className="text-xs">...</p>}

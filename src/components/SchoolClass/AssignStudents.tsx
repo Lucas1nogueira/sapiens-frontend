@@ -29,7 +29,7 @@ export function AssignStudents({ schoolClass }: Props) {
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
-  const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set([]));
+  const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set());
 
   const { setError } = useError();
   const { setSuccess } = useSuccess();
@@ -53,18 +53,14 @@ export function AssignStudents({ schoolClass }: Props) {
       .slice(start, end);
   }, [students, page, filterValue]);
 
-  const getSelectedValues = () => {
-    if (selectedKeys === "all") return [];
-    if (typeof selectedKeys === "object") return Array.from(selectedKeys);
-    return [];
-  };
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const schoolClassStudents = students.filter((student) => {
-      return getSelectedValues().includes(student.id.toString());
-    });
+    const schoolClassStudents = students.filter((student) =>
+      selectedKeys instanceof Set
+        ? selectedKeys.has(student.id.toString())
+        : false
+    );
 
     const newSchoolClass: SchoolClass = {
       ...schoolClass,
