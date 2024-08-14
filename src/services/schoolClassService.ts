@@ -6,8 +6,18 @@ export const saveSchoolClass = async (schoolClass: SchoolClass) => {
   return response;
 };
 
-export const updateSchoolClass = async (schoolClass: SchoolClass) => {
-  const response = await api.put("school-class/update", schoolClass);
+export const assignStudentsToSchoolClass = async (schoolClass: SchoolClass) => {
+  const response = await api.put("school-class/assign-students", schoolClass);
+  return response;
+};
+
+export const assignDisciplinesToSchoolClass = async (
+  schoolClass: SchoolClass
+) => {
+  const response = await api.put(
+    "school-class/assign-disciplines",
+    schoolClass
+  );
   return response;
 };
 
@@ -18,10 +28,5 @@ export const findAllSchoolClasses = async () => {
 
 export const findSchoolClassByCode = async (code: string) => {
   const response = await api.get<SchoolClass>(`school-class/code/${code}`);
-  return response;
-};
-
-export const findSchoolClassByTeacherId = async (id: string) => {
-  const response = await api.get<SchoolClass[]>(`school-class/teacher/${id}`);
   return response;
 };

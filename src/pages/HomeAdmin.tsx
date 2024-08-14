@@ -1,14 +1,14 @@
-import { CreateDiscipline } from "@components/CreateDiscipline/CreateDiscipline";
-import { CreateSchoolClass } from "@components/SchoolClass/CreateSchoolClass/CreateSchoolClass";
-import { CreateUser } from "@components/CreateUser/CreateUser";
-import { CustomModal } from "@components/CustomModal/CustomModal";
-import { CustomTableHeader } from "@components/CustomTableHeader/CustomTableHeader";
-import { Header } from "@components/Header/Header";
-import { TableDiscipline } from "@components/TableDiscipline/TableDiscipline";
-import { TableUsers } from "@components/TableUsers/TableUsers";
+import { CreateDiscipline } from "@components/Admin/CreateDiscipline";
+import { CreateSchoolClass } from "@components/Admin/CreateSchoolClass";
+import { CustomModal } from "@components/Common/CustomModal";
+import { TableDiscipline } from "@components/Discipline/TableDiscipline";
+import { TableUsers } from "@components/Admin/TableUsers";
 import { Tab, Tabs, useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
-import { TableSchoolClass } from "@components/SchoolClass/TableSchoolClass/TableSchoolClass";
+import { CreateUser } from "@components/Admin/CreateUser";
+import { Header } from "@components/Common/Header";
+import { CustomTableHeader } from "@components/Common/CustomTableHeader";
+import { TableSchoolClass } from "@components/SchoolClass/TableSchoolClass";
 
 export function HomeAdmin() {
   const disclosure = useDisclosure();

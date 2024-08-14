@@ -55,6 +55,7 @@ export function Login() {
             label="Email"
             type="email"
             placeholder="Insira seu email"
+            value={email}
             onValueChange={setEmail}
             errorMessage="Insira um email válido"
             isInvalid={emailIsValid}
@@ -64,6 +65,7 @@ export function Login() {
             label="Senha"
             type="password"
             placeholder="Insira sua senha"
+            value={password}
             onValueChange={setPassword}
             errorMessage="Deve conter ao menos 6 dígitos"
             isInvalid={passwordIsValid}

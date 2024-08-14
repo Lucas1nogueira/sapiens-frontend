@@ -1,8 +1,8 @@
-import { Header } from "@components/Header/Header";
-import { StudentProfile } from "@components/StudentProfile/StudentProfile";
-import { StudentSchoolClass } from "@components/StudentSchoolClass/StudentSchoolClass";
-import { UserProfile } from "@components/UserProfile/UserProfile";
+import { Header } from "@components/Common/Header";
+import { StudentProfile } from "@components/Student/StudentProfile";
+import { UserProfile } from "@components/Common/UserProfile";
 import { Tab, Tabs, useDisclosure } from "@nextui-org/react";
+import { StudentSchoolClass } from "@components/Student/StudentSchoolClass";
 
 export function HomeStudent() {
   const disclosure = useDisclosure();

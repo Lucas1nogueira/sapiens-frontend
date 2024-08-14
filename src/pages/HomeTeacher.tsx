@@ -1,7 +1,7 @@
-import { Header } from "@components/Header/Header";
-import { TeacherProfile } from "@components/TeacherProfile/TeacherProfile";
-import { TeacherSchoolClass } from "@components/TeacherSchoolClass/TeacherSchoolClass";
-import { UserProfile } from "@components/UserProfile/UserProfile";
+import { Header } from "@components/Common/Header";
+import { TeacherProfile } from "@components/Teacher/TeacherProfile";
+import { TeacherSchoolClass } from "@components/Teacher/TeacherSchoolClass";
+import { UserProfile } from "@components/Common/UserProfile";
 import { Tab, Tabs, useDisclosure } from "@nextui-org/react";
 
 export function HomeTeacher() {
@@ -23,7 +23,7 @@ export function HomeTeacher() {
             tabList: "overflow-x-visible",
           }}
         >
-          <Tab key="schoolClasses" title="Minhas Turmas">
+          <Tab key="disciplines" title="Disciplinas">
             <TeacherSchoolClass />
           </Tab>
         </Tabs>

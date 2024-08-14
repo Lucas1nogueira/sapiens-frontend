@@ -1,5 +1,5 @@
-import { ErrorModal } from "@components/ErrorModal/ErrorModal";
-import { SuccessModal } from "@components/SuccessModal/SuccessModal";
+import { ErrorModal } from "@components/Common/ErrorModal";
+import { SuccessModal } from "@components/Common/SuccessModal";
 import { AuthProvider } from "@contexts/AuthContext";
 import { ErrorProvider } from "@contexts/ErrorContext";
 import { SuccessProvider } from "@contexts/SuccessContext";

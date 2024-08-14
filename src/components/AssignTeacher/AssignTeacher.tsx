@@ -1,4 +1,4 @@
-import { PaginationTable } from "@components/PaginationTable/PaginationTable";
+import { PaginationTable } from "@components/Common/PaginationTable";
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
 import { Icon } from "@iconify/react/dist/iconify.js";
