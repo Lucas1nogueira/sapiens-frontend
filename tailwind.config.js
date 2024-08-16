@@ -8,8 +8,14 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'custom-gradient': 'linear-gradient(to right, #ff7e5f, #feb47b)',
+      },
+    },
   }, 
   darkMode: "class",
-  plugins: [nextui()]
+  plugins: [nextui({
+    
+  })]
 }

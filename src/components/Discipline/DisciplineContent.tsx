@@ -1,6 +1,9 @@
+import { useAuth } from "@hooks/useAuth";
 import { useError } from "@hooks/useError";
 import { Icon } from "@iconify/react";
 import {
+  Accordion,
+  AccordionItem,
   Avatar,
   Button,
   Card,
@@ -14,6 +17,8 @@ import { useEffect, useState } from "react";
 import { api } from "services/api";
 import { Discipline } from "types/discipline";
 import { Evaluation } from "types/evaluation";
+import { Grade } from "types/grade";
+import { formatDate, formatDateWithHour } from "utils/formatDate";
 
 type Props = {
   discipline: Discipline;
@@ -21,8 +26,10 @@ type Props = {
 };
 
 export function DisciplineContent({ discipline, setDiscipline }: Props) {
+  const { user } = useAuth();
   const { setError } = useError();
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
+  const [grades, setGrades] = useState<Grade[]>([]);
 
   useEffect(() => {
     api
@@ -30,6 +37,17 @@ export function DisciplineContent({ discipline, setDiscipline }: Props) {
       .then((response) => setEvaluations(response.data))
       .catch((error) => setError(error.response.data));
   }, [discipline.code, setError]);
+
+  useEffect(() => {
+    api
+      .get<Grade[]>(`grade/student/${user?.id}`)
+      .then((response) => setGrades(response.data))
+      .catch((error) => setError(error.response.data));
+  }, [user?.id, setError]);
+
+  const getGradeByEvaluation = (evaluation: Evaluation) => {
+    return grades.find((grade) => grade.evaluation.id === evaluation.id);
+  };
 
   return (
     <Card>
@@ -61,15 +79,29 @@ export function DisciplineContent({ discipline, setDiscipline }: Props) {
           variant="underlined"
         >
           <Tab key="evaluations" title="Atividades">
-            {evaluations.map((evaluation) => (
-              <div key={evaluation.id} className="flex flex-col gap-2">
-                <p>{evaluation.name}</p>
-                <Divider />
-              </div>
-            ))}
-          </Tab>
-          <Tab key="grades" title="Notas">
-            <p>Notas</p>
+            <Accordion variant="splitted">
+              {evaluations.map((evaluation) => (
+                <AccordionItem key={evaluation.id} title={evaluation.name}>
+                  <div className="flex justify-between text-sm">
+                    <div className="flex flex-col gap-2">
+                      <p>
+                        Data da criação:{" "}
+                        {formatDate(evaluation.createdAt) ?? "Sem Data"}
+                      </p>
+                      {getGradeByEvaluation(evaluation) ? (
+                        <p>Nota: {getGradeByEvaluation(evaluation)?.value}</p>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                    <p>
+                      Data da entrega:{" "}
+                      {formatDateWithHour(evaluation.deliveryAt) ?? "Sem Data"}
+                    </p>
+                  </div>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </Tab>
         </Tabs>
       </CardBody>

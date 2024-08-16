@@ -26,9 +26,6 @@ export function HomeStudent() {
           <Tab key="schoolClass" title="Turma">
             <StudentSchoolClass />
           </Tab>
-          <Tab key="grades" title="Notas">
-            <p>Notas</p>
-          </Tab>
         </Tabs>
       </div>
     </div>

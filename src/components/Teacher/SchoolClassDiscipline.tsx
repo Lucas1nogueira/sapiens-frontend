@@ -1,6 +1,8 @@
 import { CreateEvaluation } from "@components/CreateEvaluation/CreateEvaluation";
 import { CustomModal } from "@components/Common/CustomModal";
 import {
+  Accordion,
+  AccordionItem,
   Avatar,
   Button,
   Divider,
@@ -17,6 +19,7 @@ import { Discipline } from "types/discipline";
 import { useEffect, useState } from "react";
 import { api } from "services/api";
 import { LoadingPage } from "@pages/LoadingPage";
+import { formatDate, formatDateWithHour } from "utils/formatDate";
 
 type Props = {
   discipline: Discipline;
@@ -86,10 +89,8 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
         <Divider className="my-2" />
       </div>
       <Tabs aria-label="Options" color="primary" variant="underlined">
-        <Tab key="people" title="Pessoas">
+        <Tab key="people" title="Alunos">
           <div className="flex flex-col gap-2">
-            <h1 className="text-2xl">Alunos</h1>
-            <Divider />
             {students.map((student) => (
               <div key={student.id}>
                 <p>{student.name}</p>
@@ -99,21 +100,39 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
           </div>
         </Tab>
         <Tab key="evaluations" title="Atividades">
-          <Button color="primary" onClick={handleCreateEvaluation}>
+          <Button
+            className="w-full mb-2"
+            color="primary"
+            onClick={handleCreateEvaluation}
+          >
             Nova Atividade
           </Button>
 
-          <div className="flex flex-col gap-4 mt-4">
+          <Accordion variant="splitted">
             {evaluations.map((evaluation) => (
-              <div key={evaluation.id}>
-                <p>{evaluation.name}</p>
-                <Divider />
-              </div>
+              <AccordionItem key={evaluation.id} title={evaluation.name}>
+                <div className="flex justify-between text-sm">
+                  <div className="flex flex-col gap-2">
+                    <p>
+                      Data de criação:{" "}
+                      {formatDate(evaluation.createdAt) ?? "Sem Data"}
+                    </p>
+                  </div>
+                  <p>
+                    Data da entrega:{" "}
+                    {formatDateWithHour(evaluation.deliveryAt) ?? "Sem Data"}
+                  </p>
+                </div>
+              </AccordionItem>
             ))}
-          </div>
+          </Accordion>
         </Tab>
         <Tab key="notes" title="Notas">
-          <Button color="primary" onClick={handleCreateGrade}>
+          <Button
+            className="w-full mb-2"
+            color="primary"
+            onClick={handleCreateGrade}
+          >
             Lançar Notas
           </Button>
         </Tab>

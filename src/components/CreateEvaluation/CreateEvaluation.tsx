@@ -13,6 +13,7 @@ type Props = {
 
 export function CreateEvaluation({ discipline }: Props) {
   const [name, setName] = useState("");
+  const [deliveryDate, setDeliveryDate] = useState("");
   const { setError } = useError();
   const { setSuccess } = useSuccess();
 
@@ -22,6 +23,8 @@ export function CreateEvaluation({ discipline }: Props) {
     const evaluation: Evaluation = {
       id: null as unknown as string,
       name,
+      createdAt: new Date().toISOString(),
+      deliveryAt: deliveryDate,
       student: null as unknown as Student,
       discipline,
       grades: [],
@@ -31,6 +34,7 @@ export function CreateEvaluation({ discipline }: Props) {
       .post("evaluation/save", evaluation)
       .then(() => {
         setName("");
+        setDeliveryDate("");
 
         setSuccess("Atividade criada com sucesso!");
       })
@@ -54,6 +58,15 @@ export function CreateEvaluation({ discipline }: Props) {
             placeholder="Insira o nome da atividade"
             value={name}
             onValueChange={setName}
+            isRequired
+          />
+
+          <Input
+            label="Data de Entrega"
+            placeholder="Insira a data de entrega da atividade"
+            type="datetime-local"
+            value={deliveryDate}
+            onChange={(event) => setDeliveryDate(event.target.value)}
             isRequired
           />
 

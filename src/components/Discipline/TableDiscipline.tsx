@@ -1,4 +1,4 @@
-import { AssignTeacher } from "@components/AssignTeacher/AssignTeacher";
+import { AssignTeacher } from "@components/Discipline/AssignTeacher";
 import { CustomModal } from "@components/Common/CustomModal";
 import { Icon } from "@iconify/react";
 import {
