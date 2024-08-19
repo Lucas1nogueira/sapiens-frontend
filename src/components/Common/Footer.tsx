@@ -24,6 +24,12 @@ export function Footer() {
               <li>
                 <p className="hover:text-gray-400">Gestão de Turmas</p>
               </li>
+              <li>
+                <p className="hover:text-gray-400">Comunicação Integrada</p>
+              </li>
+              <li>
+                <p className="hover:text-gray-400">Suporte e Atendimento</p>
+              </li>
             </ul>
           </div>
 
