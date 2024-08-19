@@ -15,12 +15,15 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
 import { Discipline } from "types/discipline";
 import { ModalType } from "types/modal";
+import { CreateSchedule } from "./CreateSchedule";
 
 const columns = [
   { key: "name", label: "Nome" },
   { key: "disciplineCode", label: "Código" },
   { key: "professor", label: "Professor" },
   { key: "setProfessor", label: "Atribuir Professor" },
+  { key: "schedule", label: "Horário" },
+  { key: "addSchedule", label: "Adicionar Horário" },
 ];
 
 type Props = {
@@ -30,15 +33,15 @@ type Props = {
 
 export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
-  const [discipline, setDiscipline] = useState<Discipline>({} as Discipline);
-  const assignDisclosure = useDisclosure();
+  const [content, setContent] = useState<JSX.Element>(<></>);
+  const disclosure = useDisclosure();
 
   useEffect(() => {
     api
       .get<Discipline[]>("discipline/all")
       .then((response) => setDisciplines(response.data));
     return () => {};
-  }, [assignDisclosure.isOpen, customModalDisclosure.isOpen]);
+  }, [disclosure.onClose, customModalDisclosure.isOpen]);
 
   const items = useMemo(() => {
     if (!filterValue) {
@@ -51,8 +54,13 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   }, [disciplines, filterValue]);
 
   const handleAssign = (discipline: Discipline) => {
-    setDiscipline(discipline);
-    assignDisclosure.onOpenChange();
+    setContent(<AssignTeacher discipline={discipline} />);
+    disclosure.onOpenChange();
+  };
+
+  const handleAddSchedule = (discipline: Discipline) => {
+    setContent(<CreateSchedule discipline={discipline} />);
+    disclosure.onOpenChange();
   };
 
   return (
@@ -81,15 +89,23 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
                   <Icon icon="streamline:class-lesson-solid" width={22} />
                 </Button>
               </TableCell>
+              <TableCell>{JSON.stringify(discipline.schedule)}</TableCell>
+              <TableCell>
+                <Button
+                  onClick={() => handleAddSchedule(discipline)}
+                  color="primary"
+                  variant="ghost"
+                  isIconOnly
+                >
+                  <Icon icon="material-symbols:add" width={22} />
+                </Button>
+              </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
 
-      <CustomModal
-        useDisclosure={assignDisclosure}
-        content={<AssignTeacher discipline={discipline} />}
-      />
+      <CustomModal useDisclosure={disclosure} content={content} />
     </>
   );
 }
