@@ -16,6 +16,7 @@ import { api } from "services/api";
 import { Discipline } from "types/discipline";
 import { ModalType } from "types/modal";
 import { CreateSchedule } from "./CreateSchedule";
+import { DisciplineSchedule } from "./DisciplineSchedule";
 
 const columns = [
   { key: "name", label: "Nome" },
@@ -63,6 +64,11 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
     disclosure.onOpenChange();
   };
 
+  const handleShowSchedule = (discipline: Discipline) => {
+    setContent(<DisciplineSchedule discipline={discipline} />);
+    disclosure.onOpenChange();
+  };
+
   return (
     <>
       <Table aria-label="Tabble with all users">
@@ -89,7 +95,16 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
                   <Icon icon="streamline:class-lesson-solid" width={22} />
                 </Button>
               </TableCell>
-              <TableCell>{JSON.stringify(discipline.schedule)}</TableCell>
+              <TableCell>
+                <Button
+                  onClick={() => handleShowSchedule(discipline)}
+                  color="primary"
+                  variant="ghost"
+                  isIconOnly
+                >
+                  <Icon icon="material-symbols:schedule" width={22} />
+                </Button>
+              </TableCell>
               <TableCell>
                 <Button
                   onClick={() => handleAddSchedule(discipline)}

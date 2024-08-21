@@ -1,22 +1,16 @@
 import { DisciplineCard } from "@components/Discipline/DisciplineCard";
-import { useAuth } from "@hooks/useAuth";
 import { LoadingPage } from "@pages/LoadingPage";
-import { useEffect, useState } from "react";
-import { api } from "services/api";
+import { useState } from "react";
 import { Discipline } from "types/discipline";
 import { SchoolClass } from "types/schoolClass";
 import { SchoolClassDiscipline } from "./SchoolClassDiscipline";
 
-export function TeacherSchoolClass() {
-  const { user } = useAuth();
-  const [disciplines, setDisciplines] = useState<Discipline[]>([]);
-  const [discipline, setDiscipline] = useState<Discipline | null>(null);
+type Props = {
+  disciplines: Discipline[];
+};
 
-  useEffect(() => {
-    api
-      .get<Discipline[]>(`discipline/teacher/${user?.id}`)
-      .then((response) => setDisciplines(response.data));
-  }, [user?.id]);
+export function TeacherSchoolClass({ disciplines }: Props) {
+  const [discipline, setDiscipline] = useState<Discipline | null>(null);
 
   if (!disciplines) return <LoadingPage />;
 

@@ -20,6 +20,7 @@ export const servicesData: Service[] = [
       <a
         href="https://www.flaticon.com/free-icons/scholarship"
         title="scholarship icons"
+        target="_blank"
       >
         <img src={academic} alt="Academic image." />
       </a>
@@ -33,6 +34,7 @@ export const servicesData: Service[] = [
       <a
         href="https://www.flaticon.com/free-icons/attendance"
         title="attendance icons"
+        target="_blank"
       >
         <img src={attendance} alt="Attendance image." />
       </a>
@@ -46,6 +48,7 @@ export const servicesData: Service[] = [
       <a
         href="https://www.flaticon.com/free-icons/appraisal"
         title="Appraisal icons"
+        target="_blank"
       >
         <img src={assessment} alt="Assessment image." />
       </a>
@@ -55,7 +58,11 @@ export const servicesData: Service[] = [
     title: "Gestão de Turmas e Horários",
     description: "Organize turmas e crie horários de forma otimizada.",
     icon: (
-      <a href="https://www.flaticon.com/free-icons/school" title="school icons">
+      <a
+        href="https://www.flaticon.com/free-icons/school"
+        title="school icons"
+        target="_blank"
+      >
         <img src={classroom} alt="Classroom image." />
       </a>
     ),
@@ -65,7 +72,11 @@ export const servicesData: Service[] = [
     description:
       "Facilite a comunicação entre alunos, professores e a administração escolar.",
     icon: (
-      <a href="https://www.flaticon.com/free-icons/group" title="group icons">
+      <a
+        href="https://www.flaticon.com/free-icons/group"
+        title="group icons"
+        target="_blank"
+      >
         <img src={communication} alt="Communication image." />
       </a>
     ),
@@ -78,6 +89,7 @@ export const servicesData: Service[] = [
       <a
         href="https://www.flaticon.com/free-icons/support"
         title="support icons"
+        target="_blank"
       >
         <img src={support} alt="Support image." />
       </a>
