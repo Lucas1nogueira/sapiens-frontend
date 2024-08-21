@@ -95,7 +95,7 @@ export function EditGrade({ evaluation }: Props) {
                 type="number"
                 min={0}
                 max={10}
-                step={0.1}
+                step="0.01"
                 placeholder="Insira a nota da atividade"
                 value={grade.value.toString()}
                 onValueChange={(value) =>

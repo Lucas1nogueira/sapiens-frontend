@@ -91,6 +91,7 @@ export function CreateGrade({ students, evaluation }: Props) {
               <Input
                 label="Nota"
                 type="number"
+                step="0.01"
                 min={0}
                 max={10}
                 placeholder="Insira a nota da atividade"

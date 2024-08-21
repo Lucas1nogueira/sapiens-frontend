@@ -12,7 +12,7 @@ export function SideMenu({ menuItems }: Props) {
 
   return (
     <div
-      className={`bg-amber-500 fixed left-0 z-10 transition-all duration-300 p-4 min-h-screen h-full overflow-y-auto
+      className={`bg-[#88A3E2] fixed left-0 z-10 transition-all duration-300 p-4 min-h-screen h-full overflow-y-auto
         ${isMenuOpen ? "w-64" : "hidden lg:block lg:w-16"}`}
     >
       {menuItems?.map((item, index) => (
