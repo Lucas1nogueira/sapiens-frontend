@@ -5,7 +5,14 @@ import { useDisclosure } from "@nextui-org/react";
 import { StudentSchoolClass } from "@components/Student/StudentSchoolClass";
 import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { SideMenu } from "@components/Common/SideMenu";
+import { useAuth } from "@hooks/useAuth";
+import { Discipline } from "types/discipline";
+import { api } from "services/api";
+import { DisciplinesSchedule } from "@components/Discipline/DisciplinesSchedule";
+import { SchoolClass } from "types/schoolClass";
+import { LoadingPage } from "./LoadingPage";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -15,20 +22,57 @@ const generateMenuItems = (
     icon: <Icon icon="mdi:class" />,
     onClick: () => setSelectedTab(0),
   },
+  {
+    title: "Horários",
+    icon: <Icon icon="uis:schedule" />,
+    onClick: () => setSelectedTab(1),
+  },
 ];
 
-const tabs = [<>{<StudentSchoolClass />}</>];
-
 export function HomeStudent() {
+  const { user } = useAuth();
   const disclosure = useDisclosure();
+  const [disciplines, setDisciplines] = useState<Discipline[]>([]);
+  const [schoolClass, setSchoolClass] = useState<SchoolClass>(
+    {} as SchoolClass
+  );
   const [selectedTab, setSelectedTab] = useState(0);
+  const [loadingClass, setLoadingClass] = useState(true);
+  const [loadingDisciplines, setLoadingDisciplines] = useState(true);
+
+  useEffect(() => {
+    if (schoolClass.code) {
+      api
+        .get<Discipline[]>(`discipline/class/${schoolClass.code}`)
+        .then((response) => {
+          setDisciplines(response.data);
+        })
+        .catch((error) => console.log(error.response.data))
+        .finally(() => setLoadingDisciplines(false));
+    }
+  }, [schoolClass.code]);
+
+  useEffect(() => {
+    api
+      .get<SchoolClass>(`school-class/student/${user?.id}`)
+      .then((response) => {
+        setSchoolClass(response.data);
+      })
+      .catch((error) => console.log(error.response.data))
+      .finally(() => setLoadingClass(false));
+  }, [user?.id]);
+
+  if (loadingClass && loadingDisciplines) return <LoadingPage />;
+
+  const tabs = [
+    <StudentSchoolClass schoolClass={schoolClass} />,
+    <DisciplinesSchedule disciplines={disciplines} />,
+  ];
 
   return (
     <div>
-      <Header
-        useDisclosure={disclosure}
-        menuItems={generateMenuItems(setSelectedTab)}
-      />
+      <Header useDisclosure={disclosure} />
+      <SideMenu menuItems={generateMenuItems(setSelectedTab)} />
       <UserProfile
         updateDisclosure={disclosure}
         updateProfile={<StudentProfile />}

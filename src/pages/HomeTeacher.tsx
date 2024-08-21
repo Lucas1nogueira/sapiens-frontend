@@ -5,7 +5,12 @@ import { UserProfile } from "@components/Common/UserProfile";
 import { useDisclosure } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { SideMenu } from "@components/Common/SideMenu";
+import { Discipline } from "types/discipline";
+import { useAuth } from "@hooks/useAuth";
+import { api } from "services/api";
+import { DisciplinesSchedule } from "@components/Discipline/DisciplinesSchedule";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -15,20 +20,34 @@ const generateMenuItems = (
     icon: <Icon icon="mdi:class" />,
     onClick: () => setSelectedTab(0),
   },
+  {
+    title: "Horários",
+    icon: <Icon icon="uis:schedule" />,
+    onClick: () => setSelectedTab(1),
+  },
 ];
 
-const tabs = [<>{<TeacherSchoolClass />}</>];
-
 export function HomeTeacher() {
+  const { user } = useAuth();
+  const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const disclosure = useDisclosure();
   const [selectedTab, setSelectedTab] = useState(0);
 
+  useEffect(() => {
+    api
+      .get<Discipline[]>(`discipline/teacher/${user?.id}`)
+      .then((response) => setDisciplines(response.data));
+  }, [user?.id]);
+
+  const tabs = [
+    <TeacherSchoolClass disciplines={disciplines} />,
+    <DisciplinesSchedule disciplines={disciplines} />,
+  ];
+
   return (
     <div>
-      <Header
-        useDisclosure={disclosure}
-        menuItems={generateMenuItems(setSelectedTab)}
-      />
+      <Header useDisclosure={disclosure} />
+      <SideMenu menuItems={generateMenuItems(setSelectedTab)} />
       <UserProfile
         updateDisclosure={disclosure}
         updateProfile={<TeacherProfile />}

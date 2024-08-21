@@ -9,9 +9,9 @@ import {
 import { Logo } from "@components/Common/Logo";
 import { Footer } from "@components/Common/Footer";
 import { servicesData } from "utils/servicesData";
+import { ServiceCard } from "@components/Common/ServiceCard";
 import education from "@assets/education.jpg";
 import logo from "@assets/logo.png";
-import { ServiceCard } from "@components/Common/ServiceCard";
 
 export const LandingPage = () => {
   const navigate = useNavigate();

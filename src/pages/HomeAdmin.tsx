@@ -12,6 +12,7 @@ import { TableSchoolClass } from "@components/SchoolClass/TableSchoolClass";
 import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
 import { Calendar } from "@components/Common/Calendar";
+import { SideMenu } from "@components/Common/SideMenu";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -132,8 +133,9 @@ export function HomeAdmin() {
   const menuItems = generateMenuItems(setSelectedTab);
 
   return (
-    <div>
-      <Header useDisclosure={disclosure} menuItems={menuItems} />
+    <div className="relative">
+      <Header useDisclosure={disclosure} />
+      <SideMenu menuItems={menuItems} />
       <div className="max-w-5xl mx-auto p-4">
         {getComponentForTab(
           selectedTab,
