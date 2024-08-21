@@ -1,127 +1,217 @@
-import { Button } from "@nextui-org/react";
-import { useState } from "react";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Icon } from "@iconify/react";
+import { Button, Input } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import {
+  findScheduleByDisciplineCode,
+  saveSchedulesForDiscipline,
+} from "services/scheduleService";
 import { Discipline } from "types/discipline";
+import { Schedule } from "types/schedule";
 
 type Props = {
   discipline: Discipline;
 };
 
-type Schedule = {
-  startTime: string;
-  endTime: string;
-};
+type ScheduleWithTempId = Schedule & { tempId: string };
 
-const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"];
+const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
 export function CreateSchedule({ discipline }: Props) {
-  const [schedules, setSchedules] = useState<Record<string, Schedule>>({});
+  const [schedules, setSchedules] = useState<ScheduleWithTempId[]>([]);
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
+
+  useEffect(() => {
+    findScheduleByDisciplineCode(discipline.code)
+      .then((response) => {
+        const schedulesWithTempId: ScheduleWithTempId[] = response.data.map(
+          (schedule) => ({ ...schedule, tempId: crypto.randomUUID() })
+        );
+
+        console.log(schedulesWithTempId);
+
+        setSchedules(schedulesWithTempId);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [discipline.code]);
 
   const handleDaySelection = (day: string) => {
-    if (schedules[day]) {
-      const updatedSchedules = { ...schedules };
-      delete updatedSchedules[day];
-      setSchedules(updatedSchedules);
+    const existingSchedules = schedules.filter(
+      (schedule) => schedule.day === day
+    );
+
+    if (existingSchedules.length > 0) {
+      setSchedules(schedules.filter((schedule) => schedule.day !== day));
     } else {
-      setSchedules({
-        ...schedules,
-        [day]: { startTime: "", endTime: "" },
-      });
+      const newSchedule: ScheduleWithTempId = {
+        tempId: crypto.randomUUID(),
+        id: null as unknown as string,
+        date: null as unknown as string,
+        day,
+        startAt: "",
+        endAt: "",
+        discipline,
+      };
+      setSchedules([...schedules, newSchedule]);
     }
   };
 
   const handleTimeChange = (
-    day: string,
-    type: "startTime" | "endTime",
+    tempId: string,
+    type: "startAt" | "endAt",
     value: string
   ) => {
-    setSchedules({
-      ...schedules,
-      [day]: {
-        ...schedules[day],
-        [type]: value,
-      },
-    });
+    setSchedules(
+      schedules.map((schedule) =>
+        schedule.tempId === tempId ? { ...schedule, [type]: value } : schedule
+      )
+    );
+  };
+
+  const addSchedule = (day: string) => {
+    const newSchedule: ScheduleWithTempId = {
+      tempId: crypto.randomUUID(),
+      id: null as unknown as string,
+      date: null as unknown as string,
+      day,
+      startAt: "",
+      endAt: "",
+      discipline,
+    };
+    setSchedules([...schedules, newSchedule]);
+  };
+
+  const removeSchedule = (tempId: string) => {
+    setSchedules(schedules.filter((schedule) => schedule.tempId !== tempId));
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Aqui você pode processar o `schedules` conforme necessário
-    console.log("Horários da disciplina:", schedules);
+
+    const schedulesWithoutTempIds: Schedule[] = schedules.map(
+      ({ tempId, ...schedule }) => {
+        console.log(`TempId: ${tempId} | Schedule:`, schedule);
+        return {
+          ...schedule,
+          discipline,
+        };
+      }
+    );
+
+    saveSchedulesForDiscipline(discipline.code, schedulesWithoutTempIds)
+      .then(() => {
+        setSuccess("Horários salvos com sucesso!");
+        setSchedules([]);
+      })
+      .catch((error) => {
+        setError(error.response.data.message);
+      });
   };
 
   return (
-    <div className="flex justify-center items-center">
-      <div className="w-full p-4">
-        <h1 className="text-center text-2xl font-bold">
-          Atribua um Horário a uma Disciplina
-        </h1>
-        <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
-          <p>
-            <strong>Disciplina: {discipline.name} </strong>
-          </p>
+    <div className="max-h-[500px] overflow-y-auto p-4 bg-white rounded-md shadow-md">
+      <h1 className="text-center text-2xl font-bold mb-4">
+        Atribua um Horário a uma Disciplina
+      </h1>
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <p className="text-lg">
+          <strong>Disciplina: {discipline.name} </strong>
+        </p>
 
-          <div className="flex flex-col gap-2">
-            <label className="font-bold">Dias da Semana:</label>
-            <div className="flex gap-2 flex-wrap">
-              {daysOfWeek.map((day) => (
-                <button
-                  type="button"
-                  key={day}
-                  onClick={() => handleDaySelection(day)}
-                  className={`px-3 py-1 rounded-md border ${
-                    schedules[day] ? "bg-blue-500 text-white" : "bg-gray-200"
-                  }`}
-                >
-                  {day}
-                </button>
-              ))}
-            </div>
+        <div className="flex flex-col gap-2">
+          <label className="font-bold text-gray-700">Dias da Semana:</label>
+          <div className="flex gap-2 flex-wrap">
+            {daysOfWeek.map((day) => (
+              <Button
+                type="button"
+                key={day}
+                onClick={() => handleDaySelection(day)}
+                className={`px-3 py-1 rounded-md border ${
+                  schedules.some((schedule) => schedule.day === day)
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+              >
+                {day}
+              </Button>
+            ))}
           </div>
+        </div>
 
-          {daysOfWeek.map(
-            (day) =>
-              schedules[day] && (
-                <div key={day} className="flex flex-col gap-4 mt-2">
-                  <h2 className="text-lg font-bold">{day}</h2>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="font-bold">Horário de Início:</label>
-                    <input
-                      type="time"
-                      value={schedules[day].startTime}
-                      onChange={(e) =>
-                        handleTimeChange(day, "startTime", e.target.value)
-                      }
-                      className="p-2 border rounded-md"
-                      required
-                    />
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    <label className="font-bold">Horário de Término:</label>
-                    <input
-                      type="time"
-                      value={schedules[day].endTime}
-                      onChange={(e) =>
-                        handleTimeChange(day, "endTime", e.target.value)
-                      }
-                      className="p-2 border rounded-md"
-                      required
-                    />
-                  </div>
+        {daysOfWeek.map((day) => (
+          <div key={day} className="mt-4">
+            {schedules
+              .filter((schedule) => schedule.day === day)
+              .map((schedule) => (
+                <div
+                  key={schedule.tempId}
+                  className="flex flex-col gap-4 mt-2 p-4 bg-gray-100 rounded-md shadow-sm relative"
+                >
+                  <h2 className="text-lg font-bold text-gray-700">{day}</h2>
+                  <Input
+                    color="primary"
+                    variant="bordered"
+                    label="Horário de Início"
+                    type="time"
+                    value={schedule.startAt}
+                    onChange={(e) =>
+                      handleTimeChange(
+                        schedule.tempId,
+                        "startAt",
+                        e.target.value
+                      )
+                    }
+                    isRequired
+                  />
+                  <Input
+                    color="primary"
+                    variant="bordered"
+                    label="Horário de Término"
+                    type="time"
+                    value={schedule.endAt}
+                    onChange={(e) =>
+                      handleTimeChange(schedule.tempId, "endAt", e.target.value)
+                    }
+                    isRequired
+                  />
+                  <Button
+                    color="danger"
+                    variant="ghost"
+                    onClick={() => removeSchedule(schedule.tempId)}
+                    className="absolute top-2 right-2"
+                    isIconOnly
+                  >
+                    <Icon icon="ic:baseline-close" width={26} />
+                  </Button>
                 </div>
-              )
-          )}
+              ))}
 
-          <Button
-            type="submit"
-            color="primary"
-            className="w-full rounded-md mt-4"
-          >
-            Adicionar
-          </Button>
-        </form>
-      </div>
+            {schedules.some((schedule) => schedule.day === day) && (
+              <Button
+                color="primary"
+                variant="ghost"
+                onClick={() => addSchedule(day)}
+                className="mt-2"
+                isIconOnly
+              >
+                <Icon icon="ic:baseline-plus" width={26} />
+              </Button>
+            )}
+          </div>
+        ))}
+
+        <Button
+          type="submit"
+          color="primary"
+          className="w-full rounded-md mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          Adicionar
+        </Button>
+      </form>
     </div>
   );
 }
