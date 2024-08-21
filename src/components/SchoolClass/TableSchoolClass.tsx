@@ -39,27 +39,15 @@ export function TableSchoolClass({
   customModalDisclosure,
 }: Props) {
   const [schoolClasses, setSchoolClasses] = useState<SchoolClass[]>([]);
-  const [schoolClass, setSchoolClass] = useState<SchoolClass>(
-    {} as SchoolClass
-  );
-
-  const showStudentsDisclosure = useDisclosure();
-  const showDisciplinesDisclosure = useDisclosure();
-  const showTeachersDisclosure = useDisclosure();
-
-  const disciplineDisclosure = useDisclosure();
-  const studentsDisclosure = useDisclosure();
+  const [content, setContent] = useState<JSX.Element>(<></>);
+  const disclosure = useDisclosure();
 
   useEffect(() => {
     api
       .get<SchoolClass[]>("school-class/all")
       .then((response) => setSchoolClasses(response.data));
     return () => {};
-  }, [
-    customModalDisclosure.isOpen,
-    studentsDisclosure.isOpen,
-    disciplineDisclosure.isOpen,
-  ]);
+  }, [customModalDisclosure.isOpen, disclosure.isOpen]);
 
   const items = useMemo(() => {
     if (!filterValue) {
@@ -72,28 +60,28 @@ export function TableSchoolClass({
   }, [schoolClasses, filterValue]);
 
   const handleShowStudents = (schoolClass: SchoolClass) => {
-    showStudentsDisclosure.onOpenChange();
-    setSchoolClass(schoolClass);
+    disclosure.onOpenChange();
+    setContent(<SchoolClassStudents schoolClass={schoolClass} />);
   };
 
   const handleShowDisciplines = (schoolClass: SchoolClass) => {
-    showDisciplinesDisclosure.onOpenChange();
-    setSchoolClass(schoolClass);
+    disclosure.onOpenChange();
+    setContent(<SchoolClassDisciplines schoolClass={schoolClass} />);
   };
 
   const handleAssignDiscipline = (schoolClass: SchoolClass) => {
-    disciplineDisclosure.onOpenChange();
-    setSchoolClass(schoolClass);
+    disclosure.onOpenChange();
+    setContent(<AssignDisciplines schoolClass={schoolClass} />);
   };
 
   const handleAssignStudents = (schoolClass: SchoolClass) => {
-    studentsDisclosure.onOpenChange();
-    setSchoolClass(schoolClass);
+    disclosure.onOpenChange();
+    setContent(<AssignStudents schoolClass={schoolClass} />);
   };
 
   const handleShowTeachers = (schoolClass: SchoolClass) => {
-    showTeachersDisclosure.onOpenChange();
-    setSchoolClass(schoolClass);
+    disclosure.onOpenChange();
+    setContent(<SchoolClassTeachers schoolClass={schoolClass} />);
   };
 
   return (
@@ -163,30 +151,7 @@ export function TableSchoolClass({
         </TableBody>
       </Table>
 
-      <CustomModal
-        useDisclosure={showStudentsDisclosure}
-        content={<SchoolClassStudents schoolClass={schoolClass} />}
-      />
-
-      <CustomModal
-        useDisclosure={showDisciplinesDisclosure}
-        content={<SchoolClassDisciplines schoolClass={schoolClass} />}
-      />
-
-      <CustomModal
-        useDisclosure={showTeachersDisclosure}
-        content={<SchoolClassTeachers schoolClass={schoolClass} />}
-      />
-
-      <CustomModal
-        useDisclosure={studentsDisclosure}
-        content={<AssignStudents schoolClass={schoolClass} />}
-      />
-
-      <CustomModal
-        useDisclosure={disciplineDisclosure}
-        content={<AssignDisciplines schoolClass={schoolClass} />}
-      />
+      <CustomModal useDisclosure={disclosure} content={content} />
     </>
   );
 }

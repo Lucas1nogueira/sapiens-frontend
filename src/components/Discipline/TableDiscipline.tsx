@@ -12,11 +12,11 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "services/api";
 import { Discipline } from "types/discipline";
 import { ModalType } from "types/modal";
 import { CreateSchedule } from "./CreateSchedule";
 import { DisciplineSchedule } from "./DisciplineSchedule";
+import { findAllDisciplines } from "services/disciplineService";
 
 const columns = [
   { key: "name", label: "Nome" },
@@ -38,9 +38,9 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   const disclosure = useDisclosure();
 
   useEffect(() => {
-    api
-      .get<Discipline[]>("discipline/all")
-      .then((response) => setDisciplines(response.data));
+    findAllDisciplines()
+      .then((response) => setDisciplines(response.data))
+      .catch((error) => console.log(error));
     return () => {};
   }, [disclosure.onClose, customModalDisclosure.isOpen]);
 

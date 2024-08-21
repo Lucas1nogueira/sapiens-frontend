@@ -1,29 +1,17 @@
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
-import {
-  Autocomplete,
-  AutocompleteItem,
-  Button,
-  Card,
-  CardBody,
-  CardHeader,
-  Input,
-} from "@nextui-org/react";
-import { useState } from "react";
-import { saveGrades } from "services/gradeService";
-import { Discipline } from "types/discipline";
+import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { findGradesByEvaluation, saveGrades } from "services/gradeService";
 import { Evaluation } from "types/evaluation";
 import { Grade } from "types/grade";
 import { Student } from "types/student";
 
 type Props = {
-  discipline: Discipline;
-  students: Student[];
-  evaluations: Evaluation[];
+  evaluation: Evaluation;
 };
 
-export function CreateGrade({ discipline, students, evaluations }: Props) {
-  const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
+export function EditGrade({ evaluation }: Props) {
   const [grades, setGrades] = useState<Grade[]>([]);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const { setError } = useError();
@@ -41,22 +29,13 @@ export function CreateGrade({ discipline, students, evaluations }: Props) {
         setGrades([]);
         setErrors({});
 
-        setSuccess("Notas salvas com sucesso!");
+        setSuccess("Notas atualizadas com sucesso!");
       })
       .catch((error) => {
         setError(error.response.data);
       });
   };
 
-  const handleSelectionChange = (value: string) => {
-    const selectedEvaluation = evaluations.find(
-      (evaluation) => evaluation.id.toString() === value
-    );
-
-    if (selectedEvaluation) setEvaluation(selectedEvaluation);
-  };
-
-  // TODO: Improve validation //
   const handleAsssignGrade = (student: Student, value: string) => {
     if (!evaluation) {
       setGrades([]);
@@ -93,55 +72,51 @@ export function CreateGrade({ discipline, students, evaluations }: Props) {
     setErrors(errorMessages);
   };
 
+  useEffect(() => {
+    findGradesByEvaluation(evaluation.id)
+      .then((response) => setGrades(response.data))
+      .catch((error) => console.log(error.response.data));
+  }, [evaluation.id]);
+
   return (
     <Card shadow="none">
       <CardHeader className="flex justify-between">
-        <h1>Disciplina: {discipline.name}</h1>
-        <Autocomplete
-          defaultItems={evaluations}
-          label="Atividades"
-          placeholder="Buscar por atividade"
-          className="max-w-xs"
-          value={evaluation?.id}
-          onSelectionChange={(value) =>
-            handleSelectionChange(value?.toString() ?? "")
-          }
-        >
-          {(evaluation) => (
-            <AutocompleteItem key={evaluation.id}>
-              {evaluation.name}
-            </AutocompleteItem>
-          )}
-        </Autocomplete>
+        <h1>Atividade: {evaluation?.name}</h1>
       </CardHeader>
       <CardBody>
-        <h1 className="text-xl mb-4">
-          Atibua as notas da atividade: {evaluation?.name}
-        </h1>
         <form onSubmit={handleSubmit}>
-          {students.map((student) => (
-            <div className="flex gap-2 items-center mb-2" key={student.id}>
+          {grades.map((grade) => (
+            <div
+              className="flex justify-between items-center gap-2 flex-col md:flex-row bg-gray-300 rounded-md p-2 mb-2"
+              key={grade.student.id}
+            >
               <Input
                 label="Nota"
                 type="number"
                 min={0}
                 max={10}
+                step={0.1}
                 placeholder="Insira a nota da atividade"
-                onValueChange={(value) => handleAsssignGrade(student, value)}
-                className="w-64"
-                errorMessage={errors[student.id]}
-                isInvalid={!!errors[student.id]}
+                value={grade.value.toString()}
+                onValueChange={(value) =>
+                  handleAsssignGrade(grade.student, value)
+                }
+                className="max-w-64 w-full"
+                errorMessage={errors[grade.student.id]}
+                isInvalid={!!errors[grade.student.id]}
                 isRequired
               />
-              <p>{student.name}</p>
-              <p>{student.matriculation}</p>
-              <Button
-                color="primary"
-                className="disabled:bg-slate-500 disabled:cursor-not-allowed"
-                disabled
-              >
-                Ver Atividade
-              </Button>
+              <div className="flex flex-col items-center">
+                <p>Aluno: {grade.student.name}</p>
+                <p>Matricula: {grade.student.matriculation}</p>
+                <Button
+                  color="primary"
+                  className="disabled:bg-slate-500 disabled:cursor-not-allowed"
+                  disabled
+                >
+                  Ver Atividade
+                </Button>
+              </div>
             </div>
           ))}
 
@@ -150,7 +125,7 @@ export function CreateGrade({ discipline, students, evaluations }: Props) {
             type="submit"
             className="max-w-96 w-full mt-4"
           >
-            Lançar
+            Atualizar
           </Button>
         </form>
       </CardBody>

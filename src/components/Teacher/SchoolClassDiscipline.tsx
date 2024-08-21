@@ -13,13 +13,14 @@ import {
 import { Icon } from "@iconify/react";
 import { useError } from "@hooks/useError";
 import { Student } from "types/student";
-import { CreateGrade } from "@components/CreateGrade/CreateGrade";
+import { CreateGrade } from "@components/Grade/CreateGrade";
 import { Evaluation } from "types/evaluation";
 import { Discipline } from "types/discipline";
 import { useEffect, useState } from "react";
 import { api } from "services/api";
 import { LoadingPage } from "@pages/LoadingPage";
 import { formatDate, formatDateWithHour } from "utils/formatDate";
+import { EditGrade } from "@components/Grade/EditGrade";
 
 type Props = {
   discipline: Discipline;
@@ -53,14 +54,14 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
     disclosure.onOpenChange();
   };
 
-  const handleCreateGrade = () => {
-    setContent(
-      <CreateGrade
-        discipline={discipline}
-        students={students}
-        evaluations={evaluations}
-      />
-    );
+  const handleCreateGrade = (evaluation: Evaluation) => {
+    setContent(<CreateGrade students={students} evaluation={evaluation} />);
+
+    disclosure.onOpenChange();
+  };
+
+  const handleEditGrade = (evaluation: Evaluation) => {
+    setContent(<EditGrade evaluation={evaluation} />);
 
     disclosure.onOpenChange();
   };
@@ -111,30 +112,41 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
           <Accordion variant="splitted">
             {evaluations.map((evaluation) => (
               <AccordionItem key={evaluation.id} title={evaluation.name}>
-                <div className="flex justify-between text-sm">
-                  <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <div className="flex flex-col gap-2">
+                      <p>
+                        Data de criação:{" "}
+                        {formatDate(evaluation.createdAt) ?? "Sem Data"}
+                      </p>
+                    </div>
                     <p>
-                      Data de criação:{" "}
-                      {formatDate(evaluation.createdAt) ?? "Sem Data"}
+                      Data da entrega:{" "}
+                      {formatDateWithHour(evaluation.deliveryAt) ?? "Sem Data"}
                     </p>
                   </div>
-                  <p>
-                    Data da entrega:{" "}
-                    {formatDateWithHour(evaluation.deliveryAt) ?? "Sem Data"}
-                  </p>
+
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      className="w-full"
+                      color="primary"
+                      onClick={() => handleCreateGrade(evaluation)}
+                    >
+                      Lançar Notas
+                    </Button>
+
+                    <Button
+                      className="w-full"
+                      color="secondary"
+                      onClick={() => handleEditGrade(evaluation)}
+                    >
+                      Editar Notas
+                    </Button>
+                  </div>
                 </div>
               </AccordionItem>
             ))}
           </Accordion>
-        </Tab>
-        <Tab key="notes" title="Notas">
-          <Button
-            className="w-full mb-2"
-            color="primary"
-            onClick={handleCreateGrade}
-          >
-            Lançar Notas
-          </Button>
         </Tab>
       </Tabs>
 

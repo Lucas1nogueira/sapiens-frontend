@@ -22,6 +22,7 @@ export function CreateDiscipline() {
       teacher: null as unknown as Teacher,
       schoolClass: null as unknown as SchoolClass,
       evaluations: [],
+      schedule: [],
     };
 
     api

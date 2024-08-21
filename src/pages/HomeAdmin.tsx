@@ -11,8 +11,8 @@ import { CustomTableHeader } from "@components/Common/CustomTableHeader";
 import { TableSchoolClass } from "@components/SchoolClass/TableSchoolClass";
 import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
-import { Calendar } from "@components/Common/Calendar";
 import { SideMenu } from "@components/Common/SideMenu";
+import { Calendar } from "@components/Admin/Calendar";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void

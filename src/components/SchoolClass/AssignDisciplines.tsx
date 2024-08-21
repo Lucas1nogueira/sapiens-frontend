@@ -14,6 +14,7 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
+import { findAllDisciplines } from "services/disciplineService";
 import { assignDisciplinesToSchoolClass } from "services/schoolClassService";
 import { Discipline } from "types/discipline";
 import { SchoolClass } from "types/schoolClass";
@@ -83,8 +84,7 @@ export function AssignDisciplines({ schoolClass }: Props) {
   }, [setError, schoolClass.code]);
 
   useEffect(() => {
-    api
-      .get<Discipline[]>("discipline/all")
+    findAllDisciplines()
       .then((response) => {
         const initiallySelected = new Set(
           classDisciplines.map((discipline: Discipline) => discipline.code)
