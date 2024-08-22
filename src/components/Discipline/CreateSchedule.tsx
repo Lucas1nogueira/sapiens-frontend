@@ -30,8 +30,6 @@ export function CreateSchedule({ discipline }: Props) {
           (schedule) => ({ ...schedule, tempId: crypto.randomUUID() })
         );
 
-        console.log(schedulesWithTempId);
-
         setSchedules(schedulesWithTempId);
       })
       .catch((error) => {
@@ -113,11 +111,11 @@ export function CreateSchedule({ discipline }: Props) {
   };
 
   return (
-    <div className="max-h-[500px] overflow-y-auto p-4 bg-white rounded-md shadow-md">
+    <div className="max-h-[500px] overflow-y-auto p-4 bg-white">
       <h1 className="text-center text-2xl font-bold mb-4">
         Atribua um Horário a uma Disciplina
       </h1>
-      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <p className="text-lg">
           <strong>Disciplina: {discipline.name} </strong>
         </p>
@@ -143,13 +141,13 @@ export function CreateSchedule({ discipline }: Props) {
         </div>
 
         {daysOfWeek.map((day) => (
-          <div key={day} className="mt-4">
+          <div key={day}>
             {schedules
               .filter((schedule) => schedule.day === day)
               .map((schedule) => (
                 <div
                   key={schedule.tempId}
-                  className="flex flex-col gap-4 mt-2 p-4 bg-gray-100 rounded-md shadow-sm relative"
+                  className="flex flex-col gap-4 p-4 mt-2 bg-gray-100 rounded-md shadow-sm relative"
                 >
                   <h2 className="text-lg font-bold text-gray-700">{day}</h2>
                   <Input
