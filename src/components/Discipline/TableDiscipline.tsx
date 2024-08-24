@@ -42,7 +42,7 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
       .then((response) => setDisciplines(response.data))
       .catch((error) => console.log(error));
     return () => {};
-  }, [disclosure.onClose, customModalDisclosure.isOpen]);
+  }, [disclosure.isOpen, customModalDisclosure.isOpen]);
 
   const items = useMemo(() => {
     if (!filterValue) {
