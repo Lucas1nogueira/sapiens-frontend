@@ -1,4 +1,3 @@
-import { ChangePassword } from "@components/ChangePassword/ChangePassword";
 import {
   Accordion,
   AccordionItem,
@@ -10,6 +9,7 @@ import {
   ModalHeader,
 } from "@nextui-org/react";
 import { ModalType } from "types/modal";
+import { ChangePassword } from "./ChangePassword";
 
 type Props = {
   updateDisclosure: ModalType;

@@ -1,5 +1,5 @@
 import { DisciplineContent } from "@components/Discipline/DisciplineContent";
-import { SchoolClassContent } from "@components/SchoolClassContent/SchoolClassContent";
+import { SchoolClassContent } from "@components/SchoolClass/SchoolClassContent";
 import { useState } from "react";
 import { Discipline } from "types/discipline";
 import { SchoolClass } from "types/schoolClass";
