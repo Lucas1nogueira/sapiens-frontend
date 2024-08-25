@@ -45,10 +45,8 @@ export function CreateEvaluation({ discipline }: Props) {
 
   return (
     <Card shadow="none">
-      <CardHeader>
-        <h1 className="text-xl">
-          Nova atividade para a disciplina: {discipline.name}
-        </h1>
+      <CardHeader className="flex justify-center">
+        <h1 className="text-2xl font-bold">Nova Avaliação</h1>
       </CardHeader>
       <CardBody>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

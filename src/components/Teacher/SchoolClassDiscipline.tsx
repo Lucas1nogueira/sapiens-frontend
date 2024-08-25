@@ -1,94 +1,78 @@
 import { useEffect, useState } from "react";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { CreateEvaluation } from "@components/Evaluation/CreateEvaluation";
-import { CustomModal } from "@components/Common/CustomModal";
-import {
-  Accordion,
-  AccordionItem,
-  Avatar,
-  Button,
-  Divider,
-  Tab,
-  Tabs,
-  useDisclosure,
-} from "@nextui-org/react";
+import { Avatar, Button, Divider, useDisclosure } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
-import { useError } from "@hooks/useError";
-import { Student } from "types/student";
-import { CreateGrade } from "@components/Grade/CreateGrade";
 import { Evaluation } from "types/evaluation";
 import { Discipline } from "types/discipline";
 import { api } from "services/api";
-import { LoadingPage } from "@pages/LoadingPage";
-import { formatDate, formatDateWithHour } from "utils/formatDate";
-import { EditGrade } from "@components/Grade/EditGrade";
+import { LessonTab } from "./Diary/LessonTab";
+import { EvaluationsTab } from "./Diary/EvaluationsTab";
+import { AttendanceTab } from "./Diary/AttendanceTab";
+import { GradesTab } from "./Diary/GradesTab";
+import { DiaryTab } from "./Diary/DiaryTab";
+import { Student } from "types/student";
 
 type Props = {
   discipline: Discipline;
   setDiscipline: (discipline: Discipline | null) => void;
 };
 
+const breadcrumbTabMap: Record<string, string> = {
+  Diário: "diary",
+  Aula: "lesson",
+  Presença: "attendance",
+  Avaliações: "evaluations",
+  Notas: "grades",
+};
+
 export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
-  const [content, setContent] = useState<JSX.Element>(<></>);
-  const [activeTab, setActiveTab] = useState<string>("class");
+  const [breadcrumbPath, setBreadcrumbPath] = useState<string[]>(["Diário"]);
+  const [activeTab, setActiveTab] = useState<string>("diary");
   const disclosure = useDisclosure();
-  const { setError } = useError();
 
   useEffect(() => {
     api
       .get<Student[]>(`school-class/students-discipline/${discipline.code}`)
       .then((response) => setStudents(response.data))
-      .catch((error) => setError(error.response.data));
-  }, [discipline.code, setError]);
+      .catch((error) => console.log(error.response.data));
+  }, [discipline.code]);
 
   useEffect(() => {
     api
       .get<Evaluation[]>(`evaluation/discipline/${discipline.code}`)
       .then((response) => setEvaluations(response.data))
-      .catch((error) => setError(error.response.data));
-  }, [discipline.code, setError, disclosure.isOpen]);
+      .catch((error) => console.log(error.response.data));
+  }, [discipline.code, disclosure.isOpen]);
 
-  const handleCreateEvaluation = () => {
-    setContent(<CreateEvaluation discipline={discipline} />);
-    disclosure.onOpenChange();
+  const handleTabChange = (newTab: string, breadcrumb: string) => {
+    setActiveTab(newTab);
+    setBreadcrumbPath((prev) => [...prev.slice(0, 1), breadcrumb]);
   };
 
-  const handleCreateGrade = (evaluation: Evaluation) => {
-    setContent(<CreateGrade students={students} evaluation={evaluation} />);
-    disclosure.onOpenChange();
+  const handleBreadcrumbClick = (index: number) => {
+    const newPath = breadcrumbPath.slice(0, index + 1);
+    const selectedTab = breadcrumbTabMap[newPath[index]];
+
+    if (selectedTab) {
+      setActiveTab(selectedTab);
+      setBreadcrumbPath(newPath);
+    }
   };
 
-  const handleEditGrade = (evaluation: Evaluation) => {
-    setContent(<EditGrade evaluation={evaluation} />);
-    disclosure.onOpenChange();
+  const tabs: Record<string, JSX.Element> = {
+    diary: <DiaryTab handleTabChange={handleTabChange} />,
+    lesson: <LessonTab discipline={discipline} />,
+    attendance: <AttendanceTab students={students} discipline={discipline} />,
+    evaluations: (
+      <EvaluationsTab evaluations={evaluations} discipline={discipline} />
+    ),
+    grades: <GradesTab evaluations={evaluations} students={students} />,
   };
-
-  const handleBreadcrumbClick = (breadcrumb: string) => {
-    setActiveTab(breadcrumb);
-  };
-
-  if (!students) return <LoadingPage />;
 
   return (
     <div key={discipline.code} className="w-full flex flex-col">
-      {/* Breadcrumbs */}
-      <Breadcrumbs>
-        <BreadcrumbItem onClick={() => handleBreadcrumbClick("class")}>
-          Diário
-        </BreadcrumbItem>
-        <BreadcrumbItem onClick={() => handleBreadcrumbClick("attendance")}>
-          Presença
-        </BreadcrumbItem>
-        <BreadcrumbItem onClick={() => handleBreadcrumbClick("evaluations")}>
-          Avaliações
-        </BreadcrumbItem>
-        <BreadcrumbItem onClick={() => handleBreadcrumbClick("grades")}>
-          Notas
-        </BreadcrumbItem>
-      </Breadcrumbs>
-
       <div className="flex justify-between items-center flex-wrap my-4">
         <Button color="primary" isIconOnly onClick={() => setDiscipline(null)}>
           <Icon icon="ion:chevron-back" />
@@ -109,92 +93,18 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
         <Divider className="my-2" />
       </div>
 
-      {activeTab === "class" && (
-        <div className="flex flex-col gap-2">
-          <p className="text-lg font-bold">Aula</p>
-          {/* Conteúdo da aula aqui */}
-        </div>
-      )}
+      <Breadcrumbs className="mb-4" size="lg">
+        {breadcrumbPath.map((crumb, index) => (
+          <BreadcrumbItem
+            key={index}
+            onPress={() => handleBreadcrumbClick(index)}
+          >
+            {crumb}
+          </BreadcrumbItem>
+        ))}
+      </Breadcrumbs>
 
-      {activeTab === "attendance" && (
-        <div className="flex flex-col gap-2">
-          <p className="text-lg font-bold">Presença</p>
-          {/* Conteúdo da presença aqui */}
-        </div>
-      )}
-
-      {activeTab === "evaluations" && (
-        <Tabs aria-label="Options" color="primary" variant="underlined">
-          <Tab key="people" title="Alunos">
-            <div className="flex flex-col gap-2">
-              {students.map((student) => (
-                <div key={student.id}>
-                  <p>{student.name}</p>
-                  <Divider />
-                </div>
-              ))}
-            </div>
-          </Tab>
-          <Tab key="evaluations" title="Atividades">
-            <Button
-              className="w-full mb-2"
-              color="primary"
-              onClick={handleCreateEvaluation}
-            >
-              Nova Atividade
-            </Button>
-
-            <Accordion variant="splitted">
-              {evaluations.map((evaluation) => (
-                <AccordionItem key={evaluation.id} title={evaluation.name}>
-                  <div className="flex flex-col gap-2 text-sm">
-                    <div className="flex justify-between items-center">
-                      <div className="flex flex-col gap-2">
-                        <p>
-                          Data de criação:{" "}
-                          {formatDate(evaluation.createdAt) ?? "Sem Data"}
-                        </p>
-                      </div>
-                      <p>
-                        Data da entrega:{" "}
-                        {formatDateWithHour(evaluation.deliveryAt) ??
-                          "Sem Data"}
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col gap-2">
-                      <Button
-                        className="w-full"
-                        color="primary"
-                        onClick={() => handleCreateGrade(evaluation)}
-                      >
-                        Lançar Notas
-                      </Button>
-
-                      <Button
-                        className="w-full"
-                        color="secondary"
-                        onClick={() => handleEditGrade(evaluation)}
-                      >
-                        Editar Notas
-                      </Button>
-                    </div>
-                  </div>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </Tab>
-        </Tabs>
-      )}
-
-      {activeTab === "grades" && (
-        <div className="flex flex-col gap-2">
-          <p className="text-lg font-bold">Notas</p>
-          {/* Conteúdo das notas aqui */}
-        </div>
-      )}
-
-      <CustomModal useDisclosure={disclosure} content={content} size="full" />
+      {tabs[activeTab]}
     </div>
   );
 }

@@ -7,7 +7,7 @@ interface Props {
 }
 
 export function SideMenu({ menuItems }: Props) {
-  const [selectedTab, setSelectedTab] = useState("");
+  const [selectedTab, setSelectedTab] = useState(menuItems?.[0]?.title || "");
   const { isMenuOpen, setIsMenuOpen } = useSideMenu();
 
   return (

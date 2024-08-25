@@ -12,6 +12,6 @@ export const saveGrades = async (grades: Grade[]) => {
 };
 
 export const findGradesByEvaluation = async (evaluationId: string) => {
-  const response = await api.get(`grade/evaluation/${evaluationId}`);
+  const response = await api.get<Grade[]>(`grade/evaluation/${evaluationId}`);
   return response;
 };

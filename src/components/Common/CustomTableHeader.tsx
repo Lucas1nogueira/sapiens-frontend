@@ -7,6 +7,7 @@ type Props = {
   filterValue: string;
   onSearchChange: (value: string) => void;
   onClear: () => void;
+  inputPlaceholder?: string;
 };
 
 export function CustomTableHeader({
@@ -15,13 +16,14 @@ export function CustomTableHeader({
   filterValue,
   onSearchChange,
   onClear,
+  inputPlaceholder,
 }: Props) {
   return (
     <div className="flex justify-between mb-4">
       <Input
         isClearable
         className="w-full sm:max-w-[44%]"
-        placeholder="Buscar por nome..."
+        placeholder={inputPlaceholder ?? "Buscar por nome..."}
         startContent={<Icon icon="ic:baseline-search" />}
         value={filterValue}
         onClear={() => onClear()}
