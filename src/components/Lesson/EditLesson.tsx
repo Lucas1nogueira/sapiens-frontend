@@ -1,19 +1,21 @@
 import { Button, Input, Textarea } from "@nextui-org/react";
-import { Discipline } from "types/discipline";
 import { Lesson } from "types/lesson";
 import { useState } from "react";
-import { saveLesson } from "services/lessonService";
+import { updateLesson } from "services/lessonService";
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
+import { Discipline } from "types/discipline";
+import { formatDateForInput } from "utils/formatDate";
 
 type Props = {
+  lesson: Lesson;
   discipline: Discipline;
 };
 
-export function CreateLesson({ discipline }: Props) {
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState("");
-  const [manyLessons, setManyLessons] = useState(1);
+export function EditLesson({ lesson, discipline }: Props) {
+  const [description, setDescription] = useState(lesson.description);
+  const [date, setDate] = useState(formatDateForInput(lesson.date));
+  const [manyLessons, setManyLessons] = useState(lesson.manyLessons);
   const { setError } = useError();
   const { setSuccess } = useSuccess();
 
@@ -25,22 +27,21 @@ export function CreateLesson({ discipline }: Props) {
       dateTime.getTime() + dateTime.getTimezoneOffset() * 60000
     );
 
-    const lesson: Lesson = {
-      id: null as unknown as string,
+    const editedLesson: Lesson = {
+      ...lesson,
+      discipline,
       description,
       date: adjustedDate.toISOString(),
       manyLessons,
-      discipline,
-      attendances: [],
     };
 
-    saveLesson(lesson)
+    updateLesson(editedLesson)
       .then(() => {
         setDescription("");
         setDate("");
         setManyLessons(1);
 
-        setSuccess("Aula criada com sucesso!");
+        setSuccess("Aula atualizada com sucesso!");
       })
       .catch((error) => setError(error.response.data));
   };
@@ -48,7 +49,7 @@ export function CreateLesson({ discipline }: Props) {
   return (
     <div className="flex justify-center items-center">
       <div className="w-full p-4">
-        <h1 className="text-2xl font-bold mb-4 text-center">Adicionar Aula</h1>
+        <h1 className="text-2xl font-bold mb-4 text-center">Atualizar Aula</h1>
         <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
           <Textarea
             label="Descricão"
@@ -83,7 +84,7 @@ export function CreateLesson({ discipline }: Props) {
           />
 
           <Button type="submit" color="primary">
-            Criar
+            Atualizar
           </Button>
         </form>
       </div>

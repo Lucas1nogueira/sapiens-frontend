@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
-import { Avatar, Button, Divider, useDisclosure } from "@nextui-org/react";
+import { Avatar, Button, Divider } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
-import { Evaluation } from "types/evaluation";
 import { Discipline } from "types/discipline";
 import { api } from "services/api";
 import { LessonTab } from "./Diary/LessonTab";
@@ -19,18 +18,16 @@ type Props = {
 
 const breadcrumbTabMap: Record<string, string> = {
   Diário: "diary",
-  Aula: "lesson",
-  Presença: "attendance",
-  Avaliações: "evaluations",
-  Notas: "grades",
+  "Registro de Aulas": "lesson",
+  "Registro de Frequências": "attendance",
+  "Registro de Avaliações": "evaluations",
+  "Registro de Notas": "grades",
 };
 
 export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
   const [students, setStudents] = useState<Student[]>([]);
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [breadcrumbPath, setBreadcrumbPath] = useState<string[]>(["Diário"]);
   const [activeTab, setActiveTab] = useState<string>("diary");
-  const disclosure = useDisclosure();
 
   useEffect(() => {
     api
@@ -38,13 +35,6 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
       .then((response) => setStudents(response.data))
       .catch((error) => console.log(error.response.data));
   }, [discipline.code]);
-
-  useEffect(() => {
-    api
-      .get<Evaluation[]>(`evaluation/discipline/${discipline.code}`)
-      .then((response) => setEvaluations(response.data))
-      .catch((error) => console.log(error.response.data));
-  }, [discipline.code, disclosure.isOpen]);
 
   const handleTabChange = (newTab: string, breadcrumb: string) => {
     setActiveTab(newTab);
@@ -62,13 +52,25 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
   };
 
   const tabs: Record<string, JSX.Element> = {
-    diary: <DiaryTab handleTabChange={handleTabChange} />,
-    lesson: <LessonTab discipline={discipline} />,
-    attendance: <AttendanceTab students={students} discipline={discipline} />,
-    evaluations: (
-      <EvaluationsTab evaluations={evaluations} discipline={discipline} />
+    diary: <DiaryTab key={activeTab} handleTabChange={handleTabChange} />,
+    lesson: (
+      <LessonTab
+        key={activeTab}
+        discipline={discipline}
+        handleTabChange={handleTabChange}
+      />
     ),
-    grades: <GradesTab evaluations={evaluations} students={students} />,
+    attendance: (
+      <AttendanceTab
+        key={activeTab}
+        students={students}
+        discipline={discipline}
+      />
+    ),
+    evaluations: <EvaluationsTab key={activeTab} discipline={discipline} />,
+    grades: (
+      <GradesTab key={activeTab} students={students} discipline={discipline} />
+    ),
   };
 
   return (

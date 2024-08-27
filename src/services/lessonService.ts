@@ -15,3 +15,13 @@ export const saveLesson = async (lesson: Lesson) => {
   const response = await api.post("lesson/save", lesson);
   return response;
 };
+
+export const updateLesson = async (lesson: Lesson) => {
+  const response = await api.put("lesson/update", lesson);
+  return response;
+};
+
+export const deleteLesson = async (id: string) => {
+  const response = await api.delete(`lesson/delete/${id}`);
+  return response;
+};

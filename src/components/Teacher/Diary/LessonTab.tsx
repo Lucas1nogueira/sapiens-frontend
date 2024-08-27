@@ -8,9 +8,10 @@ import { useDisclosure } from "@nextui-org/react";
 
 type Props = {
   discipline: Discipline;
+  handleTabChange: (newTab: string, breadcrumb: string) => void;
 };
 
-export function LessonTab({ discipline }: Props) {
+export function LessonTab({ discipline, handleTabChange }: Props) {
   const [content, setContent] = useState<JSX.Element>(<></>);
   const [filterValue, setFilterValue] = useState<string>("");
   const disclosure = useDisclosure();
@@ -34,6 +35,7 @@ export function LessonTab({ discipline }: Props) {
         discipline={discipline}
         filterValue={filterValue}
         createDisclosure={disclosure}
+        handleTabChange={handleTabChange}
       />
 
       <CustomModal useDisclosure={disclosure} content={content} />
