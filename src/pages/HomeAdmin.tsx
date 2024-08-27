@@ -13,6 +13,7 @@ import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
 import { SideMenu } from "@components/Common/SideMenu";
 import { Calendar } from "@components/Admin/Calendar";
+import { Diary } from "@components/Admin/Diary";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -36,6 +37,11 @@ const generateMenuItems = (
     title: "Horários",
     icon: <Icon icon="uis:schedule" />,
     onClick: () => setSelectedTab(3),
+  },
+  {
+    title: "Diários",
+    icon: <Icon icon="mdi:diary" />,
+    onClick: () => setSelectedTab(4),
   },
 ];
 
@@ -99,6 +105,9 @@ const getComponentForTab = (
     },
     {
       content: <Calendar />,
+    },
+    {
+      content: <Diary />,
     },
   ];
 

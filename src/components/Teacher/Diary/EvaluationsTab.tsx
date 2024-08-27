@@ -1,7 +1,13 @@
+import { ConfirmPopover } from "@components/Common/ConfirmPopover";
 import { CustomModal } from "@components/Common/CustomModal";
 import { CustomTableHeader } from "@components/Common/CustomTableHeader";
 import { CreateEvaluation } from "@components/Evaluation/CreateEvaluation";
+import { EditEvaluation } from "@components/Evaluation/EditEvaluation";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import {
+  Button,
   Table,
   TableBody,
   TableCell,
@@ -10,13 +16,16 @@ import {
   TableRow,
   useDisclosure,
 } from "@nextui-org/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  deleteEvaluation,
+  findEvaluationsByDisciplineCode,
+} from "services/evaluationService";
 import { Discipline } from "types/discipline";
 import { Evaluation } from "types/evaluation";
 import { formatDate, formatDateWithHour } from "utils/formatDate";
 
 type Props = {
-  evaluations: Evaluation[];
   discipline: Discipline;
 };
 
@@ -24,12 +33,23 @@ const columns = [
   { key: "name", label: "Nome" },
   { key: "creationDate", label: "Data de Criação" },
   { key: "deliveryDate", label: "Data de Entrega" },
+  { key: "edit", label: "Editar" },
+  { key: "delete", label: "Excluir" },
 ];
 
-export function EvaluationsTab({ evaluations, discipline }: Props) {
+export function EvaluationsTab({ discipline }: Props) {
   const [content, setContent] = useState<JSX.Element>(<></>);
   const [filterValue, setFilterValue] = useState<string>("");
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const disclosure = useDisclosure();
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
+
+  useEffect(() => {
+    findEvaluationsByDisciplineCode(discipline.code)
+      .then((response) => setEvaluations(response.data))
+      .catch((error) => console.log(error));
+  }, [discipline.code, disclosure.isOpen]);
 
   const items = useMemo(() => {
     if (!filterValue) return evaluations;
@@ -37,7 +57,7 @@ export function EvaluationsTab({ evaluations, discipline }: Props) {
     return evaluations.filter((evaluation) => {
       return (
         evaluation.name.toLowerCase().includes(filterValue.toLowerCase()) ||
-        evaluation.createdAt.includes(filterValue)
+        formatDate(evaluation.createdAt).includes(filterValue)
       );
     });
   }, [evaluations, filterValue]);
@@ -45,6 +65,23 @@ export function EvaluationsTab({ evaluations, discipline }: Props) {
   const handleCreateEvaluation = () => {
     setContent(<CreateEvaluation discipline={discipline} />);
     disclosure.onOpenChange();
+  };
+
+  const handleEditEvaluation = (evaluation: Evaluation) => {
+    setContent(
+      <EditEvaluation evaluation={evaluation} discipline={discipline} />
+    );
+    disclosure.onOpenChange();
+  };
+
+  const handleDeleteEvaluation = (evaluation: Evaluation) => {
+    deleteEvaluation(evaluation.id)
+      .then(() => {
+        setEvaluations(evaluations.filter((e) => e.id !== evaluation.id));
+
+        setSuccess("Avaliação excluída com sucesso!");
+      })
+      .catch((error) => setError(error.response.data));
   };
 
   return (
@@ -55,7 +92,7 @@ export function EvaluationsTab({ evaluations, discipline }: Props) {
         filterValue={filterValue}
         onSearchChange={setFilterValue}
         onClear={() => setFilterValue("")}
-        inputPlaceholder="Buscar por nome ou data..."
+        inputPlaceholder="Buscar por nome ou data de criação..."
       />
 
       <Table aria-label="Tabble with all evaluations">
@@ -73,6 +110,34 @@ export function EvaluationsTab({ evaluations, discipline }: Props) {
               </TableCell>
               <TableCell>
                 {formatDateWithHour(evaluation.deliveryAt) ?? "Sem Data"}
+              </TableCell>
+              <TableCell>
+                <Button
+                  color="primary"
+                  variant="ghost"
+                  onClick={() => handleEditEvaluation(evaluation)}
+                  isIconOnly
+                >
+                  <Icon icon="material-symbols:edit" width={30} />
+                </Button>
+              </TableCell>
+              <TableCell>
+                <ConfirmPopover
+                  trigger={
+                    <Button color="danger" variant="ghost" isIconOnly>
+                      <Icon icon="material-symbols:delete" width={30} />
+                    </Button>
+                  }
+                  title="Tem certeza que deseja excluir a avaliação?"
+                  confirmAction={
+                    <Button
+                      color="danger"
+                      onClick={() => handleDeleteEvaluation(evaluation)}
+                    >
+                      Excluir
+                    </Button>
+                  }
+                />
               </TableCell>
             </TableRow>
           )}
