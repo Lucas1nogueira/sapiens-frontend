@@ -19,3 +19,12 @@ export const formatDate = (date: string) => {
 
   return `${day}/${month}/${year}`;
 };
+
+export const formatDateForInput = (date: string) => {
+  const dateTime = new Date(date);
+  const adjustedDate = new Date(
+    dateTime.getTime() + dateTime.getTimezoneOffset() * 60000
+  );
+
+  return adjustedDate.toISOString().split("T")[0];
+};
