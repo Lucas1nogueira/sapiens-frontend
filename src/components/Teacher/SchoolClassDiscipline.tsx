@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Breadcrumbs, BreadcrumbItem } from "@nextui-org/react";
 import { Avatar, Button, Divider } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
@@ -51,6 +51,11 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
     }
   };
 
+  const sortedStudents = useMemo(
+    () => students.sort((a, b) => a.name.localeCompare(b.name)),
+    [students]
+  );
+
   const tabs: Record<string, JSX.Element> = {
     diary: (
       <DiaryTab
@@ -69,13 +74,17 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
     attendance: (
       <AttendanceTab
         key={activeTab}
-        students={students}
+        students={sortedStudents}
         discipline={discipline}
       />
     ),
     evaluations: <EvaluationsTab key={activeTab} discipline={discipline} />,
     grades: (
-      <GradesTab key={activeTab} students={students} discipline={discipline} />
+      <GradesTab
+        key={activeTab}
+        students={sortedStudents}
+        discipline={discipline}
+      />
     ),
   };
 
