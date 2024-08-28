@@ -23,6 +23,8 @@ export function TableAttendance({ lessons, students }: Props) {
   const { setError } = useError();
   const { setSuccess } = useSuccess();
 
+  const sortedStudents = students.sort((a, b) => a.name.localeCompare(b.name));
+
   useEffect(() => {
     const allAttendancesPromises = lessons.map((lesson) =>
       findAttendancesByLesson(lesson.id)
@@ -45,7 +47,7 @@ export function TableAttendance({ lessons, students }: Props) {
           );
         });
 
-        const fullAttendances = students.map((student) =>
+        const fullAttendances = sortedStudents.map((student) =>
           lessons.map((lesson) => {
             return (
               attendanceMap.get(`${student.id}-${lesson.id}`) || {
@@ -62,7 +64,7 @@ export function TableAttendance({ lessons, students }: Props) {
         setAttendances(fullAttendances.flat());
       })
       .catch((error) => console.log(error.response.data));
-  }, [students, lessons]);
+  }, [sortedStudents, lessons]);
 
   const handleAttendanceChange = (
     studentId: string,
@@ -127,7 +129,7 @@ export function TableAttendance({ lessons, students }: Props) {
             ))}
           </div>
 
-          {students.map((student) => (
+          {sortedStudents.map((student) => (
             <div
               key={student.id}
               className="flex items-center border-b border-gray-300"

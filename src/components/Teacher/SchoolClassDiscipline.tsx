@@ -52,7 +52,13 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
   };
 
   const tabs: Record<string, JSX.Element> = {
-    diary: <DiaryTab key={activeTab} handleTabChange={handleTabChange} />,
+    diary: (
+      <DiaryTab
+        key={activeTab}
+        discipline={discipline}
+        handleTabChange={handleTabChange}
+      />
+    ),
     lesson: (
       <LessonTab
         key={activeTab}

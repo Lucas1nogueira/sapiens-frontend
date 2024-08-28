@@ -26,7 +26,7 @@ export const updateEvaluation = (evaluation: Evaluation) => {
   return response;
 };
 
-export const deleteEvaluation = (id: string) => {
-  const response = api.delete(`/evaluation/delete/${id}`);
+export const deleteEvaluation = (code: string) => {
+  const response = api.delete(`/evaluation/delete/${code}`);
   return response;
 };
