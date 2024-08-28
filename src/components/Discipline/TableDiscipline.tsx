@@ -16,15 +16,25 @@ import { Discipline } from "types/discipline";
 import { ModalType } from "types/modal";
 import { CreateSchedule } from "./CreateSchedule";
 import { DisciplineSchedule } from "./DisciplineSchedule";
-import { findAllDisciplines } from "services/disciplineService";
+import {
+  deleteDiscipline,
+  findAllDisciplines,
+} from "services/disciplineService";
+import { EditDiscipline } from "@components/Admin/EditDiscipline";
+import { ConfirmPopover } from "@components/Common/ConfirmPopover";
+import { useError } from "@hooks/useError";
+import { useSuccess } from "@hooks/useSuccess";
 
 const columns = [
   { key: "name", label: "Nome" },
   { key: "disciplineCode", label: "Código" },
+  { key: "lessons", label: "Aulas" },
   { key: "professor", label: "Professor" },
   { key: "setProfessor", label: "Atribuir Professor" },
   { key: "schedule", label: "Horário" },
   { key: "addSchedule", label: "Adicionar Horário" },
+  { key: "edit", label: "Editar" },
+  { key: "delete", label: "Excluir" },
 ];
 
 type Props = {
@@ -36,6 +46,8 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const [content, setContent] = useState<JSX.Element>(<></>);
   const disclosure = useDisclosure();
+  const { setError } = useError();
+  const { setSuccess } = useSuccess();
 
   useEffect(() => {
     findAllDisciplines()
@@ -69,6 +81,21 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
     disclosure.onOpenChange();
   };
 
+  const handleEdit = (discipline: Discipline) => {
+    setContent(<EditDiscipline discipline={discipline} />);
+    disclosure.onOpenChange();
+  };
+
+  const handleDelete = (discipline: Discipline) => {
+    deleteDiscipline(discipline.code)
+      .then(() => {
+        setDisciplines(disciplines.filter((d) => d.code !== discipline.code));
+
+        setSuccess("Disciplina excluída com sucesso!");
+      })
+      .catch((error) => setError(error.response.data));
+  };
+
   return (
     <>
       <Table aria-label="Tabble with all users">
@@ -82,6 +109,7 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
             <TableRow key={discipline.code}>
               <TableCell>{discipline.name}</TableCell>
               <TableCell>{discipline.code}</TableCell>
+              <TableCell>{discipline.manyLessons}</TableCell>
               <TableCell>
                 {discipline.teacher?.name ?? "Sem Professor"}
               </TableCell>
@@ -114,6 +142,34 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
                 >
                   <Icon icon="material-symbols:add" width={22} />
                 </Button>
+              </TableCell>
+              <TableCell>
+                <Button
+                  color="primary"
+                  variant="ghost"
+                  onClick={() => handleEdit(discipline)}
+                  isIconOnly
+                >
+                  <Icon icon="material-symbols:edit" width={30} />
+                </Button>
+              </TableCell>
+              <TableCell>
+                <ConfirmPopover
+                  trigger={
+                    <Button color="danger" variant="ghost" isIconOnly>
+                      <Icon icon="material-symbols:delete" width={30} />
+                    </Button>
+                  }
+                  title="Tem certeza que deseja excluir a disciplina?"
+                  confirmAction={
+                    <Button
+                      color="danger"
+                      onClick={() => handleDelete(discipline)}
+                    >
+                      Excluir
+                    </Button>
+                  }
+                />
               </TableCell>
             </TableRow>
           )}

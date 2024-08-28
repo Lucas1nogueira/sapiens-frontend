@@ -2,52 +2,46 @@ import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
-import { api } from "services/api";
+import { updateDiscipline } from "services/disciplineService";
 import { Discipline } from "types/discipline";
-import { SchoolClass } from "types/schoolClass";
-import { Teacher } from "types/teacher";
 
-export function CreateDiscipline() {
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [manyLessons, setManyLessons] = useState(0);
+type Props = {
+  discipline: Discipline;
+};
+
+export function EditDiscipline({ discipline }: Props) {
+  const [code, setCode] = useState(discipline.code);
+  const [name, setName] = useState(discipline.name);
+  const [manyLessons, setManyLessons] = useState(discipline.manyLessons);
   const { setError } = useError();
   const { setSuccess } = useSuccess();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const discipline: Discipline = {
+    const editedDiscipline: Discipline = {
+      ...discipline,
       code,
       name,
       manyLessons,
       manyHours: manyLessons * 50,
-      teacher: null as unknown as Teacher,
-      schoolClass: null as unknown as SchoolClass,
-      evaluations: [],
-      schedule: [],
-      lessons: [],
     };
 
-    api
-      .post("discipline/save", discipline)
+    updateDiscipline(editedDiscipline)
       .then(() => {
         setCode("");
         setName("");
+        setManyLessons(0);
 
-        setSuccess("Disciplina criada com sucesso!");
+        setSuccess("Disciplina atualizada com sucesso!");
       })
-      .catch((error) => {
-        setError(error.response.data);
-      });
+      .catch((error) => setError(error.response.data));
   };
 
   return (
     <div className="flex justify-center items-center">
       <div className="w-full p-4">
-        <h1 className="text-center text-2xl font-bold">
-          Criar uma Nova Disciplina
-        </h1>
+        <h1 className="text-center text-2xl font-bold">Editar Disciplina</h1>
         <form className="flex flex-col gap-4 mt-4" onSubmit={handleSubmit}>
           <Input
             label="Código da Disciplina"
@@ -61,7 +55,7 @@ export function CreateDiscipline() {
           <Input
             label="Quantidade de Aulas"
             type="number"
-            value={manyLessons.toString()}
+            value={manyLessons?.toString() || ""}
             onValueChange={(value) => setManyLessons(Number(value))}
             placeholder="Insira a quantidade de aulas"
             errorMessage="Insira uma quantidade de aulas válida"
@@ -77,7 +71,7 @@ export function CreateDiscipline() {
             isRequired
           />
           <Button type="submit" color="primary" className="w-full rounded-md">
-            Criar
+            Atualizar
           </Button>
         </form>
       </div>

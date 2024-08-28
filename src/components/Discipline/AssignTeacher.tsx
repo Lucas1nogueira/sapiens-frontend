@@ -55,11 +55,11 @@ export function AssignTeacher({ discipline }: Props) {
 
     if (!teacherId) return setError("Selecione um professor.");
 
-    const newDiscipline = {
+    const newDiscipline: Discipline = {
       ...discipline,
       teacher: {
         id: teacherId,
-      },
+      } as Teacher,
     };
 
     api

@@ -7,6 +7,8 @@ import { Teacher } from "./teacher";
 export type Discipline = {
   code: string;
   name: string;
+  manyLessons: number;
+  manyHours: number;
   teacher: Teacher;
   schoolClass: SchoolClass;
   evaluations: Evaluation[];
