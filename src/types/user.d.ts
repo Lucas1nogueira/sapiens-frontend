@@ -13,4 +13,5 @@ export type UserRole =
   | "STUDENT"
   | "TEACHER"
   | "CORDINATOR"
-  | "GUARDIAN";
+  | "GUARDIAN"
+  | "SUPERADMIN";
