@@ -1,0 +1,122 @@
+import { CustomModal } from "@components/Common/CustomModal";
+import { Icon } from "@iconify/react";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  useDisclosure,
+} from "@nextui-org/react";
+import { useEffect, useMemo, useState } from "react";
+import { School } from "types/school";
+import { ModalType } from "types/modal";
+import { ConfirmPopover } from "@components/Common/ConfirmPopover";
+import { EditSchool } from "./EditSchool";
+import { findAllSchools } from "services/schoolService";
+
+const columns = [
+  { key: "name", label: "Nome" },
+  { key: "city", label: "Cidade" },
+  { key: "state", label: "Estado" },
+  { key: "edit", label: "Editar" },
+  { key: "delete", label: "Excluir" },
+];
+
+type Props = {
+  filterValue: string;
+  customModalDisclosure: ModalType;
+};
+
+export function TableSchool({ filterValue, customModalDisclosure }: Props) {
+  const [schools, setSchools] = useState<School[]>([]);
+  const [content, setContent] = useState<JSX.Element>(<></>);
+  const disclosure = useDisclosure();
+
+  useEffect(() => {
+    findAllSchools()
+      .then((response) => setSchools(response.data))
+      .catch((error) => console.log(error));
+  }, [disclosure.isOpen, customModalDisclosure.isOpen]);
+
+  const items = useMemo(() => {
+    if (!filterValue) {
+      return schools;
+    }
+
+    return schools.filter((school) => {
+      return (
+        school.name.toLowerCase().includes(filterValue.toLowerCase()) ||
+        school.city.toLowerCase().includes(filterValue.toLowerCase()) ||
+        school.state.toLowerCase().includes(filterValue.toLowerCase())
+      );
+    });
+  }, [schools, filterValue]);
+
+  const handleEdit = (school: School) => {
+    setContent(<EditSchool school={school} />);
+    disclosure.onOpenChange();
+  };
+
+  const handleDelete = (school: School) => {
+    console.log(school);
+    // deleteSchool(school.id)
+    //   .then(() => {
+    //     setSuccess("Escola excluída com sucesso!");
+    //     setSchools((prevSchools) =>
+    //       prevSchools.filter((s) => s.id !== school.id)
+    //     );
+    //   })
+    //   .catch((error) => setError(error.response.data));
+  };
+
+  return (
+    <>
+      <Table aria-label="Table with all schools">
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn key={column.key}>{column.label}</TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={items}>
+          {(school) => (
+            <TableRow key={school.id}>
+              <TableCell>{school.name}</TableCell>
+              <TableCell>{school.city}</TableCell>
+              <TableCell>{school.state}</TableCell>
+              <TableCell>
+                <Button
+                  color="primary"
+                  variant="ghost"
+                  onClick={() => handleEdit(school)}
+                  isIconOnly
+                >
+                  <Icon icon="material-symbols:edit" width={30} />
+                </Button>
+              </TableCell>
+              <TableCell>
+                <ConfirmPopover
+                  trigger={
+                    <Button color="danger" variant="ghost" isIconOnly>
+                      <Icon icon="material-symbols:delete" width={30} />
+                    </Button>
+                  }
+                  title="Tem certeza que deseja excluir a escola?"
+                  confirmAction={
+                    <Button color="danger" onClick={() => handleDelete(school)}>
+                      Excluir
+                    </Button>
+                  }
+                />
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+
+      <CustomModal useDisclosure={disclosure} content={content} />
+    </>
+  );
+}

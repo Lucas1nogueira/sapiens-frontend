@@ -3,6 +3,7 @@ import { HomeAdmin } from "@pages/HomeAdmin";
 import { HomeCordinator } from "@pages/HomeCordinator";
 import { HomeGuardian } from "@pages/HomeGuardian";
 import { HomeStudent } from "@pages/HomeStudent";
+import { HomeSuperAdmin } from "@pages/HomeSuperAdmin";
 import { HomeTeacher } from "@pages/HomeTeacher";
 import { InitialPasswordChange } from "@pages/InitialPasswordChange";
 import { LandingPage } from "@pages/LandingPage";
@@ -18,6 +19,7 @@ const homes: Record<UserRole, JSX.Element> = {
   TEACHER: <HomeTeacher />,
   CORDINATOR: <HomeCordinator />,
   GUARDIAN: <HomeGuardian />,
+  SUPERADMIN: <HomeSuperAdmin />,
 };
 
 const routesIfNotAuthenticated = (
