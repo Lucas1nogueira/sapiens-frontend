@@ -19,11 +19,14 @@ import { DisciplineSchedule } from "./DisciplineSchedule";
 import {
   deleteDiscipline,
   findAllDisciplines,
+  findAllDisciplinesBySchool,
 } from "services/disciplineService";
 import { EditDiscipline } from "@components/Admin/EditDiscipline";
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
+import { useAuth } from "@hooks/useAuth";
+import { rolesEnum } from "utils/roles";
 
 const columns = [
   { key: "name", label: "Nome" },
@@ -43,6 +46,7 @@ type Props = {
 };
 
 export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
+  const { userSchool, user } = useAuth();
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const [content, setContent] = useState<JSX.Element>(<></>);
   const disclosure = useDisclosure();
@@ -50,11 +54,20 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   const { setSuccess } = useSuccess();
 
   useEffect(() => {
-    findAllDisciplines()
-      .then((response) => setDisciplines(response.data))
-      .catch((error) => console.log(error));
+    // TODO: MUDAR A FORMA DE BUSCAR DEPOIS PARA TER UMA SELECT POR ESCOLA.
+    if (userSchool && user?.role === rolesEnum.ADMIN) {
+      findAllDisciplinesBySchool(userSchool?.id as string)
+        .then((response) => setDisciplines(response.data))
+        .catch((error) => console.log(error));
+    }
+
+    if (user?.role === rolesEnum.SUPERADMIN) {
+      findAllDisciplines()
+        .then((response) => setDisciplines(response.data))
+        .catch((error) => console.log(error));
+    }
     return () => {};
-  }, [disclosure.isOpen, customModalDisclosure.isOpen]);
+  }, [disclosure.isOpen, customModalDisclosure.isOpen, userSchool, user]);
 
   const items = useMemo(() => {
     if (!filterValue) {

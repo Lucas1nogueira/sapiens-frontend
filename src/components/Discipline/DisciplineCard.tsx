@@ -1,4 +1,3 @@
-import { useError } from "@hooks/useError";
 import {
   Avatar,
   Card,
@@ -32,18 +31,17 @@ export function DisciplineCard({
   const [progress, setProgress] = useState<DisciplineProgress>(
     {} as DisciplineProgress
   );
-  const { setError } = useError();
 
   useEffect(() => {
     api
       .get<Evaluation[]>(`evaluation/discipline/${discipline.code}`)
       .then((response) => setEvaluations(response.data))
-      .catch((error) => setError(error.response.data));
+      .catch((error) => console.log(error.response.data));
 
     disciplineProgress(discipline.code)
       .then((response) => setProgress(response.data))
-      .catch((error) => setError(error.response.data));
-  }, [discipline.code, setError]);
+      .catch((error) => console.log(error.response.data));
+  }, [discipline.code]);
 
   return (
     <Card className="py-4" key={discipline.code}>
@@ -57,7 +55,7 @@ export function DisciplineCard({
         <div className="flex justify-between w-full">
           <div className="hover:underline cursor-pointer">
             <p className="text-tiny uppercase font-bold">{discipline.name}</p>
-            <p className="text-xs">{discipline.teacher.name}</p>
+            <p className="text-xs">{discipline?.teacher?.name}</p>
           </div>
           <Avatar
             isBordered

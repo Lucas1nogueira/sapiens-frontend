@@ -1,3 +1,4 @@
+import { useAuth } from "@hooks/useAuth";
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
@@ -5,7 +6,7 @@ import { useMemo, useState } from "react";
 import { auth } from "services/authService";
 import { User } from "types/user";
 import { generateCode, generatePassword } from "utils/generateValues";
-import { roles, rolesEnum } from "utils/roles";
+import { rolesOfAdmin, rolesOfSuperAdmin, rolesEnum } from "utils/roles";
 import { isEmailValid, isNameValid, isRolevalid } from "utils/validations";
 
 const isStudentOrTeacher = (role: string) => {
@@ -30,6 +31,7 @@ const getCodeLabel = (role: string) => {
 };
 
 export function CreateUser() {
+  const { user, userSchool } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
@@ -55,6 +57,12 @@ export function CreateUser() {
     return false;
   }, [role]);
 
+  const filterRoles = useMemo(() => {
+    if (user?.role === rolesEnum.SUPERADMIN) return rolesOfSuperAdmin;
+
+    return rolesOfAdmin;
+  }, [user?.role]);
+
   const handleCreateUser = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -69,11 +77,12 @@ export function CreateUser() {
       email,
       password,
       role,
+      school: userSchool,
       ...getUserCodeFieldIfExists(role, code),
     };
 
     auth
-      .register(newUser as User)
+      .register(newUser as unknown as User)
       .then(() => {
         setName("");
         setEmail("");
@@ -123,7 +132,7 @@ export function CreateUser() {
           />
 
           <Select
-            items={roles}
+            items={filterRoles}
             selectedKeys={[role]}
             isInvalid={isRoleInvalid}
             onChange={(e) => setRole(e.target.value)}

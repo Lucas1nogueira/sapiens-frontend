@@ -99,7 +99,7 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
             <p className="text-tiny uppercase font-bold text-right">
               {discipline.name}
             </p>
-            <p className="text-xs text-right">{discipline.teacher.name}</p>
+            <p className="text-xs text-right">{discipline?.teacher?.name}</p>
           </div>
           <Avatar
             isBordered

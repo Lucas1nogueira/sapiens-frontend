@@ -1,4 +1,5 @@
 import { useSideMenu } from "@hooks/useSideMenu";
+import { Tooltip } from "@nextui-org/react";
 import { useState } from "react";
 import { MenuItem } from "types/menu";
 
@@ -9,6 +10,16 @@ interface Props {
 export function SideMenu({ menuItems }: Props) {
   const [selectedTab, setSelectedTab] = useState(menuItems?.[0]?.title || "");
   const { isMenuOpen, setIsMenuOpen } = useSideMenu();
+
+  const getIcon = (item: MenuItem) => (
+    <span
+      className={`text-3xl ${
+        !isMenuOpen && selectedTab === item.title && "text-white"
+      }`}
+    >
+      {item.icon}
+    </span>
+  );
 
   return (
     <div
@@ -30,13 +41,19 @@ export function SideMenu({ menuItems }: Props) {
               isMenuOpen ? "gap-1 hover:border-white" : "justify-center"
             } ${isMenuOpen && selectedTab === item.title && "bg-white"}`}
           >
-            <span
-              className={`text-3xl ${
-                !isMenuOpen && selectedTab === item.title && "text-white"
-              }`}
-            >
-              {item.icon}
-            </span>
+            {isMenuOpen ? (
+              getIcon(item)
+            ) : (
+              <Tooltip
+                className="bg-[#88A3E2] font-semibold"
+                content={item.title}
+                shadow="lg"
+                radius="sm"
+                placement="right-start"
+              >
+                {getIcon(item)}
+              </Tooltip>
+            )}
             <span className={isMenuOpen ? "ml-4" : "hidden"}>{item.title}</span>
           </div>
         </div>

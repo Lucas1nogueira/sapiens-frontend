@@ -1,13 +1,16 @@
+import { useAuth } from "@hooks/useAuth";
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { api } from "services/api";
 import { Discipline } from "types/discipline";
+import { School } from "types/school";
 import { SchoolClass } from "types/schoolClass";
 import { Teacher } from "types/teacher";
 
 export function CreateDiscipline() {
+  const { userSchool } = useAuth();
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [manyLessons, setManyLessons] = useState(0);
@@ -27,6 +30,7 @@ export function CreateDiscipline() {
       evaluations: [],
       schedule: [],
       lessons: [],
+      school: userSchool ? userSchool : (null as unknown as School),
     };
 
     api

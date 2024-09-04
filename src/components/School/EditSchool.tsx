@@ -156,6 +156,7 @@ export function EditSchool({ school }: Props) {
               label="Atribua o Administrador"
               variant="bordered"
               defaultItems={admins}
+              selectedKey={selectedAdmin?.id.toString()}
               onSelectionChange={(key) => {
                 const admin = admins.find((admin) => admin.id == key);
                 setSelectedAdmin(admin ?? ({} as Admin));

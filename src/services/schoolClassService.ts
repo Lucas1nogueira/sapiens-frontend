@@ -30,3 +30,10 @@ export const findSchoolClassByCode = async (code: string) => {
   const response = await api.get<SchoolClass>(`school-class/code/${code}`);
   return response;
 };
+
+export const findSchoolClassBySchoolId = async (schoolId: string) => {
+  const response = await api.get<SchoolClass[]>(
+    `school-class/school/${schoolId}`
+  );
+  return response;
+};

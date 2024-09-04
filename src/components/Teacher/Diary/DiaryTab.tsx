@@ -27,7 +27,7 @@ export function DiaryTab({ handleTabChange, discipline }: Props) {
       <div className="p-4 bg-white rounded-lg border border-gray-200 mb-4">
         <p className="text-lg font-semibold text-gray-800">
           Turma:{" "}
-          <span className="text-blue-600">{discipline.schoolClass.code}</span>
+          <span className="text-blue-600">{discipline?.schoolClass?.code}</span>
         </p>
         <p className="text-gray-700 mt-1">
           Quantidade de Alunos:{" "}

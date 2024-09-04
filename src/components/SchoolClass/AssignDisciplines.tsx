@@ -1,4 +1,5 @@
 import { PaginationTable } from "@components/Common/PaginationTable";
+import { useAuth } from "@hooks/useAuth";
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
 import {
@@ -14,7 +15,7 @@ import {
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
-import { findAllDisciplines } from "services/disciplineService";
+import { findAllDisciplinesBySchool } from "services/disciplineService";
 import { assignDisciplinesToSchoolClass } from "services/schoolClassService";
 import { Discipline } from "types/discipline";
 import { SchoolClass } from "types/schoolClass";
@@ -26,11 +27,11 @@ type Props = {
 export function AssignDisciplines({ schoolClass }: Props) {
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const [classDisciplines, setClassDisciplines] = useState<Discipline[]>([]);
-
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
   const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set());
+  const { userSchool } = useAuth();
   const { setError } = useError();
   const { setSuccess } = useSuccess();
 
@@ -84,19 +85,21 @@ export function AssignDisciplines({ schoolClass }: Props) {
   }, [setError, schoolClass.code]);
 
   useEffect(() => {
-    findAllDisciplines()
-      .then((response) => {
-        const initiallySelected = new Set(
-          classDisciplines.map((discipline: Discipline) => discipline.code)
-        );
+    if (userSchool) {
+      findAllDisciplinesBySchool(userSchool?.id)
+        .then((response) => {
+          const initiallySelected = new Set(
+            classDisciplines.map((discipline: Discipline) => discipline.code)
+          );
 
-        setSelectedKeys(initiallySelected);
-        setDisciplines(response.data);
-      })
-      .catch((error) => {
-        setError(error.response.data);
-      });
-  }, [setError, classDisciplines]);
+          setSelectedKeys(initiallySelected);
+          setDisciplines(response.data);
+        })
+        .catch((error) => {
+          setError(error.response.data);
+        });
+    }
+  }, [setError, classDisciplines, userSchool]);
 
   return (
     <div className="flex justify-center items-center">

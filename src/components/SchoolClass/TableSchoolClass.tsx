@@ -11,7 +11,6 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "services/api";
 import { ModalType } from "types/modal";
 import { SchoolClass } from "types/schoolClass";
 import { SchoolClassStudents } from "./SchoolClassStudents";
@@ -19,6 +18,12 @@ import { SchoolClassDisciplines } from "./SchoolClassDisciplines";
 import { SchoolClassTeachers } from "./SchoolClassTeachers";
 import { AssignStudents } from "./AssignStudents";
 import { AssignDisciplines } from "./AssignDisciplines";
+import {
+  findAllSchoolClasses,
+  findSchoolClassBySchoolId,
+} from "services/schoolClassService";
+import { useAuth } from "@hooks/useAuth";
+import { rolesEnum } from "utils/roles";
 
 const columns = [
   { key: "code", label: "Código" },
@@ -38,16 +43,26 @@ export function TableSchoolClass({
   filterValue,
   customModalDisclosure,
 }: Props) {
+  const { userSchool, user } = useAuth();
   const [schoolClasses, setSchoolClasses] = useState<SchoolClass[]>([]);
   const [content, setContent] = useState<JSX.Element>(<></>);
   const disclosure = useDisclosure();
 
   useEffect(() => {
-    api
-      .get<SchoolClass[]>("school-class/all")
-      .then((response) => setSchoolClasses(response.data));
+    // TODO: MUDAR A FORMA DE BUSCAR DEPOIS PARA TER UMA SELECT POR ESCOLA.
+    if (userSchool && user?.role === rolesEnum.ADMIN) {
+      findSchoolClassBySchoolId(userSchool.id)
+        .then((response) => setSchoolClasses(response.data))
+        .catch((error) => console.log(error));
+    }
+
+    if (user?.role === rolesEnum.SUPERADMIN) {
+      findAllSchoolClasses()
+        .then((response) => setSchoolClasses(response.data))
+        .catch((error) => console.log(error));
+    }
     return () => {};
-  }, [customModalDisclosure.isOpen, disclosure.isOpen]);
+  }, [customModalDisclosure.isOpen, disclosure.isOpen, userSchool, user]);
 
   const items = useMemo(() => {
     if (!filterValue) {

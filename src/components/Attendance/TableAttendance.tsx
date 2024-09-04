@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, Input } from "@nextui-org/react";
+import { Button, Checkbox } from "@nextui-org/react";
 import {
   findAttendancesByLesson,
   saveAttendances,
@@ -73,7 +73,7 @@ export function TableAttendance({ lessons, students }: Props) {
     setAttendances((prevAttendances) => {
       const updatedAttendances = prevAttendances.map((attendance) =>
         attendance.student.id === studentId && attendance.lesson.id === lessonId
-          ? { ...attendance, isPresent, attendedCount }
+          ? { ...attendance, isPresent: isPresent, attendedCount }
           : attendance
       );
       return updatedAttendances;
@@ -147,21 +147,21 @@ export function TableAttendance({ lessons, students }: Props) {
 
                 return (
                   <div key={lesson.id} className="flex-1 text-center p-2">
-                    <Input
-                      type="number"
-                      min={0}
-                      max={lesson.manyLessons}
-                      value={attendance?.attendedCount?.toString() || "0"}
-                      onChange={(e) =>
+                    <Checkbox
+                      defaultSelected={
+                        attendance?.attendedCount === lesson.manyLessons
+                      }
+                      onValueChange={(value) => {
                         handleAttendanceChange(
                           student.id,
                           lesson.id,
-                          e.target.valueAsNumber > 0,
-                          e.target.valueAsNumber
-                        )
-                      }
-                      className="w-full text-center py-1 px-2"
-                    />
+                          value,
+                          lesson.manyLessons
+                        );
+                      }}
+                    >
+                      {attendance?.isPresent ? "Presente" : "Ausente"}
+                    </Checkbox>
                   </div>
                 );
               })}

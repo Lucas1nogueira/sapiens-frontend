@@ -1,4 +1,5 @@
 import { DisciplinesSchedule } from "@components/Discipline/DisciplinesSchedule";
+import { useAuth } from "@hooks/useAuth";
 import {
   Card,
   CardBody,
@@ -8,8 +9,12 @@ import {
   SharedSelection,
 } from "@nextui-org/react";
 import { useState } from "react";
-import { findAllDisciplines } from "services/disciplineService";
+import {
+  findAllDisciplines,
+  findAllDisciplinesBySchool,
+} from "services/disciplineService";
 import { Discipline } from "types/discipline";
+import { rolesEnum } from "utils/roles";
 
 type Option = {
   key: string;
@@ -28,6 +33,7 @@ const calendarOptions: Option[] = [
 ];
 
 export function Calendar() {
+  const { user, userSchool } = useAuth();
   const [content, setContent] = useState<JSX.Element>(<></>);
   const [value, setValue] = useState<SharedSelection>(new Set([]));
   const [disciplines, setDisciplines] = useState<Discipline[] | null>(null);
@@ -41,12 +47,23 @@ export function Calendar() {
           return setContent(<DisciplinesSchedule disciplines={disciplines} />);
         }
 
-        findAllDisciplines()
-          .then((response) => {
-            setDisciplines(response.data);
-            setContent(<DisciplinesSchedule disciplines={response.data} />);
-          })
-          .catch((error) => console.log(error.response.data));
+        if (user?.role === rolesEnum.SUPERADMIN) {
+          findAllDisciplines()
+            .then((response) => {
+              setDisciplines(response.data);
+              setContent(<DisciplinesSchedule disciplines={response.data} />);
+            })
+            .catch((error) => console.log(error.response.data));
+        }
+
+        if (user?.role === rolesEnum.ADMIN) {
+          findAllDisciplinesBySchool(userSchool?.id as string)
+            .then((response) => {
+              setDisciplines(response.data);
+              setContent(<DisciplinesSchedule disciplines={response.data} />);
+            })
+            .catch((error) => console.log(error.response.data));
+        }
       },
       events: () => {
         setContent(<></>);

@@ -1,11 +1,14 @@
+import { useAuth } from "@hooks/useAuth";
 import { useError } from "@hooks/useError";
 import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { saveSchoolClass } from "services/schoolClassService";
+import { School } from "types/school";
 import { SchoolClass } from "types/schoolClass";
 
 export function CreateSchoolClass() {
+  const { userSchool } = useAuth();
   const { setError } = useError();
   const { setSuccess } = useSuccess();
   const [code, setCode] = useState("");
@@ -17,6 +20,7 @@ export function CreateSchoolClass() {
       code,
       students: [],
       disciplines: [],
+      school: userSchool ? userSchool : (null as unknown as School),
     };
 
     saveSchoolClass(schoolClass)

@@ -23,3 +23,8 @@ export const disciplineProgress = async (code: string) => {
   );
   return response;
 };
+
+export const findAllDisciplinesBySchool = async (schoolId: string) => {
+  const response = await api.get<Discipline[]>(`discipline/school/${schoolId}`);
+  return response;
+};

@@ -20,7 +20,7 @@ interface Props {
 }
 
 export function Header({ useDisclosure }: Props) {
-  const { user, handleLogout } = useAuth();
+  const { user, handleLogout, userSchool } = useAuth();
   const { isMenuOpen, setIsMenuOpen } = useSideMenu();
 
   return (
@@ -55,6 +55,9 @@ export function Header({ useDisclosure }: Props) {
         />
         <NavbarBrand>
           <Logo className="w-10 h-10" />
+          {userSchool && (
+            <p className="ml-2 text-xl font-bold">/ {userSchool.name}</p>
+          )}
         </NavbarBrand>
       </NavbarContent>
 

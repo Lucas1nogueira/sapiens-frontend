@@ -1,4 +1,4 @@
-export const roles = [
+export const rolesOfSuperAdmin = [
   { key: "ADMIN", label: "Administrador" },
   { key: "TEACHER", label: "Professor" },
   { key: "STUDENT", label: "Aluno" },
@@ -7,12 +7,18 @@ export const roles = [
   { key: "SUPERADMIN", label: "Super Administrador" },
 ];
 
+export const rolesOfAdmin = [
+  { key: "TEACHER", label: "Professor" },
+  { key: "STUDENT", label: "Aluno" },
+  { key: "GUARDIAN", label: "Responsável" },
+];
+
 export const roleToEndpoint: Record<string, string> = {
   TEACHER: "teacher/save",
   STUDENT: "student/save",
   GUARDIAN: "guardian/save",
   CORDINATOR: "cordinator/save",
-  ADMIN: "auth/register",
+  ADMIN: "admin/save",
   SUPERADMIN: "auth/register",
 };
 
