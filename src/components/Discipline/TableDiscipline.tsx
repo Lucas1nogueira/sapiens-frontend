@@ -23,10 +23,9 @@ import {
 } from "services/disciplineService";
 import { EditDiscipline } from "@components/Admin/EditDiscipline";
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { useAuth } from "@hooks/useAuth";
 import { rolesEnum } from "utils/roles";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 const columns = [
   { key: "name", label: "Nome" },
@@ -50,8 +49,6 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const [content, setContent] = useState<JSX.Element>(<></>);
   const disclosure = useDisclosure();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   useEffect(() => {
     // TODO: MUDAR A FORMA DE BUSCAR DEPOIS PARA TER UMA SELECT POR ESCOLA.
@@ -104,9 +101,11 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
       .then(() => {
         setDisciplines(disciplines.filter((d) => d.code !== discipline.code));
 
-        setSuccess("Disciplina excluída com sucesso!");
+        enqueueNotification("Disciplina excluída com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) =>
+        enqueueNotification(error.response.data.message, "error")
+      );
   };
 
   return (

@@ -1,6 +1,4 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import {
   Autocomplete,
   AutocompleteItem,
@@ -18,11 +16,10 @@ import { Admin } from "types/admin";
 import { School } from "types/school";
 import { Secretariat } from "types/secretariat";
 import { SuperAdmin } from "types/superAdmin";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 export function CreateSchool() {
   const { user } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
@@ -83,9 +80,9 @@ export function CreateSchool() {
         setEmail("");
         setSelectedAdmin({} as Admin);
 
-        setSuccess("Escola criada com sucesso!");
+        enqueueNotification("Escola criada com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (
@@ -102,6 +99,7 @@ export function CreateSchool() {
               placeholder="Insira o nome da escola"
               value={name}
               onChange={(event) => setName(event.target.value)}
+              errorMessage="Nome obrigatório"
               isRequired
             />
             <Input

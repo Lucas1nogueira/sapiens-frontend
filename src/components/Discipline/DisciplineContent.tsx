@@ -1,5 +1,4 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
 import { Icon } from "@iconify/react";
 import {
   Accordion,
@@ -27,7 +26,6 @@ type Props = {
 
 export function DisciplineContent({ discipline, setDiscipline }: Props) {
   const { user } = useAuth();
-  const { setError } = useError();
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
 
@@ -35,15 +33,15 @@ export function DisciplineContent({ discipline, setDiscipline }: Props) {
     api
       .get<Evaluation[]>(`evaluation/discipline/${discipline.code}`)
       .then((response) => setEvaluations(response.data))
-      .catch((error) => setError(error.response.data));
-  }, [discipline.code, setError]);
+      .catch((error) => console.log(error.response.data));
+  }, [discipline.code]);
 
   useEffect(() => {
     api
       .get<Grade[]>(`grade/student/${user?.id}`)
       .then((response) => setGrades(response.data))
-      .catch((error) => setError(error.response.data));
-  }, [user?.id, setError]);
+      .catch((error) => console.log(error.response.data));
+  }, [user?.id]);
 
   const getGradeByEvaluation = (evaluation: Evaluation) => {
     return grades.find((grade) => grade.evaluation.id === evaluation.id);

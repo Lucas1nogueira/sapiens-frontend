@@ -26,8 +26,8 @@ export function SchoolClassStudents({ schoolClass }: Props) {
   useEffect(() => {
     api
       .get<Student[]>(`student/class/${schoolClass.code}`)
-      .then((response) => setStudents(response.data));
-    return () => {};
+      .then((response) => setStudents(response.data))
+      .catch((error) => console.log(error));
   }, [schoolClass.code]);
 
   return (

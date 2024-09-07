@@ -1,12 +1,12 @@
 import { Schedule } from "types/schedule";
 import { api } from "./api";
 
-export const saveSchedule = async (schedule: Schedule) => {
+export const saveOneSchedule = async (schedule: Schedule) => {
   const response = await api.post("schedule/save-one", schedule);
   return response;
 };
 
-export const saveSchedules = async (schedules: Schedule[]) => {
+export const saveManySchedules = async (schedules: Schedule[]) => {
   const response = await api.post("schedule/save-many", schedules);
   return response;
 };
@@ -29,5 +29,15 @@ export const saveSchedulesForDiscipline = async (
     `schedule/save-many/discipline/${code}`,
     schedules
   );
+  return response;
+};
+
+export const updateSchedule = async (schedule: Schedule) => {
+  const response = await api.put("schedule/update", schedule);
+  return response;
+};
+
+export const deleteSchedule = async (id: string) => {
+  const response = await api.delete(`schedule/delete/${id}`);
   return response;
 };

@@ -1,7 +1,5 @@
 import { PaginationTable } from "@components/Common/PaginationTable";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
-import { Icon } from "@iconify/react/dist/iconify.js";
+import { Icon } from "@iconify/react";
 import {
   Button,
   Input,
@@ -17,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
 import { Discipline } from "types/discipline";
 import { Teacher } from "types/teacher";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   discipline: Discipline;
@@ -27,8 +26,6 @@ export function AssignTeacher({ discipline }: Props) {
   const [teacherId, setTeacherId] = useState("");
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
   const rowsPerPage = 25;
 
   const totalPages = useMemo(() => {
@@ -53,7 +50,8 @@ export function AssignTeacher({ discipline }: Props) {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!teacherId) return setError("Selecione um professor.");
+    if (!teacherId)
+      return enqueueNotification("Selecione um professor.", "error");
 
     const newDiscipline: Discipline = {
       ...discipline,
@@ -65,10 +63,10 @@ export function AssignTeacher({ discipline }: Props) {
     api
       .put("discipline/update", newDiscipline)
       .then(() => {
-        setSuccess("Professor atribuido com sucesso!");
+        enqueueNotification("Professor atribuido com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data.message, "error");
       });
   };
 
@@ -79,9 +77,9 @@ export function AssignTeacher({ discipline }: Props) {
         setTeachers(response.data);
       })
       .catch((error) => {
-        setError(error.response.data);
+        console.log(error.response.data);
       });
-  }, [setError]);
+  }, []);
 
   if (!teachers) return <LoadingPage />;
 

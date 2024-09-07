@@ -17,9 +17,8 @@ import { Lesson } from "types/lesson";
 import { ModalType } from "types/modal";
 import { formatDate } from "utils/formatDate";
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { EditLesson } from "./EditLesson";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 const columns = [
   { key: "description", label: "Descricão" },
@@ -44,8 +43,6 @@ export function TableLesson({
 }: Props) {
   const [lessons, setLesson] = useState<Lesson[]>([]);
   const [content, setContent] = useState<JSX.Element>(<></>);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
   const disclosure = useDisclosure();
 
   useEffect(() => {
@@ -78,13 +75,13 @@ export function TableLesson({
   const handleDelete = (lesson: Lesson) => {
     deleteLesson(lesson.id)
       .then(() => {
-        setSuccess("Aula excluída com sucesso!");
+        enqueueNotification("Aula excluída com sucesso!", "success");
 
         setLesson((prevLessons) =>
           prevLessons.filter((l) => l.id !== lesson.id)
         );
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (

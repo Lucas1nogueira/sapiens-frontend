@@ -2,10 +2,9 @@ import { Button, Input, Textarea } from "@nextui-org/react";
 import { Lesson } from "types/lesson";
 import { useState } from "react";
 import { updateLesson } from "services/lessonService";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Discipline } from "types/discipline";
 import { formatDateForInput } from "utils/formatDate";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   lesson: Lesson;
@@ -16,8 +15,6 @@ export function EditLesson({ lesson, discipline }: Props) {
   const [description, setDescription] = useState(lesson.description);
   const [date, setDate] = useState(formatDateForInput(lesson.date));
   const [manyLessons, setManyLessons] = useState(lesson.manyLessons);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -41,9 +38,9 @@ export function EditLesson({ lesson, discipline }: Props) {
         setDate("");
         setManyLessons(1);
 
-        setSuccess("Aula atualizada com sucesso!");
+        enqueueNotification("Aula atualizada com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (

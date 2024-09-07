@@ -1,16 +1,13 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { saveSchoolClass } from "services/schoolClassService";
 import { School } from "types/school";
 import { SchoolClass } from "types/schoolClass";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 export function CreateSchoolClass() {
   const { userSchool } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
   const [code, setCode] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -25,10 +22,12 @@ export function CreateSchoolClass() {
 
     saveSchoolClass(schoolClass)
       .then(() => {
-        setSuccess("Turma criada com sucesso!");
+        setCode("");
+
+        enqueueNotification("Turma criada com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data.message);
+        enqueueNotification(error.response.data.message, "error");
       });
   };
 

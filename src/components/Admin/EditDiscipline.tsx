@@ -1,9 +1,8 @@
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { updateDiscipline } from "services/disciplineService";
 import { Discipline } from "types/discipline";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   discipline: Discipline;
@@ -13,8 +12,6 @@ export function EditDiscipline({ discipline }: Props) {
   const [code, setCode] = useState(discipline.code);
   const [name, setName] = useState(discipline.name);
   const [manyLessons, setManyLessons] = useState(discipline.manyLessons);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -33,9 +30,11 @@ export function EditDiscipline({ discipline }: Props) {
         setName("");
         setManyLessons(0);
 
-        setSuccess("Disciplina atualizada com sucesso!");
+        enqueueNotification("Disciplina atualizada com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) =>
+        enqueueNotification(error.response.data.message, "error")
+      );
   };
 
   return (

@@ -1,6 +1,4 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import {
@@ -8,23 +6,13 @@ import {
   updateSecretariat,
 } from "services/secretariatService";
 import { Secretariat as SecretariatType } from "types/secretariat";
-import { SuperAdmin } from "types/superAdmin";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 export function Secretariat() {
   const { user } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
-
-  const [secretariat, setSecretariat] = useState<SecretariatType>({
-    superAdmin: user as SuperAdmin,
-    name: "",
-    address: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    phone: "",
-    email: "",
-  } as SecretariatType);
+  const [secretariat, setSecretariat] = useState<SecretariatType>(
+    {} as SecretariatType
+  );
 
   useEffect(() => {
     if (user?.id) {
@@ -39,9 +27,12 @@ export function Secretariat() {
 
     updateSecretariat(secretariat)
       .then(() => {
-        setSuccess("Secretaria de Educação atualizada com sucesso!");
+        enqueueNotification(
+          "Secretaria de Educação atualizada com sucesso!",
+          "success"
+        );
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +55,7 @@ export function Secretariat() {
             <Input
               name="name"
               placeholder="Insira o nome da secretaria"
-              value={secretariat.name}
+              value={secretariat.name || ""}
               onChange={handleChange}
               label="Nome"
               fullWidth
@@ -72,7 +63,7 @@ export function Secretariat() {
             <Input
               name="address"
               placeholder="Insira o endereço da secretaria"
-              value={secretariat.address}
+              value={secretariat.address || ""}
               onChange={handleChange}
               label="Endereço"
               fullWidth
@@ -80,7 +71,7 @@ export function Secretariat() {
             <Input
               name="city"
               placeholder="Insira a cidade da secretaria"
-              value={secretariat.city}
+              value={secretariat.city || ""}
               onChange={handleChange}
               label="Cidade"
               fullWidth
@@ -88,7 +79,7 @@ export function Secretariat() {
             <Input
               name="state"
               placeholder="Insira o estado da secretaria"
-              value={secretariat.state}
+              value={secretariat.state || ""}
               onChange={handleChange}
               label="Estado"
               fullWidth
@@ -96,7 +87,7 @@ export function Secretariat() {
             <Input
               name="zipCode"
               placeholder="Insira o CEP da secretaria"
-              value={secretariat.zipCode}
+              value={secretariat.zipCode || ""}
               onChange={handleChange}
               label="CEP"
               fullWidth
@@ -104,7 +95,7 @@ export function Secretariat() {
             <Input
               name="phone"
               placeholder="Insira o telefone da secretaria"
-              value={secretariat.phone}
+              value={secretariat.phone || ""}
               onChange={handleChange}
               label="Telefone"
               fullWidth
@@ -112,7 +103,7 @@ export function Secretariat() {
             <Input
               name="email"
               placeholder="Insira o e-mail da secretaria"
-              value={secretariat.email}
+              value={secretariat.email || ""}
               onChange={handleChange}
               label="E-mail"
               fullWidth

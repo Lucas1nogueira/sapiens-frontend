@@ -3,8 +3,6 @@ import { CustomModal } from "@components/Common/CustomModal";
 import { CustomTableHeader } from "@components/Common/CustomTableHeader";
 import { CreateEvaluation } from "@components/Evaluation/CreateEvaluation";
 import { EditEvaluation } from "@components/Evaluation/EditEvaluation";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Button,
@@ -23,6 +21,7 @@ import {
 } from "services/evaluationService";
 import { Discipline } from "types/discipline";
 import { Evaluation } from "types/evaluation";
+import { enqueueNotification } from "utils/enqueueNotification";
 import { formatDate, formatDateWithHour } from "utils/formatDate";
 
 type Props = {
@@ -42,8 +41,6 @@ export function EvaluationsTab({ discipline }: Props) {
   const [filterValue, setFilterValue] = useState<string>("");
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const disclosure = useDisclosure();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   useEffect(() => {
     findEvaluationsByDisciplineCode(discipline.code)
@@ -79,9 +76,9 @@ export function EvaluationsTab({ discipline }: Props) {
       .then(() => {
         setEvaluations(evaluations.filter((e) => e.id !== evaluation.id));
 
-        setSuccess("Avaliação excluída com sucesso!");
+        enqueueNotification("Avaliação excluída com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (

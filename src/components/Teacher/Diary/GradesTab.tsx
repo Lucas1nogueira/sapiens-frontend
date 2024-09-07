@@ -3,10 +3,10 @@ import { Discipline } from "types/discipline";
 import { Student } from "types/student";
 
 type Props = {
-  students: Student[];
+  sortedStudents: Student[];
   discipline: Discipline;
 };
 
-export function GradesTab({ students, discipline }: Props) {
-  return <Grades students={students} discipline={discipline} />;
+export function GradesTab({ sortedStudents, discipline }: Props) {
+  return <Grades students={sortedStudents} discipline={discipline} />;
 }

@@ -1,16 +1,12 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Card, Input } from "@nextui-org/react";
 import { useMemo, useState } from "react";
-import { auth } from "services/authService";
+import { authChangePassword } from "services/authService";
+import { enqueueNotification } from "utils/enqueueNotification";
 import { isPasswordValid } from "utils/validations";
 
 export function ChangePassword() {
   const { user } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
-
   const [lastPassword, setLastPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,17 +32,16 @@ export function ChangePassword() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    auth
-      .changePassword(user?.email as string, lastPassword, password)
+    authChangePassword(user?.email as string, lastPassword, password)
       .then(() => {
         setLastPassword("");
         setPassword("");
         setConfirmPassword("");
 
-        setSuccess("Senha alterada com sucesso!");
+        enqueueNotification("Senha alterada com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data.message, "error");
       });
   };
 

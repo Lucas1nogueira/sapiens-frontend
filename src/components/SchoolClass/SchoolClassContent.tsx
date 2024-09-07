@@ -16,7 +16,8 @@ export function SchoolClassContent({ setDiscipline, schoolClass }: Props) {
   useEffect(() => {
     api
       .get<Discipline[]>(`discipline/class/${schoolClass.code}`)
-      .then((response) => setDisciplines(response.data));
+      .then((response) => setDisciplines(response.data))
+      .catch((error) => console.log(error));
   }, [schoolClass.code]);
 
   return (

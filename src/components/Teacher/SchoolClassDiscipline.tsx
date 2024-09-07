@@ -74,7 +74,7 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
     attendance: (
       <AttendanceTab
         key={activeTab}
-        students={sortedStudents}
+        sortedStudents={sortedStudents}
         discipline={discipline}
       />
     ),
@@ -82,7 +82,7 @@ export function SchoolClassDiscipline({ discipline, setDiscipline }: Props) {
     grades: (
       <GradesTab
         key={activeTab}
-        students={sortedStudents}
+        sortedStudents={sortedStudents}
         discipline={discipline}
       />
     ),

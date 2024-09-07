@@ -1,20 +1,18 @@
-import { ErrorModal } from "@components/Common/ErrorModal";
-import { SuccessModal } from "@components/Common/SuccessModal";
 import { AuthProvider } from "@contexts/AuthContext";
-import { ErrorProvider } from "@contexts/ErrorContext";
+import { NotificationProvider } from "@contexts/NotificationContext";
 import { SideMenuProvider } from "@contexts/SideMenuContext";
-import { SuccessProvider } from "@contexts/SuccessContext";
+import { useNotification } from "@hooks/useNotification";
 import { AppRoutes } from "AppRoutes";
 import { BrowserRouter } from "react-router-dom";
+import { setNotify } from "utils/enqueueNotification";
 
 const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { enqueueNotification } = useNotification();
+  setNotify(enqueueNotification);
+
   return (
     <AuthProvider>
-      <SideMenuProvider>
-        <SuccessProvider>
-          <ErrorProvider>{children}</ErrorProvider>
-        </SuccessProvider>
-      </SideMenuProvider>
+      <SideMenuProvider>{children}</SideMenuProvider>
     </AuthProvider>
   );
 };
@@ -22,11 +20,11 @@ const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 export function App() {
   return (
     <BrowserRouter>
-      <Providers>
-        <ErrorModal />
-        <SuccessModal />
-        <AppRoutes />
-      </Providers>
+      <NotificationProvider>
+        <Providers>
+          <AppRoutes />
+        </Providers>
+      </NotificationProvider>
     </BrowserRouter>
   );
 }

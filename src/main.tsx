@@ -6,7 +6,7 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <NextUIProvider>
+    <NextUIProvider locale="pt-BR">
       <App />
     </NextUIProvider>
   </React.StrictMode>

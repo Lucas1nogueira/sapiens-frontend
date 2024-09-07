@@ -1,6 +1,4 @@
 import { PaginationTable } from "@components/Common/PaginationTable";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import {
   Button,
   Input,
@@ -18,6 +16,7 @@ import { api } from "services/api";
 import { assignStudentsToSchoolClass } from "services/schoolClassService";
 import { SchoolClass } from "types/schoolClass";
 import { Student } from "types/student";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   schoolClass: SchoolClass;
@@ -30,9 +29,6 @@ export function AssignStudents({ schoolClass }: Props) {
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
   const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set());
-
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const totalPages = useMemo(() => {
     return Math.ceil(students.length / rowsPerPage);
@@ -71,10 +67,10 @@ export function AssignStudents({ schoolClass }: Props) {
       .then((response) => {
         console.log(response.data);
 
-        setSuccess("Turma atualizada com sucesso!");
+        enqueueNotification("Turma atualizada com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data, "error");
       });
   };
 
@@ -83,9 +79,9 @@ export function AssignStudents({ schoolClass }: Props) {
       .get<Student[]>(`student/class/${schoolClass.code}`)
       .then((response) => setClassStudents(response.data))
       .catch((error) => {
-        setError(error.response.data);
+        console.log(error.response.data);
       });
-  }, [schoolClass.code, setError]);
+  }, [schoolClass.code]);
 
   useEffect(() => {
     api
@@ -99,9 +95,9 @@ export function AssignStudents({ schoolClass }: Props) {
         setStudents(response.data);
       })
       .catch((error) => {
-        setError(error.response.data);
+        console.log(error.response.data);
       });
-  }, [setError, classStudents]);
+  }, [classStudents]);
 
   if (!students) return <LoadingPage />;
 

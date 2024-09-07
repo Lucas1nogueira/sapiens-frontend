@@ -30,3 +30,8 @@ export const deleteEvaluation = (code: string) => {
   const response = api.delete(`/evaluation/delete/${code}`);
   return response;
 };
+
+export const findEvaluationById = (id: string) => {
+  const response = api.get(`/evaluation/${id}`);
+  return response;
+};

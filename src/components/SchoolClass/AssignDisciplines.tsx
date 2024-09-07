@@ -1,7 +1,5 @@
 import { PaginationTable } from "@components/Common/PaginationTable";
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import {
   Button,
   Input,
@@ -19,6 +17,7 @@ import { findAllDisciplinesBySchool } from "services/disciplineService";
 import { assignDisciplinesToSchoolClass } from "services/schoolClassService";
 import { Discipline } from "types/discipline";
 import { SchoolClass } from "types/schoolClass";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   schoolClass: SchoolClass;
@@ -32,8 +31,6 @@ export function AssignDisciplines({ schoolClass }: Props) {
   const rowsPerPage = 25;
   const [selectedKeys, setSelectedKeys] = useState<SelectionType>(new Set());
   const { userSchool } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const totalPages = useMemo(() => {
     return Math.ceil(disciplines.length / rowsPerPage);
@@ -68,10 +65,10 @@ export function AssignDisciplines({ schoolClass }: Props) {
 
     assignDisciplinesToSchoolClass(newSchoolClass)
       .then(() => {
-        setSuccess("Turma atualizada com sucesso!");
+        enqueueNotification("Turma atualizada com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data, "error");
       });
   };
 
@@ -80,9 +77,9 @@ export function AssignDisciplines({ schoolClass }: Props) {
       .get<Discipline[]>(`discipline/class/${schoolClass.code}`)
       .then((response) => setClassDisciplines(response.data))
       .catch((error) => {
-        setError(error.response.data);
+        console.log(error.response.data);
       });
-  }, [setError, schoolClass.code]);
+  }, [schoolClass.code]);
 
   useEffect(() => {
     if (userSchool) {
@@ -96,10 +93,10 @@ export function AssignDisciplines({ schoolClass }: Props) {
           setDisciplines(response.data);
         })
         .catch((error) => {
-          setError(error.response.data);
+          console.log(error.response.data);
         });
     }
-  }, [setError, classDisciplines, userSchool]);
+  }, [classDisciplines, userSchool]);
 
   return (
     <div className="flex justify-center items-center">

@@ -1,6 +1,4 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import {
   Autocomplete,
   AutocompleteItem,
@@ -18,6 +16,7 @@ import { Admin } from "types/admin";
 import { School } from "types/school";
 import { Secretariat } from "types/secretariat";
 import { SuperAdmin } from "types/superAdmin";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   school: School;
@@ -25,8 +24,6 @@ type Props = {
 
 export function EditSchool({ school }: Props) {
   const { user } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
   const [name, setName] = useState(school.name);
   const [address, setAddress] = useState(school.address);
   const [city, setCity] = useState(school.city);
@@ -83,9 +80,9 @@ export function EditSchool({ school }: Props) {
         setEmail("");
         setSelectedAdmin({} as Admin);
 
-        setSuccess("Escola atualizada com sucesso!");
+        enqueueNotification("Escola atualizada com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (

@@ -7,11 +7,11 @@ import { Lesson } from "types/lesson";
 import { Student } from "types/student";
 
 type Props = {
-  students: Student[];
+  sortedStudents: Student[];
   discipline: Discipline;
 };
 
-export function AttendanceTab({ discipline, students }: Props) {
+export function AttendanceTab({ discipline, sortedStudents }: Props) {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +30,7 @@ export function AttendanceTab({ discipline, students }: Props) {
       <h1 className="text-center text-2xl font-bold text-gray-800">
         Frequência
       </h1>
-      <TableAttendance lessons={lessons} students={students} />
+      <TableAttendance lessons={lessons} sortedStudents={sortedStudents} />
     </div>
   );
 }

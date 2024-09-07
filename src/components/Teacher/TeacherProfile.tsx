@@ -1,10 +1,9 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { api } from "services/api";
 import { Teacher } from "types/teacher";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 const sexTypes = [
   { key: "BLANK", label: "Prefiro não Informar" },
@@ -14,8 +13,6 @@ const sexTypes = [
 
 export function TeacherProfile() {
   const { user } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const [teacher, setTeacher] = useState({} as Teacher);
   const [sex, setSex] = useState(teacher?.sex ?? "BLANK");
@@ -52,13 +49,13 @@ export function TeacherProfile() {
           } as Teacher);
         })
         .catch((error) => {
-          setError(error.response.data);
+          enqueueNotification(error.response.data, "error");
         })
         .finally(() => {
           setIsFirstLoad(false);
         });
     }
-  }, [user, setError, isFirstLoad]);
+  }, [user, isFirstLoad]);
 
   const handleUpdateData = () => {
     const newTeacher = { ...teacher, name, email, age, sex };
@@ -79,10 +76,10 @@ export function TeacherProfile() {
           code,
         } as Teacher);
 
-        setSuccess("Informações atualizadas com sucesso!");
+        enqueueNotification("Informações atualizadas com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data, "error");
       });
   };
 

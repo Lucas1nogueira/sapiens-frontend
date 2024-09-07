@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button, Input, Card, CardBody, CardHeader } from "@nextui-org/react";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
-import { saveGrades, findGradesByEvaluation } from "services/gradeService";
+import { saveManyGrades, findGradesByEvaluation } from "services/gradeService";
 import { findEvaluationsByDisciplineCode } from "services/evaluationService";
 import { Evaluation } from "types/evaluation";
 import { Grade } from "types/grade";
 import { Student } from "types/student";
 import { Discipline } from "types/discipline";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   students: Student[];
@@ -18,8 +17,6 @@ export function Grades({ students, discipline }: Props) {
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [grades, setGrades] = useState<{ [key: string]: Grade[] }>({});
   const [filterValue, setFilterValue] = useState<string>("");
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const studentsToDisplay = useMemo(() => {
     if (!filterValue) return students;
@@ -84,11 +81,11 @@ export function Grades({ students, discipline }: Props) {
 
   const handleSubmit = () => {
     const allGrades = Object.values(grades).flat();
-    saveGrades(allGrades)
+    saveManyGrades(allGrades)
       .then(() => {
-        setSuccess("Notas salvas com sucesso!");
+        enqueueNotification("Notas salvas com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   const findGradeByEvaluationAndStudent = (

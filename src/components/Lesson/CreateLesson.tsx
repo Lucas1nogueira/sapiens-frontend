@@ -3,8 +3,7 @@ import { Discipline } from "types/discipline";
 import { Lesson } from "types/lesson";
 import { useState } from "react";
 import { saveLesson } from "services/lessonService";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   discipline: Discipline;
@@ -14,8 +13,6 @@ export function CreateLesson({ discipline }: Props) {
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [manyLessons, setManyLessons] = useState(1);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -40,9 +37,9 @@ export function CreateLesson({ discipline }: Props) {
         setDate("");
         setManyLessons(1);
 
-        setSuccess("Aula criada com sucesso!");
+        enqueueNotification("Aula criada com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (

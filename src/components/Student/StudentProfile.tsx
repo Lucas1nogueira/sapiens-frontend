@@ -1,10 +1,9 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import { api } from "services/api";
 import { Student } from "types/student";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 const sexTypes = [
   { key: "BLANK", label: "Prefiro não Informar" },
@@ -14,8 +13,6 @@ const sexTypes = [
 
 export function StudentProfile() {
   const { user } = useAuth();
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const [student, setStudent] = useState({} as Student);
   const [matriculation, setMatriculation] = useState(
@@ -54,13 +51,13 @@ export function StudentProfile() {
           } as Student);
         })
         .catch((error) => {
-          setError(error.response.data);
+          enqueueNotification(error.response.data, "error");
         })
         .finally(() => {
           setIsFirstLoad(false);
         });
     }
-  }, [user, isFirstLoad, setError]);
+  }, [user, isFirstLoad]);
 
   const handleUpdateData = () => {
     const newStudent = { ...student, name, email, age, sex };
@@ -81,10 +78,10 @@ export function StudentProfile() {
           matriculation,
         } as Student);
 
-        setSuccess("Informações atualizadas com sucesso!");
+        enqueueNotification("Informações atualizadas com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data, "error");
       });
   };
 

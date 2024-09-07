@@ -37,3 +37,15 @@ export const findSchoolClassBySchoolId = async (schoolId: string) => {
   );
   return response;
 };
+
+export const getSchoolClassStudentsByDisciplineCode = async (code: string) => {
+  const response = await api.get<SchoolClass[]>(
+    `school-class/students-discipline/${code}`
+  );
+  return response;
+};
+
+export const findSchoolClassStudentId = async (id: string) => {
+  const response = await api.get<SchoolClass>(`school-class/student/${id}`);
+  return response;
+};

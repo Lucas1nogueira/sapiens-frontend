@@ -1,6 +1,4 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { api } from "services/api";
@@ -8,14 +6,13 @@ import { Discipline } from "types/discipline";
 import { School } from "types/school";
 import { SchoolClass } from "types/schoolClass";
 import { Teacher } from "types/teacher";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 export function CreateDiscipline() {
   const { userSchool } = useAuth();
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
   const [manyLessons, setManyLessons] = useState(0);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -39,10 +36,10 @@ export function CreateDiscipline() {
         setCode("");
         setName("");
 
-        setSuccess("Disciplina criada com sucesso!");
+        enqueueNotification("Disciplina criada com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data.message, "error");
       });
   };
 

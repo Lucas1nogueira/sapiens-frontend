@@ -25,7 +25,9 @@ export function CustomModal({ useDisclosure, content, size = "5xl" }: Props) {
       disableAnimation
     >
       <ModalContent>
-        <ModalBody>{content}</ModalBody>
+        <ModalBody>
+          <div className="py-6">{content}</div>
+        </ModalBody>
         <ModalFooter>
           <Button onClick={onClose} color="danger">
             Fechar

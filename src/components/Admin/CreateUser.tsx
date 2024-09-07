@@ -1,10 +1,9 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useMemo, useState } from "react";
-import { auth } from "services/authService";
+import { authRegister } from "services/authService";
 import { User } from "types/user";
+import { enqueueNotification } from "utils/enqueueNotification";
 import { generateCode, generatePassword } from "utils/generateValues";
 import { rolesOfAdmin, rolesOfSuperAdmin, rolesEnum } from "utils/roles";
 import { isEmailValid, isNameValid, isRolevalid } from "utils/validations";
@@ -36,8 +35,6 @@ export function CreateUser() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
   const [password, setPassword] = useState(generatePassword());
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
   const [code, setCode] = useState(generateCode());
 
   const isNameInvalid = useMemo(() => {
@@ -81,17 +78,16 @@ export function CreateUser() {
       ...getUserCodeFieldIfExists(role, code),
     };
 
-    auth
-      .register(newUser as unknown as User)
+    authRegister(newUser as unknown as User)
       .then(() => {
         setName("");
         setEmail("");
         setRole("");
 
-        setSuccess("Usuário criado com sucesso!");
+        enqueueNotification("Usuário criado com sucesso!", "success");
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data, "error");
       });
   };
 

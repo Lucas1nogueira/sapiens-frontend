@@ -4,12 +4,10 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "@assets/logo.png";
 import { isEmailValid, isPasswordValid } from "utils/validations";
-import { auth } from "services/authService";
-import { useError } from "@hooks/useError";
+import { authLogin } from "services/authService";
 
 export function Login() {
   const { handleLogin } = useAuth();
-  const { setError } = useError();
 
   const disclosure = useDisclosure();
   const [email, setEmail] = useState("");
@@ -28,13 +26,12 @@ export function Login() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    auth
-      .login(email, password)
+    authLogin(email, password)
       .then((response) => {
         handleLogin(response.data);
       })
       .catch((error) => {
-        setError(error.response.data);
+        console.log(error.response.data);
         disclosure.onOpenChange();
       });
   };

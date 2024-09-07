@@ -1,5 +1,3 @@
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Icon } from "@iconify/react";
 import { Button, Input } from "@nextui-org/react";
 import { useEffect, useState } from "react";
@@ -9,6 +7,7 @@ import {
 } from "services/scheduleService";
 import { Discipline } from "types/discipline";
 import { Schedule } from "types/schedule";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   discipline: Discipline;
@@ -20,8 +19,6 @@ const daysOfWeek = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"]
 
 export function CreateSchedule({ discipline }: Props) {
   const [schedules, setSchedules] = useState<ScheduleWithTempId[]>([]);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   useEffect(() => {
     findScheduleByDisciplineCode(discipline.code)
@@ -102,11 +99,11 @@ export function CreateSchedule({ discipline }: Props) {
 
     saveSchedulesForDiscipline(discipline.code, schedulesWithoutTempIds)
       .then(() => {
-        setSuccess("Horários salvos com sucesso!");
+        enqueueNotification("Horários salvos com sucesso!", "success");
         setSchedules([]);
       })
       .catch((error) => {
-        setError(error.response.data.message);
+        enqueueNotification(error.response.data.message, "error");
       });
   };
 

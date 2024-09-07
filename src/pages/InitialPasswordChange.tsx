@@ -1,15 +1,14 @@
 import { useAuth } from "@hooks/useAuth";
-import { useError } from "@hooks/useError";
 import { Button, Input } from "@nextui-org/react";
 import { useMemo, useState } from "react";
-import { auth } from "services/authService";
+import { authChangePassword } from "services/authService";
+import { enqueueNotification } from "utils/enqueueNotification";
 import { isPasswordValid } from "utils/validations";
 
 export function InitialPasswordChange() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const { user, handleLogin } = useAuth();
-  const { setError } = useError();
 
   const isPasswordInvalid = useMemo(() => {
     if (password === "") return false;
@@ -26,8 +25,7 @@ export function InitialPasswordChange() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    auth
-      .changePassword(user?.email as string, password, confirmPassword)
+    authChangePassword(user?.email as string, password, confirmPassword)
       .then((response) => {
         setConfirmPassword("");
         setPassword("");
@@ -35,7 +33,7 @@ export function InitialPasswordChange() {
         handleLogin({ ...user, ...response.data });
       })
       .catch((error) => {
-        setError(error.response.data);
+        enqueueNotification(error.response.data, "error");
       });
   };
 

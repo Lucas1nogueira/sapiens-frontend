@@ -1,10 +1,9 @@
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react";
 import { useState } from "react";
 import { updateEvaluation } from "services/evaluationService";
 import { Discipline } from "types/discipline";
 import { Evaluation } from "types/evaluation";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   evaluation: Evaluation;
@@ -14,8 +13,6 @@ type Props = {
 export function EditEvaluation({ discipline, evaluation }: Props) {
   const [name, setName] = useState(evaluation.name);
   const [deliveryDate, setDeliveryDate] = useState(evaluation.deliveryAt);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,9 +29,9 @@ export function EditEvaluation({ discipline, evaluation }: Props) {
         setName("");
         setDeliveryDate("");
 
-        setSuccess("Atividade atualizada com sucesso!");
+        enqueueNotification("Atividade atualizada com sucesso!", "success");
       })
-      .catch((error) => setError(error.response.data));
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (

@@ -25,3 +25,13 @@ export const deleteLesson = async (id: string) => {
   const response = await api.delete(`lesson/delete/${id}`);
   return response;
 };
+
+export const findByAttendanceId = async (id: string) => {
+  const response = await api.get<Lesson>(`lesson/attendance/${id}`);
+  return response;
+};
+
+export const findLessonById = async (id: string) => {
+  const response = await api.get<Lesson>(`lesson/${id}`);
+  return response;
+};
