@@ -1,43 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button, Checkbox } from "@nextui-org/react";
 import {
   findAttendancesByLesson,
-  saveAttendances,
+  saveManyAttendances,
 } from "services/attendanceService";
 import { Attendance } from "types/attendance";
 import { Lesson } from "types/lesson";
 import { formatDate } from "utils/formatDate";
-import { useError } from "@hooks/useError";
-import { useSuccess } from "@hooks/useSuccess";
 import { Student } from "types/student";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Props = {
   lessons: Lesson[];
-  students: Student[];
+  sortedStudents: Student[];
 };
 
-type TempAttendance = Omit<Attendance, "id"> & { tempId: string };
+export function TableAttendance({ lessons, sortedStudents }: Props) {
+  const [attendances, setAttendances] = useState(new Map<string, Attendance>());
 
-export function TableAttendance({ lessons, students }: Props) {
-  const [attendances, setAttendances] = useState<TempAttendance[]>([]);
-  const { setError } = useError();
-  const { setSuccess } = useSuccess();
+  const sortedLessons = useMemo(() => {
+    return lessons.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+  }, [lessons]);
 
   useEffect(() => {
-    const allAttendancesPromises = lessons.map((lesson) =>
+    const allAttendancesPromises = sortedLessons.map((lesson) =>
       findAttendancesByLesson(lesson.id)
     );
 
     Promise.all(allAttendancesPromises)
       .then((responses) => {
-        const allAttendances = responses.flatMap((response) =>
-          response.data.map((attendance: Attendance) => ({
-            ...attendance,
-            tempId: crypto.randomUUID(),
-          }))
-        );
+        const allAttendances = responses.flatMap((response) => response.data);
 
-        const attendanceMap = new Map<string, TempAttendance>();
+        // Criar um mapeamento para armazenar as presencas existentes melhorando a performance
+        const attendanceMap = new Map<string, Attendance>();
         allAttendances.forEach((attendance) => {
           attendanceMap.set(
             `${attendance.student.id}-${attendance.lesson.id}`,
@@ -45,24 +42,31 @@ export function TableAttendance({ lessons, students }: Props) {
           );
         });
 
-        const fullAttendances = students.map((student) =>
-          lessons.map((lesson) => {
-            return (
-              attendanceMap.get(`${student.id}-${lesson.id}`) || {
-                tempId: crypto.randomUUID(),
-                student,
-                attendedCount: 0,
-                isPresent: false,
-                lesson,
-              }
-            );
+        // Criar um array de presencas cheias com as presencas existentes e novas
+        sortedStudents.forEach((student) =>
+          sortedLessons.forEach((lesson) => {
+            const key = `${student.id}-${lesson.id}`;
+            const existingAttendance = attendanceMap.get(key);
+
+            // Crie uma nova frequência se não existir
+            const attendance: Attendance = existingAttendance
+              ? existingAttendance
+              : {
+                  id: null as unknown as string,
+                  student,
+                  lesson,
+                  attendedCount: 0,
+                  isPresent: false,
+                };
+
+            attendanceMap.set(key, attendance);
           })
         );
 
-        setAttendances(fullAttendances.flat());
+        setAttendances(attendanceMap);
       })
       .catch((error) => console.log(error.response.data));
-  }, [students, lessons]);
+  }, [sortedStudents, sortedLessons]);
 
   const handleAttendanceChange = (
     studentId: string,
@@ -71,31 +75,40 @@ export function TableAttendance({ lessons, students }: Props) {
     attendedCount: number
   ) => {
     setAttendances((prevAttendances) => {
-      const updatedAttendances = prevAttendances.map((attendance) =>
-        attendance.student.id === studentId && attendance.lesson.id === lessonId
-          ? { ...attendance, isPresent: isPresent, attendedCount }
-          : attendance
-      );
+      const updatedAttendances = new Map(prevAttendances);
+
+      const key = `${studentId}-${lessonId}`;
+      const existingAttendance = updatedAttendances.get(key);
+
+      if (existingAttendance) {
+        updatedAttendances.set(key, {
+          ...existingAttendance,
+          isPresent,
+          attendedCount,
+        });
+      }
+
       return updatedAttendances;
     });
   };
 
   const handleSubmit = () => {
-    const attendancesToSave: Attendance[] = attendances.map(
-      ({ tempId, ...attendance }) => {
-        console.log(tempId);
-        return { ...attendance, id: null as unknown as string };
-      }
-    );
+    // Filtra frequências para salvar, mantendo id como null para novas entradas
+    const attendancesToSave: Attendance[] = Array.from(
+      attendances.values()
+    ).map((attendance) => ({
+      ...attendance,
+      id: attendance.id ?? null,
+    }));
 
-    saveAttendances(attendancesToSave)
-      .then(() => setSuccess("Chamada feita com sucesso!"))
-      .catch((error) => setError(error.response.data));
+    saveManyAttendances(attendancesToSave)
+      .then(() =>
+        enqueueNotification("Presenças salvas com sucesso!", "success")
+      )
+      .catch((error) =>
+        enqueueNotification(error.response.data.message, "error")
+      );
   };
-
-  const sortedLessons = lessons.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
 
   return (
     <div className="p-4">
@@ -127,7 +140,7 @@ export function TableAttendance({ lessons, students }: Props) {
             ))}
           </div>
 
-          {students.map((student) => (
+          {sortedStudents.map((student) => (
             <div
               key={student.id}
               className="flex items-center border-b border-gray-300"
@@ -140,17 +153,13 @@ export function TableAttendance({ lessons, students }: Props) {
               </div>
 
               {sortedLessons.map((lesson) => {
-                const attendance = attendances.find(
-                  (att) =>
-                    att.student.id === student.id && att.lesson.id === lesson.id
-                );
+                const key = `${student.id}-${lesson.id}`;
+                const attendance = attendances.get(key);
 
                 return (
                   <div key={lesson.id} className="flex-1 text-center p-2">
                     <Checkbox
-                      defaultSelected={
-                        attendance?.attendedCount === lesson.manyLessons
-                      }
+                      isSelected={attendance?.isPresent ?? false}
                       onValueChange={(value) => {
                         handleAttendanceChange(
                           student.id,
