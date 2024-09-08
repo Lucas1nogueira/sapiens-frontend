@@ -14,8 +14,8 @@ import { useEffect, useMemo, useState } from "react";
 import { School } from "types/school";
 import { ModalType } from "types/modal";
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
-import { EditSchool } from "./EditSchool";
 import { findAllSchools } from "services/schoolService";
+import { ChangeSchool } from "./ChangeSchool";
 
 const columns = [
   { key: "name", label: "Nome" },
@@ -56,7 +56,7 @@ export function TableSchool({ filterValue, customModalDisclosure }: Props) {
   }, [schools, filterValue]);
 
   const handleEdit = (school: School) => {
-    setContent(<EditSchool school={school} />);
+    setContent(<ChangeSchool school={school} />);
     disclosure.onOpenChange();
   };
 

@@ -1,8 +1,7 @@
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
 import { CustomModal } from "@components/Common/CustomModal";
 import { CustomTableHeader } from "@components/Common/CustomTableHeader";
-import { CreateEvaluation } from "@components/Evaluation/CreateEvaluation";
-import { EditEvaluation } from "@components/Evaluation/EditEvaluation";
+import { ChangeEvaluation } from "@components/Evaluation/ChangeEvaluation";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   Button,
@@ -60,13 +59,13 @@ export function EvaluationsTab({ discipline }: Props) {
   }, [evaluations, filterValue]);
 
   const handleCreateEvaluation = () => {
-    setContent(<CreateEvaluation discipline={discipline} />);
+    setContent(<ChangeEvaluation discipline={discipline} />);
     disclosure.onOpenChange();
   };
 
   const handleEditEvaluation = (evaluation: Evaluation) => {
     setContent(
-      <EditEvaluation evaluation={evaluation} discipline={discipline} />
+      <ChangeEvaluation evaluation={evaluation} discipline={discipline} />
     );
     disclosure.onOpenChange();
   };

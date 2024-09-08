@@ -1,4 +1,3 @@
-import { CreateDiscipline } from "@components/Admin/CreateDiscipline";
 import { CreateSchoolClass } from "@components/Admin/CreateSchoolClass";
 import { CustomModal } from "@components/Common/CustomModal";
 import { TableDiscipline } from "@components/Discipline/TableDiscipline";
@@ -14,9 +13,10 @@ import { MenuItem } from "types/menu";
 import { SideMenu } from "@components/Common/SideMenu";
 import { Calendar } from "@components/Admin/Calendar";
 import { Diary } from "@components/Admin/Diary";
-import { CreateSchool } from "@components/School/CreateSchool";
 import { TableSchool } from "@components/School/TableSchool";
 import { Secretariat } from "@components/SuperAdmin/Secretariat";
+import { ChangeDiscipline } from "@components/Discipline/ChangeDiscipline";
+import { ChangeSchool } from "@components/School/ChangeSchool";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -112,7 +112,7 @@ const getComponentForTab = (
       TableComponent: TableUsers,
     },
     {
-      content: <CreateDiscipline />,
+      content: <ChangeDiscipline />,
       TableComponent: TableDiscipline,
     },
     {
@@ -126,7 +126,7 @@ const getComponentForTab = (
       content: <Diary />,
     },
     {
-      content: <CreateSchool />,
+      content: <ChangeSchool />,
       TableComponent: TableSchool,
     },
   ];

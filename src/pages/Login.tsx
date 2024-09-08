@@ -1,34 +1,38 @@
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input, useDisclosure } from "@nextui-org/react";
-import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "@assets/logo.png";
-import { isEmailValid, isPasswordValid } from "utils/validations";
 import { authLogin } from "services/authService";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { emailPattern } from "utils/validations";
+import logo from "@assets/logo.png";
+
+type Inputs = {
+  email: string;
+  password: string;
+};
 
 export function Login() {
   const { handleLogin } = useAuth();
-
   const disclosure = useDisclosure();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const emailIsValid = useMemo(() => {
-    if (email === "") return false;
-    return !isEmailValid(email);
-  }, [email]);
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    reset,
+    formState: { errors },
+  } = useForm<Inputs>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const passwordIsValid = useMemo(() => {
-    if (password === "") return false;
-    return !isPasswordValid(password);
-  }, [password]);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    authLogin(email, password)
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    authLogin(data.email, data.password)
       .then((response) => {
         handleLogin(response.data);
+        reset();
       })
       .catch((error) => {
         console.log(error.response.data);
@@ -47,25 +51,37 @@ export function Login() {
           <h1 className="text-3xl font-bold mb-2">Fazer Login</h1>
           <p className="mb-4">Bem-vindo ao Sapiens Educação!</p>
         </div>
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
           <Input
+            {...register("email", {
+              required: "Email obrigatório",
+              pattern: {
+                value: emailPattern,
+                message: "Email inválido",
+              },
+            })}
+            onInput={() => trigger("email")}
             label="Email"
             type="email"
             placeholder="Insira seu email"
-            value={email}
-            onValueChange={setEmail}
-            errorMessage="Insira um email válido"
-            isInvalid={emailIsValid}
+            errorMessage={errors.email?.message}
+            isInvalid={!!errors.email}
             isRequired
           />
           <Input
+            {...register("password", {
+              required: "Senha obrigatória",
+              minLength: {
+                value: 6,
+                message: "Sua senha deve ter pelo menos 6 caracteres",
+              },
+            })}
+            onInput={() => trigger("password")}
             label="Senha"
             type="password"
             placeholder="Insira sua senha"
-            value={password}
-            onValueChange={setPassword}
-            errorMessage="Deve conter ao menos 6 dígitos"
-            isInvalid={passwordIsValid}
+            errorMessage={errors.password?.message}
+            isInvalid={!!errors.password}
             isRequired
           />
           <Link

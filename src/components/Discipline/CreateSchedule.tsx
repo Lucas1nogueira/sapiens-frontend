@@ -103,7 +103,7 @@ export function CreateSchedule({ discipline }: Props) {
         setSchedules([]);
       })
       .catch((error) => {
-        enqueueNotification(error.response.data.message, "error");
+        enqueueNotification(error.response.data, "error");
       });
   };
 

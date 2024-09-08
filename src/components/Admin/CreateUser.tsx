@@ -1,12 +1,13 @@
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useMemo, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { authRegister } from "services/authService";
-import { User } from "types/user";
+import { User, UserRole } from "types/user";
 import { enqueueNotification } from "utils/enqueueNotification";
 import { generateCode, generatePassword } from "utils/generateValues";
 import { rolesOfAdmin, rolesOfSuperAdmin, rolesEnum } from "utils/roles";
-import { isEmailValid, isNameValid, isRolevalid } from "utils/validations";
+import { emailPattern } from "utils/validations";
 
 const isStudentOrTeacher = (role: string) => {
   return role === "STUDENT" || role === "TEACHER";
@@ -29,30 +30,17 @@ const getCodeLabel = (role: string) => {
   return role === rolesEnum.STUDENT ? "Matrícula" : "Código do Professor";
 };
 
+type Inputs = {
+  name: string;
+  email: string;
+  role: UserRole;
+  password: string;
+  code: string;
+};
+
 export function CreateUser() {
   const { user, userSchool } = useAuth();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [role, setRole] = useState("");
-  const [password, setPassword] = useState(generatePassword());
-  const [code, setCode] = useState(generateCode());
-
-  const isNameInvalid = useMemo(() => {
-    if (name === "") return false;
-    return !isNameValid(name);
-  }, [name]);
-
-  const isEmailInvalid = useMemo(() => {
-    if (email === "") return false;
-    return !isEmailValid(email);
-  }, [email]);
-
-  const isRoleInvalid = useMemo(() => {
-    if (role === "") return false;
-    if (!isRolevalid(role)) return true;
-
-    return false;
-  }, [role]);
+  const [role, setRole] = useState<UserRole>("ADMIN");
 
   const filterRoles = useMemo(() => {
     if (user?.role === rolesEnum.SUPERADMIN) return rolesOfSuperAdmin;
@@ -60,29 +48,42 @@ export function CreateUser() {
     return rolesOfAdmin;
   }, [user?.role]);
 
-  const handleCreateUser = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    trigger,
+    watch,
+  } = useForm<Inputs>({
+    defaultValues: {
+      name: "",
+      email: "",
+      role: "ADMIN",
+      code: generateCode(),
+      password: generatePassword(),
+    },
+  });
 
-    // TODO: add crate to each role
-    if (role === "GUARDIAN" || role === "CORDINATOR") return;
+  watch((data, { name }) => {
+    if (name === "role") setRole(data.role as UserRole);
+  });
 
-    if (!password) setPassword(generatePassword());
-    if (!code) setCode(generateCode());
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    if (data.role === "GUARDIAN" || data.role === "CORDINATOR") return;
 
     const newUser = {
-      name,
-      email,
-      password,
-      role,
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role,
       school: userSchool,
-      ...getUserCodeFieldIfExists(role, code),
+      ...getUserCodeFieldIfExists(role, data.code),
     };
 
     authRegister(newUser as unknown as User)
       .then(() => {
-        setName("");
-        setEmail("");
-        setRole("");
+        reset();
 
         enqueueNotification("Usuário criado com sucesso!", "success");
       })
@@ -97,41 +98,40 @@ export function CreateUser() {
         <h1 className="text-center text-2xl font-bold">
           Criar um Novo Usuário
         </h1>
-        <form className="flex flex-col gap-4 mt-4" onSubmit={handleCreateUser}>
+        <form
+          className="flex flex-col gap-4 mt-4"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Input
+            {...register("name", { required: "Nome obrigatório" })}
+            onInput={() => trigger("name")}
             label="Nome"
             type="text"
-            value={name}
-            onValueChange={setName}
-            isInvalid={isNameInvalid}
             placeholder="Insira seu nome"
-            errorMessage="Insira um nome válido"
+            isInvalid={!!errors.name}
+            errorMessage={errors.name?.message}
             isRequired
-          />
-          <Input
-            label="Email"
-            type="email"
-            value={email}
-            onValueChange={setEmail}
-            isInvalid={isEmailInvalid}
-            placeholder="Insira seu email"
-            errorMessage="Insira um email válido"
-            isRequired
-          />
-          <Input
-            label="Senha"
-            type="text"
-            value={password}
-            placeholder="Insira sua senha"
-            errorMessage="Deve conter ao menos 6 dígitos"
-            disabled
           />
 
+          <Input
+            {...register("email", {
+              required: "Email obrigatório",
+              pattern: emailPattern,
+            })}
+            onInput={() => trigger("email")}
+            label="Email"
+            type="email"
+            placeholder="Insira seu email"
+            isInvalid={!!errors.email}
+            errorMessage={errors.email?.message}
+            isRequired
+          />
+
+          <Input {...register("password")} label="Senha" type="text" disabled />
+
           <Select
+            {...register("role", { required: "Tipo de Usuário obrigatório" })}
             items={filterRoles}
-            selectedKeys={[role]}
-            isInvalid={isRoleInvalid}
-            onChange={(e) => setRole(e.target.value)}
             label="Tipo de Usuário"
             placeholder="Selecione o tipo de Usuário"
           >
@@ -140,9 +140,9 @@ export function CreateUser() {
 
           {isStudentOrTeacher(role) && (
             <Input
+              {...register("code")}
               label={getCodeLabel(role)}
               type="text"
-              value={code}
               disabled
             />
           )}

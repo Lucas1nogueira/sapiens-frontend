@@ -55,9 +55,9 @@ export function Header({ useDisclosure }: Props) {
         />
         <NavbarBrand>
           <Logo className="w-10 h-10" />
-          {userSchool && (
-            <p className="ml-2 text-xl font-bold">/ {userSchool.name}</p>
-          )}
+          <p className="ml-2 text-xl font-bold">
+            / {userSchool ? userSchool.name : "Secretaria"}
+          </p>
         </NavbarBrand>
       </NavbarContent>
 

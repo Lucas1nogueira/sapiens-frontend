@@ -26,10 +26,6 @@ const calendarOptions: Option[] = [
     key: "disciplines",
     label: "Disciplinas",
   },
-  {
-    key: "events",
-    label: "Eventos",
-  },
 ];
 
 export function Calendar() {

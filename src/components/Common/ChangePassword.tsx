@@ -1,83 +1,104 @@
 import { useAuth } from "@hooks/useAuth";
 import { Button, Card, Input } from "@nextui-org/react";
-import { useMemo, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { authChangePassword } from "services/authService";
 import { enqueueNotification } from "utils/enqueueNotification";
-import { isPasswordValid } from "utils/validations";
+
+type Inputs = {
+  lastPassword: string;
+  password: string;
+  confirmPassword: string;
+};
 
 export function ChangePassword() {
   const { user } = useAuth();
-  const [lastPassword, setLastPassword] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const isPasswordInvalid = useMemo(() => {
-    if (password === "") return false;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    trigger,
+    getValues,
+  } = useForm<Inputs>({
+    defaultValues: {
+      lastPassword: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-    return !isPasswordValid(password);
-  }, [password]);
-
-  const isLastPasswordInvalid = useMemo(() => {
-    if (lastPassword === "") return false;
-
-    return !isPasswordValid(lastPassword);
-  }, [lastPassword]);
-
-  const isConfirmPasswordInvalid = useMemo(() => {
-    if (confirmPassword === "") return false;
-
-    return password !== confirmPassword;
-  }, [confirmPassword, password]);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    authChangePassword(user?.email as string, lastPassword, password)
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    authChangePassword(user?.email as string, data.lastPassword, data.password)
       .then(() => {
-        setLastPassword("");
-        setPassword("");
-        setConfirmPassword("");
-
+        reset();
         enqueueNotification("Senha alterada com sucesso!", "success");
       })
       .catch((error) => {
-        enqueueNotification(error.response.data.message, "error");
+        enqueueNotification(error.response.data, "error");
       });
   };
 
   return (
     <Card shadow="none">
-      <form onSubmit={handleSubmit}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col gap-2 px-1"
+      >
         <Input
+          {...register("lastPassword", {
+            required: "Senha atual obrigatória",
+            minLength: {
+              value: 6,
+              message: "Senha atual deve conter pelo menos 6 caracteres",
+            },
+          })}
+          onKeyUp={() => trigger("lastPassword")}
+          isInvalid={!!errors.lastPassword}
+          errorMessage={errors.lastPassword?.message}
           color="primary"
           label="Senha Atual"
           type="password"
-          value={lastPassword}
-          onValueChange={setLastPassword}
-          errorMessage="Insira sua senha atual"
-          isInvalid={isLastPasswordInvalid}
           isRequired
         />
 
         <Input
+          {...register("password", {
+            required: "Nova senha obrigatória",
+            minLength: {
+              value: 6,
+              message: "Nova senha deve conter pelo menos 6 caracteres",
+            },
+          })}
+          onKeyUp={() => trigger("password")}
+          isInvalid={!!errors.password}
+          errorMessage={errors.password?.message}
           color="primary"
           label="Nova Senha"
           type="password"
-          value={password}
-          onValueChange={setPassword}
-          errorMessage="Deve conter ao menos 6 dígitos"
-          isInvalid={isPasswordInvalid}
           isRequired
         />
 
         <Input
+          {...register("confirmPassword", {
+            required: "Confirmar nova senha obrigatória",
+            minLength: {
+              value: 6,
+              message:
+                "Confirmar nova senha deve conter pelo menos 6 caracteres",
+            },
+            validate: (value) => {
+              if (value !== getValues("password")) {
+                return "As senhas devem ser iguais";
+              }
+            },
+          })}
+          onKeyUp={() => trigger("confirmPassword")}
+          isInvalid={!!errors.confirmPassword}
+          errorMessage={errors.confirmPassword?.message}
           color="primary"
           label="Confirmar Nova Senha"
           type="password"
-          value={confirmPassword}
-          onValueChange={setConfirmPassword}
-          errorMessage="As senhas devem ser iguais"
-          isInvalid={isConfirmPasswordInvalid}
           isRequired
         />
 

@@ -17,7 +17,7 @@ import { Lesson } from "types/lesson";
 import { ModalType } from "types/modal";
 import { formatDate } from "utils/formatDate";
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
-import { EditLesson } from "./EditLesson";
+import { ChangeLesson } from "./ChangeLesson";
 import { enqueueNotification } from "utils/enqueueNotification";
 
 const columns = [
@@ -68,7 +68,7 @@ export function TableLesson({
     handleTabChange("attendance", "Registro de Frequências");
 
   const handleEdit = (lesson: Lesson) => {
-    setContent(<EditLesson discipline={discipline} lesson={lesson} />);
+    setContent(<ChangeLesson discipline={discipline} lesson={lesson} />);
     disclosure.onOpenChange();
   };
 

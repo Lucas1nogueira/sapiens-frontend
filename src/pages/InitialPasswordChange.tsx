@@ -1,34 +1,39 @@
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input } from "@nextui-org/react";
-import { useMemo, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { authChangePassword } from "services/authService";
 import { enqueueNotification } from "utils/enqueueNotification";
-import { isPasswordValid } from "utils/validations";
+
+type Inputs = {
+  password: string;
+  confirmPassword: string;
+};
 
 export function InitialPasswordChange() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const { user, handleLogin } = useAuth();
 
-  const isPasswordInvalid = useMemo(() => {
-    if (password === "") return false;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    trigger,
+    getValues,
+  } = useForm<Inputs>({
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
+  });
 
-    return !isPasswordValid(password);
-  }, [password]);
-
-  const isConfirmPasswordInvalid = useMemo(() => {
-    if (confirmPassword === "" && password === "") return false;
-
-    return password !== confirmPassword;
-  }, [confirmPassword, password]);
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    authChangePassword(user?.email as string, password, confirmPassword)
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    authChangePassword(
+      user?.email as string,
+      data.password,
+      data.confirmPassword
+    )
       .then((response) => {
-        setConfirmPassword("");
-        setPassword("");
+        reset();
 
         handleLogin({ ...user, ...response.data });
       })
@@ -45,33 +50,43 @@ export function InitialPasswordChange() {
       </div>
 
       <form
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col gap-2 max-w-sm w-full"
       >
         <Input
+          {...register("password", {
+            required: "Senha obrigatória",
+            minLength: {
+              value: 6,
+              message: "A senha deve ter pelo menos 6 caracteres",
+            },
+          })}
           type="password"
-          value={password}
-          onValueChange={setPassword}
-          isInvalid={isPasswordInvalid}
+          onInput={() => trigger("password")}
+          isInvalid={!!errors.password}
+          errorMessage={errors.password?.message}
           label="Nova Senha"
           placeholder="Insira sua nova senha"
-          errorMessage="A senha deve ter pelo menos 6 caracteres"
         />
         <Input
+          {...register("confirmPassword", {
+            required: "Confirme sua nova senha",
+            validate: (value) =>
+              value === getValues("password") || "As senhas devem ser iguais",
+          })}
+          onBlur={() => trigger("confirmPassword")}
           type="password"
-          value={confirmPassword}
-          onValueChange={setConfirmPassword}
-          isInvalid={isConfirmPasswordInvalid}
+          isInvalid={!!errors.confirmPassword}
+          errorMessage={errors.confirmPassword?.message}
           label="Confirmar Senha"
           placeholder="Confirme sua nova senha"
-          errorMessage="As senhas devem ser iguais"
         />
 
         <Button
           type="submit"
           color="primary"
           className="disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={isPasswordInvalid || isConfirmPasswordInvalid}
+          disabled={!!errors.password || !!errors.confirmPassword}
         >
           Alterar Senha
         </Button>

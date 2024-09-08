@@ -59,7 +59,7 @@ export const NotificationProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <NotificationContext.Provider value={{ enqueueNotification }}>
       {children}
-      <div className="fixed top-5 right-5 z-50">
+      <div className="fixed top-5 right-5 z-50" style={{ zIndex: 9999 }}>
         {currentNotification && (
           <NotificationCard
             message={currentNotification.message}

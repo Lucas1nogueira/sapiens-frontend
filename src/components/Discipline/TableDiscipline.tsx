@@ -21,11 +21,11 @@ import {
   findAllDisciplines,
   findAllDisciplinesBySchool,
 } from "services/disciplineService";
-import { EditDiscipline } from "@components/Admin/EditDiscipline";
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
 import { useAuth } from "@hooks/useAuth";
 import { rolesEnum } from "utils/roles";
 import { enqueueNotification } from "utils/enqueueNotification";
+import { ChangeDiscipline } from "@components/Discipline/ChangeDiscipline";
 
 const columns = [
   { key: "name", label: "Nome" },
@@ -92,7 +92,7 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   };
 
   const handleEdit = (discipline: Discipline) => {
-    setContent(<EditDiscipline discipline={discipline} />);
+    setContent(<ChangeDiscipline discipline={discipline} />);
     disclosure.onOpenChange();
   };
 
@@ -103,9 +103,7 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
 
         enqueueNotification("Disciplina excluída com sucesso!", "success");
       })
-      .catch((error) =>
-        enqueueNotification(error.response.data.message, "error")
-      );
+      .catch((error) => enqueueNotification(error.response.data, "error"));
   };
 
   return (

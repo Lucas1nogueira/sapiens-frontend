@@ -2,9 +2,9 @@ import { Discipline } from "types/discipline";
 import { TableLesson } from "../../Lesson/TableLesson";
 import { CustomTableHeader } from "@components/Common/CustomTableHeader";
 import { useState } from "react";
-import { CreateLesson } from "@components/Lesson/CreateLesson";
 import { CustomModal } from "@components/Common/CustomModal";
 import { useDisclosure } from "@nextui-org/react";
+import { ChangeLesson } from "@components/Lesson/ChangeLesson";
 
 type Props = {
   discipline: Discipline;
@@ -17,7 +17,7 @@ export function LessonTab({ discipline, handleTabChange }: Props) {
   const disclosure = useDisclosure();
 
   const handleCreateLesson = () => {
-    setContent(<CreateLesson discipline={discipline} />);
+    setContent(<ChangeLesson discipline={discipline} />);
     disclosure.onOpenChange();
   };
 
