@@ -23,7 +23,6 @@ import {
 } from "services/disciplineService";
 import { ConfirmPopover } from "@components/Common/ConfirmPopover";
 import { useAuth } from "@hooks/useAuth";
-import { rolesEnum } from "utils/roles";
 import { enqueueNotification } from "utils/enqueueNotification";
 import { ChangeDiscipline } from "@components/Discipline/ChangeDiscipline";
 
@@ -51,19 +50,18 @@ export function TableDiscipline({ filterValue, customModalDisclosure }: Props) {
   const disclosure = useDisclosure();
 
   useEffect(() => {
-    // TODO: MUDAR A FORMA DE BUSCAR DEPOIS PARA TER UMA SELECT POR ESCOLA.
-    if (userSchool && user?.role === rolesEnum.ADMIN) {
-      findAllDisciplinesBySchool(userSchool?.id as string)
-        .then((response) => setDisciplines(response.data))
-        .catch((error) => console.log(error));
+    // The super admin can see all disciplines and the school admin can see only their disciplines
+    if (userSchool) {
+      if (userSchool.name === "Todas as Escolas") {
+        findAllDisciplines()
+          .then((response) => setDisciplines(response.data))
+          .catch((error) => console.log(error));
+      } else {
+        findAllDisciplinesBySchool(userSchool?.id as string)
+          .then((response) => setDisciplines(response.data))
+          .catch((error) => console.log(error));
+      }
     }
-
-    if (user?.role === rolesEnum.SUPERADMIN) {
-      findAllDisciplines()
-        .then((response) => setDisciplines(response.data))
-        .catch((error) => console.log(error));
-    }
-    return () => {};
   }, [disclosure.isOpen, customModalDisclosure.isOpen, userSchool, user]);
 
   const items = useMemo(() => {

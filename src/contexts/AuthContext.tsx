@@ -22,6 +22,7 @@ export interface AuthContextType {
   userSchool: School | null;
   handleLogout: () => void;
   handleLogin: (user: User) => void;
+  setUserSchool: (school: School) => void;
   loading: boolean;
 }
 
@@ -99,6 +100,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         loading,
         handleLogin,
         handleLogout,
+        setUserSchool,
       }}
     >
       {children}

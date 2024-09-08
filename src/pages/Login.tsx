@@ -5,6 +5,7 @@ import { authLogin } from "services/authService";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { emailPattern } from "utils/validations";
 import logo from "@assets/logo.png";
+import { enqueueNotification } from "utils/enqueueNotification";
 
 type Inputs = {
   email: string;
@@ -35,7 +36,7 @@ export function Login() {
         reset();
       })
       .catch((error) => {
-        console.log(error.response.data);
+        enqueueNotification(error.response.data, "error");
         disclosure.onOpenChange();
       });
   };

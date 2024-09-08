@@ -60,18 +60,6 @@ export function TableSchool({ filterValue, customModalDisclosure }: Props) {
     disclosure.onOpenChange();
   };
 
-  const handleDelete = (school: School) => {
-    console.log(school);
-    // deleteSchool(school.id)
-    //   .then(() => {
-    //     setSuccess("Escola excluída com sucesso!");
-    //     setSchools((prevSchools) =>
-    //       prevSchools.filter((s) => s.id !== school.id)
-    //     );
-    //   })
-    //   .catch((error) => setError(error.response.data));
-  };
-
   return (
     <>
       <Table aria-label="Table with all schools">
@@ -103,9 +91,13 @@ export function TableSchool({ filterValue, customModalDisclosure }: Props) {
                       <Icon icon="material-symbols:delete" width={30} />
                     </Button>
                   }
-                  title="Tem certeza que deseja excluir a escola?"
+                  title="Ainda não é possível excluir uma escola!"
                   confirmAction={
-                    <Button color="danger" onClick={() => handleDelete(school)}>
+                    <Button
+                      color="danger"
+                      className="disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled
+                    >
                       Excluir
                     </Button>
                   }

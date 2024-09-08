@@ -23,7 +23,8 @@ import {
   findSchoolClassBySchoolId,
 } from "services/schoolClassService";
 import { useAuth } from "@hooks/useAuth";
-import { rolesEnum } from "utils/roles";
+import { enqueueNotification } from "utils/enqueueNotification";
+import { ConfirmPopover } from "@components/Common/ConfirmPopover";
 
 const columns = [
   { key: "code", label: "Código" },
@@ -32,6 +33,8 @@ const columns = [
   { key: "teachers", label: "Professores" },
   { key: "addStudents", label: "Adicionar Alunos" },
   { key: "addDiscipline", label: "Adicionar Disciplinas" },
+  { key: "edit", label: "Editar" },
+  { key: "delete", label: "Excluir" },
 ];
 
 type Props = {
@@ -49,19 +52,18 @@ export function TableSchoolClass({
   const disclosure = useDisclosure();
 
   useEffect(() => {
-    // TODO: MUDAR A FORMA DE BUSCAR DEPOIS PARA TER UMA SELECT POR ESCOLA.
-    if (userSchool && user?.role === rolesEnum.ADMIN) {
-      findSchoolClassBySchoolId(userSchool.id)
-        .then((response) => setSchoolClasses(response.data))
-        .catch((error) => console.log(error));
+    // The super admin can see all school classes and the school admin can see only their school classes
+    if (userSchool) {
+      if (userSchool.name === "Todas as Escolas") {
+        findAllSchoolClasses()
+          .then((response) => setSchoolClasses(response.data))
+          .catch((error) => console.log(error));
+      } else {
+        findSchoolClassBySchoolId(userSchool.id)
+          .then((response) => setSchoolClasses(response.data))
+          .catch((error) => console.log(error));
+      }
     }
-
-    if (user?.role === rolesEnum.SUPERADMIN) {
-      findAllSchoolClasses()
-        .then((response) => setSchoolClasses(response.data))
-        .catch((error) => console.log(error));
-    }
-    return () => {};
   }, [customModalDisclosure.isOpen, disclosure.isOpen, userSchool, user]);
 
   const items = useMemo(() => {
@@ -160,6 +162,37 @@ export function TableSchoolClass({
                 >
                   <Icon icon="material-symbols:add" width={22} />
                 </Button>
+              </TableCell>
+              <TableCell>
+                <Button
+                  color="primary"
+                  variant="ghost"
+                  onClick={() =>
+                    enqueueNotification("Funcionalidade indisponível!", "info")
+                  }
+                  isIconOnly
+                >
+                  <Icon icon="material-symbols:edit" width={30} />
+                </Button>
+              </TableCell>
+              <TableCell>
+                <ConfirmPopover
+                  trigger={
+                    <Button color="danger" variant="ghost" isIconOnly>
+                      <Icon icon="material-symbols:delete" width={30} />
+                    </Button>
+                  }
+                  title="Ainda não é possível excluir uma turma!"
+                  confirmAction={
+                    <Button
+                      color="danger"
+                      className="disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled
+                    >
+                      Excluir
+                    </Button>
+                  }
+                />
               </TableCell>
             </TableRow>
           )}

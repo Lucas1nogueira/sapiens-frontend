@@ -45,7 +45,7 @@ export const findDisciplineByName = async (name: string) => {
 };
 
 export const findDisciplineByTeacherId = async (id: string) => {
-  const response = await api.get<Discipline>(`discipline/teacher/${id}`);
+  const response = await api.get<Discipline[]>(`discipline/teacher/${id}`);
   return response;
 };
 

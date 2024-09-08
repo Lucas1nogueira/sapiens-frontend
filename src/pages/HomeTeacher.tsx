@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import { SideMenu } from "@components/Common/SideMenu";
 import { Discipline } from "types/discipline";
 import { useAuth } from "@hooks/useAuth";
-import { api } from "services/api";
 import { DisciplinesSchedule } from "@components/Discipline/DisciplinesSchedule";
+import { findDisciplineByTeacherId } from "services/disciplineService";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -34,10 +34,12 @@ export function HomeTeacher() {
   const [selectedTab, setSelectedTab] = useState(0);
 
   useEffect(() => {
-    api
-      .get<Discipline[]>(`discipline/teacher/${user?.id}`)
-      .then((response) => setDisciplines(response.data));
-  }, [user?.id]);
+    if (user) {
+      findDisciplineByTeacherId(user.id)
+        .then((response) => setDisciplines(response.data))
+        .catch((error) => console.log(error));
+    }
+  }, [user]);
 
   const tabs = [
     <TeacherSchoolClass disciplines={disciplines} />,

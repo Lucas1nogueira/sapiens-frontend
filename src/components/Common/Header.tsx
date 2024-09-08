@@ -14,6 +14,7 @@ import { ModalType } from "types/modal";
 import { Logo } from "@components/Common/Logo";
 import { Icon } from "@iconify/react";
 import { useSideMenu } from "@hooks/useSideMenu";
+import { rolesEnum } from "utils/roles";
 
 interface Props {
   useDisclosure: ModalType;
@@ -22,6 +23,13 @@ interface Props {
 export function Header({ useDisclosure }: Props) {
   const { user, handleLogout, userSchool } = useAuth();
   const { isMenuOpen, setIsMenuOpen } = useSideMenu();
+
+  const headerTitle = () => {
+    if (user?.role === rolesEnum.SUPERADMIN) {
+      return `/ Secretaria`;
+    }
+    return `/ ${userSchool ? userSchool.name : "Sem Escola"}`;
+  };
 
   return (
     <Navbar
@@ -55,9 +63,7 @@ export function Header({ useDisclosure }: Props) {
         />
         <NavbarBrand>
           <Logo className="w-10 h-10" />
-          <p className="ml-2 text-xl font-bold">
-            / {userSchool ? userSchool.name : "Secretaria"}
-          </p>
+          <p className="ml-2 text-xl font-bold">{headerTitle()}</p>
         </NavbarBrand>
       </NavbarContent>
 

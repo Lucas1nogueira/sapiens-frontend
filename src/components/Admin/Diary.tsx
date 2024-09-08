@@ -1,20 +1,33 @@
 import { DisciplineCard } from "@components/Discipline/DisciplineCard";
 import { SchoolClassDiscipline } from "@components/Teacher/SchoolClassDiscipline";
+import { useAuth } from "@hooks/useAuth";
 import { LoadingPage } from "@pages/LoadingPage";
 import { useEffect, useState } from "react";
-import { findAllDisciplines } from "services/disciplineService";
+import {
+  findAllDisciplines,
+  findAllDisciplinesBySchool,
+} from "services/disciplineService";
 import { Discipline } from "types/discipline";
 import { SchoolClass } from "types/schoolClass";
 
 export function Diary() {
+  const { userSchool } = useAuth();
   const [disciplines, setDisciplines] = useState<Discipline[] | null>(null);
   const [discipline, setDiscipline] = useState<Discipline | null>(null);
 
   useEffect(() => {
-    findAllDisciplines()
-      .then((response) => setDisciplines(response.data))
-      .catch((error) => console.log(error.response.data));
-  }, []);
+    if (userSchool) {
+      if (userSchool.name === "Todas as Escolas") {
+        findAllDisciplines()
+          .then((response) => setDisciplines(response.data))
+          .catch((error) => console.log(error));
+      } else {
+        findAllDisciplinesBySchool(userSchool?.id as string)
+          .then((response) => setDisciplines(response.data))
+          .catch((error) => console.log(error));
+      }
+    }
+  }, [userSchool]);
 
   if (!disciplines) return <LoadingPage />;
 
