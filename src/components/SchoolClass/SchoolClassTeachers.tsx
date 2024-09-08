@@ -33,7 +33,13 @@ export function SchoolClassTeachers({ schoolClass }: Props) {
   return (
     <>
       <h1>Professores da Turma: {schoolClass.code}</h1>
-      <Table aria-label="Tabble with all teachers">
+      <Table
+        aria-label="Tabble with all teachers"
+        classNames={{
+          base: "max-h-[300px] overflow-auto",
+          wrapper: "rounded-none",
+        }}
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>
@@ -41,9 +47,9 @@ export function SchoolClassTeachers({ schoolClass }: Props) {
         </TableHeader>
         <TableBody items={disciplines}>
           {(discipline) => (
-            <TableRow key={discipline.teacher.code}>
-              <TableCell>{discipline.teacher.name}</TableCell>
-              <TableCell>{discipline.teacher.code}</TableCell>
+            <TableRow key={discipline.teacher?.code}>
+              <TableCell>{discipline.teacher?.name} </TableCell>
+              <TableCell>{discipline.teacher?.code}</TableCell>
             </TableRow>
           )}
         </TableBody>

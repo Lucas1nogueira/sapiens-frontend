@@ -50,6 +50,6 @@ export const findDisciplineByTeacherId = async (id: string) => {
 };
 
 export const findDisciplineBySchoolClassCode = async (code: string) => {
-  const response = await api.get<Discipline>(`discipline/class/${code}`);
+  const response = await api.get<Discipline[]>(`discipline/class/${code}`);
   return response;
 };

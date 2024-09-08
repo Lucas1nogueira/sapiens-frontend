@@ -2,12 +2,8 @@ import { CreateSchoolClass } from "@components/Admin/CreateSchoolClass";
 import { CustomModal } from "@components/Common/CustomModal";
 import { TableDiscipline } from "@components/Discipline/TableDiscipline";
 import { TableUsers } from "@components/Admin/TableUsers";
-import {
-  Autocomplete,
-  AutocompleteItem,
-  useDisclosure,
-} from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useDisclosure } from "@nextui-org/react";
+import { useState } from "react";
 import { CreateUser } from "@components/Admin/CreateUser";
 import { Header } from "@components/Common/Header";
 import { CustomTableHeader } from "@components/Common/CustomTableHeader";
@@ -21,9 +17,6 @@ import { TableSchool } from "@components/School/TableSchool";
 import { Secretariat } from "@components/SuperAdmin/Secretariat";
 import { ChangeDiscipline } from "@components/Discipline/ChangeDiscipline";
 import { ChangeSchool } from "@components/School/ChangeSchool";
-import { School } from "types/school";
-import { findAllSchools } from "services/schoolService";
-import { useAuth } from "@hooks/useAuth";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -173,8 +166,6 @@ export function HomeSuperAdmin() {
       <Header useDisclosure={disclosure} />
       <SideMenu menuItems={menuItems} />
       <div className="max-w-5xl mx-auto p-4">
-        <FilterBySchool />
-
         {getComponentForTab(
           selectedTab,
           filterValue,
@@ -185,51 +176,6 @@ export function HomeSuperAdmin() {
 
         <CustomModal useDisclosure={customModalDisclosure} content={content} />
       </div>
-    </div>
-  );
-}
-
-export function FilterBySchool() {
-  const { userSchool, setUserSchool } = useAuth();
-  const [schools, setSchools] = useState<School[]>([]);
-
-  useEffect(() => {
-    findAllSchools()
-      .then((response) => {
-        const allSchools = response.data;
-
-        allSchools.unshift({
-          id: Date.now().toString(),
-          name: "Todas as Escolas",
-        } as School);
-
-        setUserSchool(allSchools[0]);
-        setSchools(allSchools);
-      })
-      .catch((error) => console.log(error));
-  }, [setUserSchool]);
-
-  return (
-    <div>
-      <Autocomplete
-        label="Escolha uma Escola"
-        variant="bordered"
-        defaultItems={schools}
-        placeholder="Buscar uma Escola"
-        className="max-w-xs"
-        selectedKey={userSchool ? userSchool.id.toString() : ""}
-        onSelectionChange={(key) => {
-          const school = schools.find((s) => s.id == key);
-
-          if (school) {
-            setUserSchool(school);
-          }
-        }}
-      >
-        {(item) => (
-          <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
-        )}
-      </Autocomplete>
     </div>
   );
 }

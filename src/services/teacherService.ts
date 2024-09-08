@@ -27,6 +27,6 @@ export const findTeacherByCode = async (code: string) => {
 };
 
 export const findTeacherBySchoolId = async (id: string) => {
-  const response = await api.get<Teacher>(`teacher/school/${id}`);
+  const response = await api.get<Teacher[]>(`teacher/school/${id}`);
   return response;
 };

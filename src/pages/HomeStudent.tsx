@@ -9,10 +9,11 @@ import { useEffect, useState } from "react";
 import { SideMenu } from "@components/Common/SideMenu";
 import { useAuth } from "@hooks/useAuth";
 import { Discipline } from "types/discipline";
-import { api } from "services/api";
 import { DisciplinesSchedule } from "@components/Discipline/DisciplinesSchedule";
 import { SchoolClass } from "types/schoolClass";
 import { LoadingPage } from "./LoadingPage";
+import { findSchoolClassStudentId } from "services/schoolClassService";
+import { findDisciplineBySchoolClassCode } from "services/disciplineService";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -41,26 +42,26 @@ export function HomeStudent() {
   const [loadingDisciplines, setLoadingDisciplines] = useState(true);
 
   useEffect(() => {
-    if (schoolClass.code) {
-      api
-        .get<Discipline[]>(`discipline/class/${schoolClass.code}`)
+    if (schoolClass) {
+      findDisciplineBySchoolClassCode(schoolClass.code)
         .then((response) => {
           setDisciplines(response.data);
         })
         .catch((error) => console.log(error.response.data))
         .finally(() => setLoadingDisciplines(false));
     }
-  }, [schoolClass.code]);
+  }, [schoolClass]);
 
   useEffect(() => {
-    api
-      .get<SchoolClass>(`school-class/student/${user?.id}`)
-      .then((response) => {
-        setSchoolClass(response.data);
-      })
-      .catch((error) => console.log(error.response.data))
-      .finally(() => setLoadingClass(false));
-  }, [user?.id]);
+    if (user) {
+      findSchoolClassStudentId(user.id)
+        .then((response) => {
+          setSchoolClass(response.data);
+        })
+        .catch((error) => console.log(error.response.data))
+        .finally(() => setLoadingClass(false));
+    }
+  }, [user]);
 
   if (loadingClass && loadingDisciplines) return <LoadingPage />;
 

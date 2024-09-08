@@ -12,7 +12,8 @@ import {
 } from "@nextui-org/react";
 import { LoadingPage } from "@pages/LoadingPage";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "services/api";
+import { updateDiscipline } from "services/disciplineService";
+import { findTeacherBySchoolId } from "services/teacherService";
 import { Discipline } from "types/discipline";
 import { Teacher } from "types/teacher";
 import { enqueueNotification } from "utils/enqueueNotification";
@@ -60,26 +61,22 @@ export function AssignTeacher({ discipline }: Props) {
       } as Teacher,
     };
 
-    api
-      .put("discipline/update", newDiscipline)
+    updateDiscipline(newDiscipline)
       .then(() => {
         enqueueNotification("Professor atribuido com sucesso!", "success");
       })
       .catch((error) => {
-        enqueueNotification(error.response.data.message, "error");
+        enqueueNotification(error.response.data, "error");
       });
   };
 
   useEffect(() => {
-    api
-      .get<Teacher[]>("teacher/all")
-      .then((response) => {
-        setTeachers(response.data);
-      })
+    findTeacherBySchoolId(discipline.school.id)
+      .then((response) => setTeachers(response.data))
       .catch((error) => {
         console.log(error.response.data);
       });
-  }, []);
+  }, [discipline.school.id]);
 
   if (!teachers) return <LoadingPage />;
 
@@ -96,7 +93,6 @@ export function AssignTeacher({ discipline }: Props) {
 
           <Table
             aria-label="Tabble with all teachers"
-            className="min-h-96"
             topContent={
               <Input
                 type="text"
@@ -120,6 +116,10 @@ export function AssignTeacher({ discipline }: Props) {
               const [value] = keys;
               const id = value?.toString() || "";
               setTeacherId(id);
+            }}
+            classNames={{
+              base: "max-h-[300px] overflow-auto",
+              wrapper: "rounded-none",
             }}
           >
             <TableHeader>

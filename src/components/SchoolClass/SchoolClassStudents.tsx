@@ -33,7 +33,13 @@ export function SchoolClassStudents({ schoolClass }: Props) {
   return (
     <>
       <h1>Alunos da Turma: {schoolClass.code}</h1>
-      <Table aria-label="Tabble with all students">
+      <Table
+        aria-label="Tabble with all students"
+        classNames={{
+          base: "max-h-[300px] overflow-auto",
+          wrapper: "rounded-none",
+        }}
+      >
         <TableHeader columns={columns}>
           {(column) => (
             <TableColumn key={column.key}>{column.label}</TableColumn>

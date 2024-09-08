@@ -34,6 +34,6 @@ export const findStudentBySchoolClassCode = async (code: string) => {
 };
 
 export const findStudentBySchoolId = async (id: string) => {
-  const response = await api.get<Student>(`student/school/${id}`);
+  const response = await api.get<Student[]>(`student/school/${id}`);
   return response;
 };

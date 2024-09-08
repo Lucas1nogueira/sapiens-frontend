@@ -114,7 +114,6 @@ export function AssignStudents({ schoolClass }: Props) {
 
           <Table
             aria-label="Tabble with all students"
-            className="min-h-96"
             topContent={
               <Input
                 type="text"
@@ -135,6 +134,10 @@ export function AssignStudents({ schoolClass }: Props) {
             onSelectionChange={setSelectedKeys}
             color="primary"
             selectionMode="multiple"
+            classNames={{
+              base: "max-h-[300px] overflow-auto",
+              wrapper: "rounded-none",
+            }}
           >
             <TableHeader>
               <TableColumn key="name">Nome</TableColumn>
