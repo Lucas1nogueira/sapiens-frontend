@@ -61,7 +61,7 @@ export function NotificationCard({
           />
         </div>
         <div className="flex-1">
-          <p className="text-sm mb-2 text-justify">{messageNormalized}</p>
+          <p className="text-sm mb-2 text-left">{messageNormalized}</p>
         </div>
         {onClose && (
           <Button

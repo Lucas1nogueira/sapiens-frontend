@@ -1,7 +1,9 @@
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { LoadingPage } from "@pages/LoadingPage";
 import { useEffect, useState } from "react";
-import { api } from "services/api";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { findTeacherByEmail, updateTeacher } from "services/teacherService";
 import { Teacher } from "types/teacher";
 import { enqueueNotification } from "utils/enqueueNotification";
 
@@ -11,98 +13,82 @@ const sexTypes = [
   { key: "WOMAN", label: "Feminino" },
 ];
 
+type Inputs = {
+  sex: string;
+  name: string;
+  age: number;
+  code: string;
+};
+
 export function TeacherProfile() {
   const { user } = useAuth();
+  const [teacher, setTeacher] = useState<Teacher | null>(null);
 
-  const [teacher, setTeacher] = useState({} as Teacher);
-  const [sex, setSex] = useState(teacher?.sex ?? "BLANK");
-  const [name, setName] = useState(teacher?.name ?? "");
-  const [email, setEmail] = useState(teacher?.email ?? "");
-  const [age, setAge] = useState(teacher?.age ?? 0);
-  const [code, setCode] = useState(teacher?.code ?? "");
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+    setValue,
+  } = useForm<Inputs>();
 
-  useEffect(() => {
-    setSex(teacher?.sex ?? "BLANK");
-    setName(teacher?.name ?? "");
-    setEmail(teacher?.email ?? "");
-    setAge(teacher?.age ?? 0);
-    setCode(teacher?.code ?? "");
-  }, [teacher]);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    if (teacher) {
+      const newTeacher: Teacher = {
+        ...teacher,
+        name: data.name,
+        age: data.age,
+        sex: data.sex,
+      };
 
-  useEffect(() => {
-    if (user && isFirstLoad) {
-      api
-        .get<Teacher>(`teacher/email/${user.email}`)
-        .then((response) => {
-          const { id, name, email, age, sex, password, code } = response.data;
-
-          setTeacher({
-            ...user,
-            id,
-            name,
-            email,
-            age,
-            sex,
-            password,
-            code,
-          } as Teacher);
+      updateTeacher(newTeacher)
+        .then(() => {
+          enqueueNotification(
+            "Informações atualizadas com sucesso!",
+            "success"
+          );
         })
         .catch((error) => {
           enqueueNotification(error.response.data, "error");
-        })
-        .finally(() => {
-          setIsFirstLoad(false);
         });
     }
-  }, [user, isFirstLoad]);
-
-  const handleUpdateData = () => {
-    const newTeacher = { ...teacher, name, email, age, sex };
-
-    api
-      .put("teacher/update", newTeacher)
-      .then((response) => {
-        const { id, name, email, age, sex, password, code } = response.data;
-
-        setTeacher({
-          ...user,
-          id,
-          name,
-          email,
-          age,
-          sex,
-          password,
-          code,
-        } as Teacher);
-
-        enqueueNotification("Informações atualizadas com sucesso!", "success");
-      })
-      .catch((error) => {
-        enqueueNotification(error.response.data, "error");
-      });
   };
 
+  useEffect(() => {
+    if (user) {
+      findTeacherByEmail(user.email)
+        .then((response) => {
+          setTeacher(response.data);
+
+          const { name, age, sex, code } = response.data;
+          setValue("name", name);
+          setValue("age", age);
+          setValue("sex", sex);
+          setValue("code", code);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    }
+  }, [user, setValue]);
+
+  if (!teacher) return <LoadingPage />;
+
   return (
-    <div className="flex flex-col gap-4">
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <Input
+        {...register("name", { required: "Nome obrigatório" })}
+        onKeyUp={() => trigger("name")}
+        errorMessage={errors.name?.message}
+        isInvalid={!!errors.name}
         color="primary"
         label="Nome"
-        value={name}
-        onValueChange={setName}
-      />
-      <Input
-        color="primary"
-        label="Email"
-        value={email}
-        onValueChange={setEmail}
       />
 
       <Select
+        {...register("sex")}
         color="primary"
         items={sexTypes}
-        selectedKeys={[sex]}
-        onChange={(e) => setSex(e.target.value)}
         label="Sexo"
         placeholder="Selecione o sexo"
       >
@@ -110,15 +96,22 @@ export function TeacherProfile() {
       </Select>
 
       <Input
+        {...register("age", {
+          required: "Idade obrigatória",
+          valueAsNumber: true,
+        })}
+        onKeyUp={() => trigger("age")}
+        errorMessage={errors.age?.message}
+        isInvalid={!!errors.age}
         color="primary"
         label="Idade"
-        value={String(age)}
-        onValueChange={(value) => setAge(Number(value))}
       />
-      <Input label="Código" color="warning" value={code} disabled />
-      <Button color="primary" onClick={handleUpdateData}>
+
+      <Input {...register("code")} label="Código" color="warning" disabled />
+
+      <Button color="primary" type="submit">
         Atualizar Informações
       </Button>
-    </div>
+    </form>
   );
 }

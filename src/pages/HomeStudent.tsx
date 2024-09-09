@@ -14,6 +14,7 @@ import { SchoolClass } from "types/schoolClass";
 import { LoadingPage } from "./LoadingPage";
 import { findSchoolClassStudentId } from "services/schoolClassService";
 import { findDisciplineBySchoolClassCode } from "services/disciplineService";
+import { Report } from "@components/Student/Report";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -27,6 +28,11 @@ const generateMenuItems = (
     title: "Horários",
     icon: <Icon icon="uis:schedule" />,
     onClick: () => setSelectedTab(1),
+  },
+  {
+    title: "Boletim",
+    icon: <Icon icon="fluent-mdl2:report-library" />,
+    onClick: () => setSelectedTab(2),
   },
 ];
 
@@ -66,8 +72,9 @@ export function HomeStudent() {
   if (loadingClass && loadingDisciplines) return <LoadingPage />;
 
   const tabs = [
-    <StudentSchoolClass schoolClass={schoolClass} />,
+    <StudentSchoolClass schoolClass={schoolClass} disciplines={disciplines} />,
     <DisciplinesSchedule disciplines={disciplines} />,
+    <Report />,
   ];
 
   return (

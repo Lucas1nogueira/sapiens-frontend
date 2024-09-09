@@ -2,7 +2,7 @@ import { useAuth } from "@hooks/useAuth";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
 import { useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { authRegister } from "services/authService";
+import { authRegister, authUpdateUserRistred } from "services/authService";
 import { User, UserRole } from "types/user";
 import { enqueueNotification } from "utils/enqueueNotification";
 import { generateCode, generatePassword } from "utils/generateValues";
@@ -38,8 +38,12 @@ type Inputs = {
   code: string;
 };
 
-export function CreateUser() {
-  const { user, userSchool } = useAuth();
+type Props = {
+  userToEdit?: User;
+};
+
+export function ChangeUser({ userToEdit }: Props) {
+  const { user } = useAuth();
   const [role, setRole] = useState<UserRole>("ADMIN");
 
   const filterRoles = useMemo(() => {
@@ -57,9 +61,9 @@ export function CreateUser() {
     watch,
   } = useForm<Inputs>({
     defaultValues: {
-      name: "",
-      email: "",
-      role: "ADMIN",
+      name: userToEdit?.name ?? "",
+      email: userToEdit?.email ?? "",
+      role: userToEdit?.role ?? "ADMIN",
       code: generateCode(),
       password: generatePassword(),
     },
@@ -72,12 +76,36 @@ export function CreateUser() {
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (data.role === "GUARDIAN" || data.role === "CORDINATOR") return;
 
-    const newUser = {
+    if (userToEdit) {
+      const updatedUser: User = {
+        ...userToEdit,
+        name: data.name,
+        role: data.role as UserRole,
+        password: data.password,
+        ...getUserCodeFieldIfExists(data.role, data.code),
+      };
+
+      authUpdateUserRistred(updatedUser)
+        .then(() => {
+          reset();
+
+          enqueueNotification("Usuário atualizado com sucesso!", "success");
+        })
+        .catch((error) => {
+          enqueueNotification(error.response.data, "error");
+        });
+
+      return;
+    }
+
+    const newUser: User = {
+      id: null as unknown as string,
       name: data.name,
       email: data.email,
       password: data.password,
-      role: data.role,
-      school: userSchool,
+      role: data.role as UserRole,
+      firstLogin: true,
+      token: null as unknown as string,
       ...getUserCodeFieldIfExists(role, data.code),
     };
 
@@ -96,7 +124,7 @@ export function CreateUser() {
     <div className="flex justify-center items-center">
       <div className="w-full p-4">
         <h1 className="text-center text-2xl font-bold">
-          Criar um Novo Usuário
+          {userToEdit ? "Editar" : "Criar"} Usuário
         </h1>
         <form
           className="flex flex-col gap-4 mt-4"
@@ -104,7 +132,7 @@ export function CreateUser() {
         >
           <Input
             {...register("name", { required: "Nome obrigatório" })}
-            onInput={() => trigger("name")}
+            onKeyUp={() => trigger("name")}
             label="Nome"
             type="text"
             placeholder="Insira seu nome"
@@ -118,7 +146,7 @@ export function CreateUser() {
               required: "Email obrigatório",
               pattern: emailPattern,
             })}
-            onInput={() => trigger("email")}
+            onKeyUp={() => trigger("email")}
             label="Email"
             type="email"
             placeholder="Insira seu email"
@@ -148,7 +176,7 @@ export function CreateUser() {
           )}
 
           <Button type="submit" color="primary" className="w-full rounded-md">
-            Criar
+            Salvar Alterações
           </Button>
         </form>
       </div>

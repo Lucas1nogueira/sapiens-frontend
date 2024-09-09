@@ -4,7 +4,7 @@ import { TableDiscipline } from "@components/Discipline/TableDiscipline";
 import { TableUsers } from "@components/Admin/TableUsers";
 import { useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
-import { CreateUser } from "@components/Admin/CreateUser";
+import { ChangeUser } from "@components/Admin/ChangeUser";
 import { Header } from "@components/Common/Header";
 import { CustomTableHeader } from "@components/Common/CustomTableHeader";
 import { TableSchoolClass } from "@components/SchoolClass/TableSchoolClass";
@@ -108,7 +108,7 @@ const getComponentForTab = (
       content: <Secretariat />,
     },
     {
-      content: <CreateUser />,
+      content: <ChangeUser />,
       TableComponent: TableUsers,
     },
     {
@@ -150,7 +150,7 @@ const getComponentForTab = (
 export function HomeSuperAdmin() {
   const disclosure = useDisclosure();
   const customModalDisclosure = useDisclosure();
-  const [content, setContent] = useState<JSX.Element>(<CreateUser />);
+  const [content, setContent] = useState<JSX.Element>(<ChangeUser />);
   const [filterValue, setFilterValue] = useState("");
   const [selectedTab, setSelectedTab] = useState(0);
 

@@ -22,13 +22,14 @@ export function UserProfile({ updateDisclosure, updateProfile }: Props) {
       isOpen={updateDisclosure.isOpen}
       onOpenChange={updateDisclosure.onOpenChange}
       size="full"
+      disableAnimation
     >
       <ModalContent>
         <ModalHeader>
           <h1>Meu Perfil</h1>
         </ModalHeader>
         <ModalBody>
-          <Accordion>
+          <Accordion disableAnimation>
             <AccordionItem
               key="1"
               aria-label="Alterar Dados"

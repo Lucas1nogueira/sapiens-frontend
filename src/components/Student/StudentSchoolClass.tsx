@@ -6,15 +6,17 @@ import { SchoolClass } from "types/schoolClass";
 
 type Props = {
   schoolClass: SchoolClass;
+  disciplines: Discipline[];
 };
 
-export function StudentSchoolClass({ schoolClass }: Props) {
+export function StudentSchoolClass({ schoolClass, disciplines }: Props) {
   const [discipline, setDiscipline] = useState<Discipline | null>(null);
 
   return (
     <div>
       {!discipline ? (
         <SchoolClassContent
+          disciplines={disciplines}
           schoolClass={schoolClass}
           setDiscipline={setDiscipline}
         />

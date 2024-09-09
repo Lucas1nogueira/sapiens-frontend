@@ -10,6 +10,8 @@ export function Logo({ className }: Props) {
   const { user, userSchool } = useAuth();
 
   const headerTitle = () => {
+    if (!user) return "";
+
     if (user?.role === rolesEnum.SUPERADMIN) {
       return `/ Secretaria`;
     }

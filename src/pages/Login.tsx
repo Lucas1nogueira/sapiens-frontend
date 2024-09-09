@@ -61,7 +61,8 @@ export function Login() {
                 message: "Email inválido",
               },
             })}
-            onInput={() => trigger("email")}
+            onKeyUp={() => trigger("email")}
+            onBlur={() => trigger("email")}
             label="Email"
             type="email"
             placeholder="Insira seu email"
@@ -77,7 +78,8 @@ export function Login() {
                 message: "Sua senha deve ter pelo menos 6 caracteres",
               },
             })}
-            onInput={() => trigger("password")}
+            onKeyUp={() => trigger("password")}
+            onBlur={() => trigger("password")}
             label="Senha"
             type="password"
             placeholder="Insira sua senha"

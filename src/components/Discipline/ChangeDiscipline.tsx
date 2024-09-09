@@ -118,7 +118,7 @@ export function ChangeDiscipline({ discipline }: Props) {
                 message: "Quantidade de Aulas inválida",
               },
             })}
-            onInput={() => trigger("manyLessons")}
+            onKeyUp={() => trigger("manyLessons")}
             errorMessage={errors.manyLessons?.message}
             isInvalid={!!errors.manyLessons}
             label="Quantidade de Aulas"
@@ -128,7 +128,7 @@ export function ChangeDiscipline({ discipline }: Props) {
           />
           <Input
             {...register("name", { required: "Nome obrigatório" })}
-            onInput={() => trigger("name")}
+            onKeyUp={() => trigger("name")}
             errorMessage={errors.name?.message}
             isInvalid={!!errors.name}
             label="Nome"

@@ -1,5 +1,6 @@
 import { Student } from "types/student";
 import { api } from "./api";
+import { Report } from "types/report";
 
 export const saveStudent = async (student: Student) => {
   const response = await api.post<Student>("student/save", student);
@@ -35,5 +36,10 @@ export const findStudentBySchoolClassCode = async (code: string) => {
 
 export const findStudentBySchoolId = async (id: string) => {
   const response = await api.get<Student[]>(`student/school/${id}`);
+  return response;
+};
+
+export const studentReport = async (id: string) => {
+  const response = await api.get<Report>(`student/report/${id}`);
   return response;
 };

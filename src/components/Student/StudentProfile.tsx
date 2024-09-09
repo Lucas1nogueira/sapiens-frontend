@@ -1,7 +1,9 @@
 import { useAuth } from "@hooks/useAuth";
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
+import { LoadingPage } from "@pages/LoadingPage";
 import { useEffect, useState } from "react";
-import { api } from "services/api";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { findStudentByEmail, updateStudent } from "services/studentService";
 import { Student } from "types/student";
 import { enqueueNotification } from "utils/enqueueNotification";
 
@@ -11,100 +13,82 @@ const sexTypes = [
   { key: "WOMAN", label: "Feminino" },
 ];
 
+type Inputs = {
+  sex: string;
+  name: string;
+  age: number;
+  matriculation: string;
+};
+
 export function StudentProfile() {
   const { user } = useAuth();
+  const [student, setStudent] = useState<Student | null>(null);
 
-  const [student, setStudent] = useState({} as Student);
-  const [matriculation, setMatriculation] = useState(
-    student?.matriculation ?? ""
-  );
-  const [sex, setSex] = useState(student?.sex ?? "BLANK");
-  const [name, setName] = useState(student?.name ?? "");
-  const [email, setEmail] = useState(student?.email ?? "");
-  const [age, setAge] = useState(student?.age ?? 0);
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+    setValue,
+  } = useForm<Inputs>();
 
-  useEffect(() => {
-    setSex(student?.sex ?? "BLANK");
-    setName(student?.name ?? "");
-    setEmail(student?.email ?? "");
-    setAge(student?.age ?? 0);
-    setMatriculation(student?.matriculation ?? "");
-  }, [student]);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    if (student) {
+      const newStudent: Student = {
+        ...student,
+        name: data.name,
+        age: data.age,
+        sex: data.sex,
+      };
 
-  useEffect(() => {
-    if (user && isFirstLoad) {
-      api
-        .get<Student>(`student/email/${user.email}`)
-        .then((response) => {
-          const { id, name, email, age, sex, password, matriculation } =
-            response.data;
-          setStudent({
-            ...user,
-            id,
-            name,
-            email,
-            age,
-            sex,
-            password,
-            matriculation,
-          } as Student);
+      updateStudent(newStudent)
+        .then(() => {
+          enqueueNotification(
+            "Informações atualizadas com sucesso!",
+            "success"
+          );
         })
         .catch((error) => {
           enqueueNotification(error.response.data, "error");
-        })
-        .finally(() => {
-          setIsFirstLoad(false);
         });
     }
-  }, [user, isFirstLoad]);
-
-  const handleUpdateData = () => {
-    const newStudent = { ...student, name, email, age, sex };
-
-    api
-      .put(`student/update`, newStudent)
-      .then((response) => {
-        const { id, name, email, age, sex, password, matriculation } =
-          response.data;
-        setStudent({
-          ...user,
-          id,
-          name,
-          email,
-          age,
-          sex,
-          password,
-          matriculation,
-        } as Student);
-
-        enqueueNotification("Informações atualizadas com sucesso!", "success");
-      })
-      .catch((error) => {
-        enqueueNotification(error.response.data, "error");
-      });
   };
 
+  useEffect(() => {
+    if (user) {
+      findStudentByEmail(user.email)
+        .then((response) => {
+          const { name, age, sex, matriculation } = response.data;
+          setStudent(response.data);
+
+          setValue("name", name);
+          setValue("age", age);
+          setValue("sex", sex);
+          setValue("matriculation", matriculation);
+        })
+        .catch((error) => {
+          enqueueNotification(error.response.data, "error");
+        });
+    }
+  }, [user, setValue]);
+
+  if (!student) return <LoadingPage />;
+
   return (
-    <div className="flex flex-col gap-4">
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <Input
+        {...register("name", { required: "Nome obrigatório" })}
+        onKeyUp={() => trigger("name")}
+        errorMessage={errors.name?.message}
+        isInvalid={!!errors.name}
         color="primary"
         label="Nome"
-        value={name}
-        onValueChange={setName}
-      />
-      <Input
-        color="primary"
-        label="Email"
-        value={email}
-        onValueChange={setEmail}
       />
 
       <Select
+        {...register("sex")}
         color="primary"
         items={sexTypes}
-        selectedKeys={[sex]}
-        onChange={(e) => setSex(e.target.value)}
         label="Sexo"
         placeholder="Selecione o sexo"
       >
@@ -112,15 +96,26 @@ export function StudentProfile() {
       </Select>
 
       <Input
+        {...register("age", {
+          required: "Idade obrigatória",
+          valueAsNumber: true,
+        })}
+        onKeyUp={() => trigger("age")}
+        errorMessage={errors.age?.message}
+        isInvalid={!!errors.age}
         color="primary"
         label="Idade"
-        value={String(age)}
-        onValueChange={(value) => setAge(Number(value))}
       />
-      <Input label="Matricula" color="warning" value={matriculation} disabled />
-      <Button color="primary" onClick={handleUpdateData}>
+
+      <Input
+        {...register("matriculation")}
+        label="Matricula"
+        color="warning"
+        disabled
+      />
+      <Button color="primary" type="submit">
         Atualizar Informações
       </Button>
-    </div>
+    </form>
   );
 }
