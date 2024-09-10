@@ -15,6 +15,7 @@ import {
   findSchoolByTeachersId,
 } from "services/schoolService";
 import { rolesEnum } from "utils/roles";
+import { isTokenExpired } from "utils/verifyToken";
 
 export interface AuthContextType {
   isAuthenticated: boolean;
@@ -50,21 +51,21 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     navigate("/");
   };
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     setUser(null);
     setUserSchool(null);
     localStorage.removeItem("user");
-  };
+  }, []);
 
-  const retrieveUser = () => {
+  const retrieveUser = useCallback(() => {
     const user = localStorage.getItem("user");
 
-    if (!user) {
-      return null;
-    }
+    if (!user) return null;
 
-    return JSON.parse(user);
-  };
+    const userParsed = JSON.parse(user);
+
+    return userParsed;
+  }, []);
 
   const findUserSchool = useCallback((user: User) => {
     if (!user) return;
@@ -81,15 +82,21 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     const user = retrieveUser();
 
-    if (user) {
-      findUserSchool(user);
-      setUser(user);
-      navigate("/");
+    if (!user) {
+      setUser(null);
+      setUserSchool(null);
+      return setLoading(false);
     }
 
+    const isTokenInvalid = isTokenExpired(user);
+
+    if (isTokenInvalid) return handleLogout();
+
+    findUserSchool(user);
+    setUser(user);
+    navigate("/");
     setLoading(false);
-    return () => {};
-  }, [navigate, findUserSchool]);
+  }, [navigate, findUserSchool, retrieveUser, handleLogout]);
 
   return (
     <AuthContext.Provider

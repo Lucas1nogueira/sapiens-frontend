@@ -26,11 +26,6 @@ export const authChangePassword = async (
   return response;
 };
 
-export const authRefreshToken = async (User: User) => {
-  const response = await api.post("auth/refresh", User);
-  return response;
-};
-
 export const authUpdateUserRistred = async (user: User) => {
   const response = await api.put("auth/update", user);
   return response;
