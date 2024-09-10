@@ -1,4 +1,8 @@
-import { Grade } from "./grade";
+type SubjectGrade = {
+  id: string;
+  value: number;
+  evaluation: Evaluation;
+};
 
 export type Subject = {
   disciplineCode: string;
@@ -9,7 +13,7 @@ export type Subject = {
   attendancePercentage: number;
   status: string;
   finalGrade: number;
-  grades: Grade[];
+  grades: SubjectGrade[];
 };
 
 export type Report = {

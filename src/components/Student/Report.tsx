@@ -44,7 +44,7 @@ export function Report() {
   if (!report) return <LoadingPage />;
 
   const handleReportDetails = (subject: Subject) => {
-    setContent(<ReportDetails report={report} subject={subject} />);
+    setContent(<ReportDetails subject={subject} />);
     disclosure.onOpen();
   };
 
@@ -63,10 +63,10 @@ export function Report() {
             <TableRow key={subject.disciplineCode}>
               <TableCell>{subject.disciplineName}</TableCell>
               <TableCell>{subject.manyLessons}</TableCell>
-              <TableCell>{subject.lessonsAttended}</TableCell>
+              <TableCell>{subject.lessonsMissed}</TableCell>
               <TableCell>{subject.attendancePercentage}%</TableCell>
               <TableCell>{subject.status}</TableCell>
-              <TableCell>{subject.finalGrade}</TableCell>
+              <TableCell>{subject.finalGrade.toFixed(1)}</TableCell>
               <TableCell>
                 <Button
                   color="primary"

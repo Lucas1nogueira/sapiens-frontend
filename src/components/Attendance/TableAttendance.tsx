@@ -83,8 +83,8 @@ export function TableAttendance({ lessons, sortedStudents }: Props) {
       if (existingAttendance) {
         updatedAttendances.set(key, {
           ...existingAttendance,
-          isPresent,
-          attendedCount,
+          isPresent: isPresent,
+          attendedCount: attendedCount,
         });
       }
 
@@ -165,7 +165,7 @@ export function TableAttendance({ lessons, sortedStudents }: Props) {
                           student.id,
                           lesson.id,
                           value,
-                          lesson.manyLessons
+                          value ? lesson.manyLessons : 0
                         );
                       }}
                     >

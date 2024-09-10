@@ -46,7 +46,7 @@ export function ChangeDiscipline({ discipline }: Props) {
         manyLessons: data.manyLessons,
       };
 
-      updateDiscipline(editedDiscipline)
+      updateDiscipline(discipline.code, editedDiscipline)
         .then(() => {
           reset();
 
@@ -58,6 +58,12 @@ export function ChangeDiscipline({ discipline }: Props) {
 
       return;
     }
+
+    if (!userSchool || userSchool.name === "Todas as Escolas")
+      return enqueueNotification(
+        "Para criar uma disciplina, escolha uma escola a ser gerenciada!",
+        "error"
+      );
 
     const newDiscipline: Discipline = {
       code: data.code,
@@ -136,6 +142,7 @@ export function ChangeDiscipline({ discipline }: Props) {
             placeholder="Insira seu nome"
             isRequired
           />
+
           <Button type="submit" color="primary" className="w-full rounded-md">
             Salvar Alterações
           </Button>

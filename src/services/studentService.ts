@@ -30,7 +30,7 @@ export const findAllStudents = async () => {
 };
 
 export const findStudentBySchoolClassCode = async (code: string) => {
-  const response = await api.get<Student>(`student/class/${code}`);
+  const response = await api.get<Student[]>(`student/class/${code}`);
   return response;
 };
 

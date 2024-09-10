@@ -33,6 +33,12 @@ export function CreateSchoolClass() {
       school: userSchool ? userSchool : (null as unknown as School),
     };
 
+    if (!userSchool || userSchool.name === "Todas as Escolas")
+      return enqueueNotification(
+        "Para criar uma disciplina, escolha uma escola a ser gerenciada!",
+        "error"
+      );
+
     saveSchoolClass(schoolClass)
       .then(() => {
         reset();

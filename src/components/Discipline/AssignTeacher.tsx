@@ -24,7 +24,7 @@ type Props = {
 
 export function AssignTeacher({ discipline }: Props) {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [teacherId, setTeacherId] = useState("");
+  const [teacherId, setTeacherId] = useState(discipline.teacher?.id);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
@@ -61,7 +61,7 @@ export function AssignTeacher({ discipline }: Props) {
       } as Teacher,
     };
 
-    updateDiscipline(newDiscipline)
+    updateDiscipline(newDiscipline.code, newDiscipline)
       .then(() => {
         enqueueNotification("Professor atribuido com sucesso!", "success");
       })
@@ -112,6 +112,7 @@ export function AssignTeacher({ discipline }: Props) {
             color="primary"
             selectionMode="single"
             selectionBehavior="toggle"
+            selectedKeys={[teacherId.toString()]}
             onSelectionChange={(keys) => {
               const [value] = keys;
               const id = value?.toString() || "";

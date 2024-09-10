@@ -1,4 +1,5 @@
 import { PaginationTable } from "@components/Common/PaginationTable";
+import { useAuth } from "@hooks/useAuth";
 import {
   Button,
   Input,
@@ -12,8 +13,11 @@ import {
 } from "@nextui-org/react";
 import { LoadingPage } from "@pages/LoadingPage";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "services/api";
 import { assignStudentsToSchoolClass } from "services/schoolClassService";
+import {
+  findStudentBySchoolClassCode,
+  findStudentBySchoolId,
+} from "services/studentService";
 import { SchoolClass } from "types/schoolClass";
 import { Student } from "types/student";
 import { enqueueNotification } from "utils/enqueueNotification";
@@ -23,8 +27,8 @@ type Props = {
 };
 
 export function AssignStudents({ schoolClass }: Props) {
+  const { userSchool } = useAuth();
   const [students, setStudents] = useState<Student[]>([]);
-  const [classStudents, setClassStudents] = useState<Student[]>([]);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
@@ -75,29 +79,32 @@ export function AssignStudents({ schoolClass }: Props) {
   };
 
   useEffect(() => {
-    api
-      .get<Student[]>(`student/class/${schoolClass.code}`)
-      .then((response) => setClassStudents(response.data))
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-  }, [schoolClass.code]);
+    if (schoolClass) {
+      findStudentBySchoolClassCode(schoolClass.code)
+        .then((response) => {
+          const initiallySelected = new Set(
+            response.data.map((student) => student.id.toString())
+          );
+
+          setSelectedKeys(initiallySelected);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    }
+  }, [schoolClass]);
 
   useEffect(() => {
-    api
-      .get<Student[]>("student/all")
-      .then((response) => {
-        const initiallySelected = new Set(
-          classStudents.map((student) => student.id.toString())
-        );
-
-        setSelectedKeys(initiallySelected);
-        setStudents(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-  }, [classStudents]);
+    if (userSchool) {
+      findStudentBySchoolId(userSchool.id)
+        .then((response) => {
+          setStudents(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    }
+  }, [userSchool]);
 
   if (!students) return <LoadingPage />;
 
@@ -131,7 +138,15 @@ export function AssignStudents({ schoolClass }: Props) {
               />
             }
             selectedKeys={selectedKeys}
-            onSelectionChange={setSelectedKeys}
+            onSelectionChange={(keys) => {
+              if (keys != "all") {
+                return setSelectedKeys(keys);
+              }
+
+              setSelectedKeys(
+                new Set(students.map((student) => student.id.toString()))
+              );
+            }}
             color="primary"
             selectionMode="multiple"
             classNames={{
@@ -142,7 +157,14 @@ export function AssignStudents({ schoolClass }: Props) {
             <TableHeader>
               <TableColumn key="name">Nome</TableColumn>
             </TableHeader>
-            <TableBody items={items}>
+            <TableBody
+              items={items}
+              emptyContent={
+                schoolClass
+                  ? "Nenhuma escola selecionada"
+                  : "Nenhum Aluno encontrado"
+              }
+            >
               {(student) => (
                 <TableRow key={student.id}>
                   <TableCell>{student.name}</TableCell>

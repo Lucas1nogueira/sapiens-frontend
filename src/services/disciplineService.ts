@@ -7,8 +7,11 @@ export const findAllDisciplines = async () => {
   return response;
 };
 
-export const updateDiscipline = async (discipline: Discipline) => {
-  const response = await api.put("discipline/update", discipline);
+export const updateDiscipline = async (
+  code: string,
+  discipline: Discipline
+) => {
+  const response = await api.put(`discipline/update/${code}`, discipline);
   return response;
 };
 

@@ -12,8 +12,10 @@ import {
   Selection as SelectionType,
 } from "@nextui-org/react";
 import { useEffect, useMemo, useState } from "react";
-import { api } from "services/api";
-import { findAllDisciplinesBySchool } from "services/disciplineService";
+import {
+  findAllDisciplinesBySchool,
+  findDisciplineBySchoolClassCode,
+} from "services/disciplineService";
 import { assignDisciplinesToSchoolClass } from "services/schoolClassService";
 import { Discipline } from "types/discipline";
 import { SchoolClass } from "types/schoolClass";
@@ -24,8 +26,7 @@ type Props = {
 };
 
 export function AssignDisciplines({ schoolClass }: Props) {
-  const [disciplines, setDisciplines] = useState<Discipline[]>([]);
-  const [classDisciplines, setClassDisciplines] = useState<Discipline[]>([]);
+  const [allDisciplines, setAllDisciplines] = useState<Discipline[]>([]);
   const [page, setPage] = useState(1);
   const [filterValue, setFilterValue] = useState("");
   const rowsPerPage = 25;
@@ -33,28 +34,28 @@ export function AssignDisciplines({ schoolClass }: Props) {
   const { userSchool } = useAuth();
 
   const totalPages = useMemo(() => {
-    return Math.ceil(disciplines.length / rowsPerPage);
-  }, [disciplines]);
+    return Math.ceil(allDisciplines.length / rowsPerPage);
+  }, [allDisciplines]);
 
   const items = useMemo(() => {
-    if (!disciplines) return [];
+    if (!allDisciplines) return [];
 
     const start = (page - 1) * rowsPerPage;
     const end = page * rowsPerPage;
 
-    if (!filterValue) return disciplines.slice(start, end);
+    if (!filterValue) return allDisciplines.slice(start, end);
 
-    return disciplines
+    return allDisciplines
       .filter((student) => {
         return student.name.toLowerCase().includes(filterValue.toLowerCase());
       })
       .slice(start, end);
-  }, [disciplines, page, filterValue]);
+  }, [allDisciplines, page, filterValue]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const disciplinesOfClass = disciplines.filter((discipline) =>
+    const disciplinesOfClass = allDisciplines.filter((discipline) =>
       selectedKeys instanceof Set ? selectedKeys.has(discipline.code) : false
     );
 
@@ -73,30 +74,30 @@ export function AssignDisciplines({ schoolClass }: Props) {
   };
 
   useEffect(() => {
-    api
-      .get<Discipline[]>(`discipline/class/${schoolClass.code}`)
-      .then((response) => setClassDisciplines(response.data))
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-  }, [schoolClass.code]);
-
-  useEffect(() => {
     if (userSchool) {
-      findAllDisciplinesBySchool(userSchool?.id)
+      findAllDisciplinesBySchool(userSchool.id)
         .then((response) => {
-          const initiallySelected = new Set(
-            classDisciplines.map((discipline: Discipline) => discipline.code)
-          );
-
-          setSelectedKeys(initiallySelected);
-          setDisciplines(response.data);
+          setAllDisciplines(response.data);
         })
         .catch((error) => {
           console.log(error.response.data);
         });
     }
-  }, [classDisciplines, userSchool]);
+  }, [userSchool]);
+
+  useEffect(() => {
+    findDisciplineBySchoolClassCode(schoolClass.code)
+      .then((response) => {
+        const initiallySelected = new Set(
+          response.data.map((discipline: Discipline) => discipline.code)
+        );
+
+        setSelectedKeys(initiallySelected);
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
+  }, [schoolClass, userSchool, allDisciplines]);
 
   return (
     <div className="flex justify-center items-center">
@@ -128,7 +129,15 @@ export function AssignDisciplines({ schoolClass }: Props) {
               />
             }
             selectedKeys={selectedKeys}
-            onSelectionChange={setSelectedKeys}
+            onSelectionChange={(keys) => {
+              if (keys != "all") {
+                return setSelectedKeys(keys);
+              }
+
+              setSelectedKeys(
+                new Set(allDisciplines.map((discipline) => discipline.code))
+              );
+            }}
             color="primary"
             selectionMode="multiple"
             classNames={{
@@ -139,7 +148,14 @@ export function AssignDisciplines({ schoolClass }: Props) {
             <TableHeader>
               <TableColumn key="name">Nome</TableColumn>
             </TableHeader>
-            <TableBody items={items}>
+            <TableBody
+              items={items}
+              emptyContent={
+                schoolClass
+                  ? "Nenhuma escola selecionada"
+                  : "Nenhum Aluno encontrado"
+              }
+            >
               {(discipline) => (
                 <TableRow key={discipline.code}>
                   <TableCell>{discipline.name}</TableCell>
