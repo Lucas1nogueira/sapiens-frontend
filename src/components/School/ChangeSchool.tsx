@@ -50,7 +50,6 @@ export function ChangeSchool({ school }: Props) {
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
   } = useForm<Inputs>({
     defaultValues: {
       name: school?.name || "",
@@ -62,6 +61,7 @@ export function ChangeSchool({ school }: Props) {
       email: school?.email || "",
       admin: school?.admin || ({} as Admin),
     },
+    mode: "onChange",
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -144,7 +144,6 @@ export function ChangeSchool({ school }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               {...register("name", { required: "Nome obrigatório" })}
-              onKeyUp={() => trigger("name")}
               isInvalid={!!errors.name}
               errorMessage={errors.name?.message}
               label="Nome"
@@ -154,7 +153,6 @@ export function ChangeSchool({ school }: Props) {
             />
             <Input
               {...register("address", { required: "Endereço obrigatório" })}
-              onKeyUp={() => trigger("address")}
               isInvalid={!!errors.address}
               errorMessage={errors.address?.message}
               label="Endereço"
@@ -164,7 +162,6 @@ export function ChangeSchool({ school }: Props) {
             />
             <Input
               {...register("city", { required: "Cidade obrigatória" })}
-              onKeyUp={() => trigger("city")}
               isInvalid={!!errors.city}
               errorMessage={errors.city?.message}
               label="Cidade"
@@ -174,7 +171,6 @@ export function ChangeSchool({ school }: Props) {
             />
             <Input
               {...register("state", { required: "Estado obrigatório" })}
-              onKeyUp={() => trigger("state")}
               isInvalid={!!errors.state}
               errorMessage={errors.state?.message}
               label="Estado"
@@ -184,7 +180,6 @@ export function ChangeSchool({ school }: Props) {
             />
             <Input
               {...register("zipCode", { required: "CEP obrigatório" })}
-              onKeyUp={() => trigger("zipCode")}
               isInvalid={!!errors.zipCode}
               errorMessage={errors.zipCode?.message}
               label="CEP"
@@ -194,7 +189,6 @@ export function ChangeSchool({ school }: Props) {
             />
             <Input
               {...register("phone", { required: "Telefone obrigatório" })}
-              onKeyUp={() => trigger("phone")}
               isInvalid={!!errors.phone}
               errorMessage={errors.phone?.message}
               label="Telefone"
@@ -210,7 +204,6 @@ export function ChangeSchool({ school }: Props) {
                   message: "Email inválido",
                 },
               })}
-              onKeyUp={() => trigger("email")}
               isInvalid={!!errors.email}
               errorMessage={errors.email?.message}
               label="Email"
@@ -220,7 +213,6 @@ export function ChangeSchool({ school }: Props) {
             />
             <Autocomplete
               {...register("admin", { required: "Administrador obrigatório" })}
-              onInput={() => trigger("admin")}
               isInvalid={!!errors.admin}
               errorMessage={errors.admin?.message}
               label="Atribua o Administrador"

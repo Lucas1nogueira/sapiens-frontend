@@ -19,7 +19,6 @@ export function Login() {
   const {
     register,
     handleSubmit,
-    trigger,
     reset,
     formState: { errors },
   } = useForm<Inputs>({
@@ -27,6 +26,7 @@ export function Login() {
       email: "",
       password: "",
     },
+    mode: "onChange",
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -61,8 +61,6 @@ export function Login() {
                 message: "Email inválido",
               },
             })}
-            onKeyUp={() => trigger("email")}
-            onBlur={() => trigger("email")}
             label="Email"
             type="email"
             placeholder="Insira seu email"
@@ -78,8 +76,6 @@ export function Login() {
                 message: "Sua senha deve ter pelo menos 6 caracteres",
               },
             })}
-            onKeyUp={() => trigger("password")}
-            onBlur={() => trigger("password")}
             label="Senha"
             type="password"
             placeholder="Insira sua senha"

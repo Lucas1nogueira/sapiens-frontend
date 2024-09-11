@@ -57,7 +57,6 @@ export function ChangeUser({ userToEdit }: Props) {
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
     watch,
   } = useForm<Inputs>({
     defaultValues: {
@@ -67,6 +66,7 @@ export function ChangeUser({ userToEdit }: Props) {
       code: generateCode(),
       password: generatePassword(),
     },
+    mode: "onChange",
   });
 
   watch((data, { name }) => {
@@ -132,7 +132,6 @@ export function ChangeUser({ userToEdit }: Props) {
         >
           <Input
             {...register("name", { required: "Nome obrigatório" })}
-            onKeyUp={() => trigger("name")}
             label="Nome"
             type="text"
             placeholder="Insira seu nome"
@@ -146,7 +145,6 @@ export function ChangeUser({ userToEdit }: Props) {
               required: "Email obrigatório",
               pattern: emailPattern,
             })}
-            onKeyUp={() => trigger("email")}
             label="Email"
             type="email"
             placeholder="Insira seu email"

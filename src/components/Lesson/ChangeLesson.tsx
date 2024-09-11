@@ -23,13 +23,13 @@ export function ChangeLesson({ lesson, discipline }: Props) {
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
   } = useForm<Inputs>({
     defaultValues: {
       description: lesson?.description || "",
       date: lesson ? formatDateForInput(lesson?.date) : "",
       manyLessons: lesson?.manyLessons || 1,
     },
+    mode: "onChange",
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -89,7 +89,6 @@ export function ChangeLesson({ lesson, discipline }: Props) {
             {...register("description", {
               required: "Preencha a descrição da aula",
             })}
-            onKeyUp={() => trigger("description")}
             isInvalid={!!errors.description}
             errorMessage={errors.description?.message}
             label="Descricão"
@@ -102,7 +101,6 @@ export function ChangeLesson({ lesson, discipline }: Props) {
             {...register("date", {
               required: "Preencha a data da aula",
             })}
-            onValueChange={() => trigger("date")}
             isInvalid={!!errors.date}
             errorMessage={errors.date?.message}
             label="Data"
@@ -116,7 +114,6 @@ export function ChangeLesson({ lesson, discipline }: Props) {
               required: "Preencha a quantidade de aulas",
               valueAsNumber: true,
             })}
-            onKeyUp={() => trigger("manyLessons")}
             isInvalid={!!errors.manyLessons}
             errorMessage={errors.manyLessons?.message}
             label="Quantidade de Aulas"

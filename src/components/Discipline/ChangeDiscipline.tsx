@@ -27,7 +27,6 @@ export function ChangeDiscipline({ discipline }: Props) {
     register,
     handleSubmit,
     formState: { errors },
-    trigger,
     reset,
   } = useForm<Inputs>({
     defaultValues: {
@@ -35,6 +34,7 @@ export function ChangeDiscipline({ discipline }: Props) {
       name: discipline?.name || "",
       manyLessons: discipline?.manyLessons || 1,
     },
+    mode: "onChange",
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -107,7 +107,6 @@ export function ChangeDiscipline({ discipline }: Props) {
                 message: "Código inválido",
               },
             })}
-            onBlur={() => trigger("code")}
             errorMessage={errors.code?.message}
             isInvalid={!!errors.code}
             label="Código da Disciplina"
@@ -124,7 +123,6 @@ export function ChangeDiscipline({ discipline }: Props) {
                 message: "Quantidade de Aulas inválida",
               },
             })}
-            onKeyUp={() => trigger("manyLessons")}
             errorMessage={errors.manyLessons?.message}
             isInvalid={!!errors.manyLessons}
             label="Quantidade de Aulas"
@@ -134,7 +132,6 @@ export function ChangeDiscipline({ discipline }: Props) {
           />
           <Input
             {...register("name", { required: "Nome obrigatório" })}
-            onKeyUp={() => trigger("name")}
             errorMessage={errors.name?.message}
             isInvalid={!!errors.name}
             label="Nome"

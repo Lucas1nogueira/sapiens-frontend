@@ -22,12 +22,12 @@ export function ChangeEvaluation({ discipline, evaluation }: Props) {
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
   } = useForm<Inputs>({
     defaultValues: {
       name: evaluation?.name || "",
       deliveryDate: evaluation?.deliveryAt || "",
     },
+    mode: "onChange",
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -82,7 +82,6 @@ export function ChangeEvaluation({ discipline, evaluation }: Props) {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <Input
             {...register("name", { required: "Nome obrigatório" })}
-            onKeyUp={() => trigger("name")}
             isInvalid={!!errors.name}
             errorMessage={errors.name?.message}
             label="Nome"
@@ -95,7 +94,6 @@ export function ChangeEvaluation({ discipline, evaluation }: Props) {
             {...register("deliveryDate", {
               required: "Data de Entrega obrigatória",
             })}
-            onKeyUp={() => trigger("deliveryDate")}
             isInvalid={!!errors.deliveryDate}
             errorMessage={errors.deliveryDate?.message}
             label="Data de Entrega"

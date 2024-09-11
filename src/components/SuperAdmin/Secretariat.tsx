@@ -31,7 +31,6 @@ export function Secretariat() {
     register,
     handleSubmit,
     formState: { errors },
-    trigger,
     setValue,
   } = useForm<Inputs>({
     defaultValues: {
@@ -43,6 +42,7 @@ export function Secretariat() {
       email: "",
       phone: "",
     },
+    mode: "onChange",
   });
 
   useEffect(() => {
@@ -108,7 +108,6 @@ export function Secretariat() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               {...register("name", { required: "Este campo é obrigatório" })}
-              onInput={() => trigger("name")}
               isInvalid={!!errors.name}
               errorMessage={errors.name?.message}
               name="name"
@@ -118,7 +117,6 @@ export function Secretariat() {
             />
             <Input
               {...register("address", { required: "Este campo é obrigatório" })}
-              onInput={() => trigger("address")}
               isInvalid={!!errors.address}
               errorMessage={errors.address?.message}
               name="address"
@@ -128,7 +126,6 @@ export function Secretariat() {
             />
             <Input
               {...register("city", { required: "Este campo é obrigatório" })}
-              onInput={() => trigger("city")}
               isInvalid={!!errors.city}
               errorMessage={errors.city?.message}
               name="city"
@@ -138,7 +135,6 @@ export function Secretariat() {
             />
             <Input
               {...register("state", { required: "Este campo é obrigatório" })}
-              onInput={() => trigger("state")}
               isInvalid={!!errors.state}
               errorMessage={errors.state?.message}
               name="state"
@@ -148,7 +144,6 @@ export function Secretariat() {
             />
             <Input
               {...register("zipCode", { required: "Este campo é obrigatório" })}
-              onInput={() => trigger("zipCode")}
               isInvalid={!!errors.zipCode}
               errorMessage={errors.zipCode?.message}
               name="zipCode"
@@ -158,7 +153,6 @@ export function Secretariat() {
             />
             <Input
               {...register("phone", { required: "Este campo é obrigatório" })}
-              onInput={() => trigger("phone")}
               isInvalid={!!errors.phone}
               errorMessage={errors.phone?.message}
               name="phone"
@@ -174,7 +168,6 @@ export function Secretariat() {
                   message: "Insira um e-mail válido",
                 },
               })}
-              onInput={() => trigger("email")}
               isInvalid={!!errors.email}
               errorMessage={errors.email?.message}
               name="email"

@@ -20,7 +20,7 @@ export const LandingPage = () => {
     <div>
       <Navbar>
         <NavbarBrand>
-          <Logo className="w-7 h-10" />
+          <Logo className="w-11 h-11" />
         </NavbarBrand>
         <NavbarContent justify="end">
           <NavbarItem>

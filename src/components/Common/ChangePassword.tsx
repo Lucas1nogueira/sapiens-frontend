@@ -18,7 +18,6 @@ export function ChangePassword() {
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
     getValues,
   } = useForm<Inputs>({
     defaultValues: {
@@ -26,6 +25,7 @@ export function ChangePassword() {
       password: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -53,7 +53,6 @@ export function ChangePassword() {
               message: "Senha atual deve conter pelo menos 6 caracteres",
             },
           })}
-          onKeyUp={() => trigger("lastPassword")}
           isInvalid={!!errors.lastPassword}
           errorMessage={errors.lastPassword?.message}
           color="primary"
@@ -70,7 +69,6 @@ export function ChangePassword() {
               message: "Nova senha deve conter pelo menos 6 caracteres",
             },
           })}
-          onKeyUp={() => trigger("password")}
           isInvalid={!!errors.password}
           errorMessage={errors.password?.message}
           color="primary"
@@ -93,7 +91,6 @@ export function ChangePassword() {
               }
             },
           })}
-          onKeyUp={() => trigger("confirmPassword")}
           isInvalid={!!errors.confirmPassword}
           errorMessage={errors.confirmPassword?.message}
           color="primary"

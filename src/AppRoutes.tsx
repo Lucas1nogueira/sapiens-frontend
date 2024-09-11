@@ -1,4 +1,5 @@
 import { useAuth } from "@hooks/useAuth";
+import { ForgotPassword } from "@pages/ForgotPassword";
 import { HomeAdmin } from "@pages/HomeAdmin";
 import { HomeCordinator } from "@pages/HomeCordinator";
 import { HomeGuardian } from "@pages/HomeGuardian";
@@ -26,6 +27,7 @@ const routesIfNotAuthenticated = (
   <Route>
     <Route path="/" element={<LandingPage />} />
     <Route path="/login" element={<Login />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
   </Route>
 );
 

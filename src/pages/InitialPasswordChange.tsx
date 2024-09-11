@@ -17,13 +17,13 @@ export function InitialPasswordChange() {
     handleSubmit,
     formState: { errors },
     reset,
-    trigger,
     getValues,
   } = useForm<Inputs>({
     defaultValues: {
       password: "",
       confirmPassword: "",
     },
+    mode: "onChange",
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
@@ -62,7 +62,6 @@ export function InitialPasswordChange() {
             },
           })}
           type="password"
-          onInput={() => trigger("password")}
           isInvalid={!!errors.password}
           errorMessage={errors.password?.message}
           label="Nova Senha"
@@ -74,7 +73,6 @@ export function InitialPasswordChange() {
             validate: (value) =>
               value === getValues("password") || "As senhas devem ser iguais",
           })}
-          onBlur={() => trigger("confirmPassword")}
           type="password"
           isInvalid={!!errors.confirmPassword}
           errorMessage={errors.confirmPassword?.message}

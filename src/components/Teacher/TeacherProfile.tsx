@@ -28,9 +28,10 @@ export function TeacherProfile() {
     register,
     handleSubmit,
     formState: { errors },
-    trigger,
     setValue,
-  } = useForm<Inputs>();
+  } = useForm<Inputs>({
+    mode: "onChange",
+  });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (teacher) {
@@ -78,7 +79,6 @@ export function TeacherProfile() {
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
       <Input
         {...register("name", { required: "Nome obrigatório" })}
-        onKeyUp={() => trigger("name")}
         errorMessage={errors.name?.message}
         isInvalid={!!errors.name}
         color="primary"
@@ -100,7 +100,6 @@ export function TeacherProfile() {
           required: "Idade obrigatória",
           valueAsNumber: true,
         })}
-        onKeyUp={() => trigger("age")}
         errorMessage={errors.age?.message}
         isInvalid={!!errors.age}
         color="primary"
