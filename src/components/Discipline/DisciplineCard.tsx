@@ -6,7 +6,7 @@ import {
   Divider,
   Progress,
 } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "services/api";
 import { disciplineProgress } from "services/disciplineService";
 import { Discipline } from "types/discipline";
@@ -43,6 +43,14 @@ export function DisciplineCard({
       .catch((error) => console.log(error.response.data));
   }, [discipline.code]);
 
+  const progressParsed = useMemo(() => {
+    const { progress: progressValue } = progress;
+
+    if (!progressValue) return 0;
+
+    return parseFloat((progressValue + ""))
+  }, [progress]);
+
   return (
     <Card className="py-4" key={discipline.code}>
       <CardHeader
@@ -71,14 +79,14 @@ export function DisciplineCard({
           </p>
           <Progress
             size="md"
-            color={progress.progress > 50 ? "success" : "warning"}
+            color={progressParsed > 50 ? "success" : "warning"}
             className="h-10"
             label="Progresso"
             classNames={{
               label: "text-xs",
               value: "text-xs",
             }}
-            value={progress.progress}
+            value={progressParsed}
             showValueLabel={true}
           />
         </div>

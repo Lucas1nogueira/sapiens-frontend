@@ -1,5 +1,5 @@
 import { Button, Progress } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { disciplineProgress } from "services/disciplineService";
 import { Discipline } from "types/discipline";
 import { DisciplineProgress } from "types/disciplineProgress";
@@ -22,6 +22,14 @@ export function DiaryTab({ handleTabChange, discipline }: Props) {
       .catch((error) => console.log(error.response.data));
   }, [discipline.code]);
 
+  const progressParsed = useMemo(() => {
+    const { progress: progressValue } = progress;
+
+    if (!progressValue) return 0;
+    
+    return parseFloat((progressValue + ""))
+  }, [progress]);
+
   return (
     <>
       <div className="p-4 bg-white rounded-lg border border-gray-200 mb-4">
@@ -41,10 +49,10 @@ export function DiaryTab({ handleTabChange, discipline }: Props) {
         <div className="mt-4">
           <Progress
             size="md"
-            color={progress.progress > 50 ? "success" : "warning"}
+            color={progressParsed > 50 ? "success" : "warning"}
             label="Carga Horária Cumprida"
             className="text-sm font-medium"
-            value={progress.progress}
+            value={progressParsed}
             showValueLabel={true}
           />
         </div>
