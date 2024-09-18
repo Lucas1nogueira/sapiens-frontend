@@ -1,22 +1,22 @@
-import { CreateSchoolClass } from "@components/Admin/CreateSchoolClass";
+import { CreateSchoolClass } from "sections/Admin/CreateSchoolClass";
 import { CustomModal } from "@components/Common/CustomModal";
-import { TableDiscipline } from "@components/Discipline/TableDiscipline";
-import { TableUsers } from "@components/Admin/TableUsers";
+import { TableUsers } from "sections/Admin/TableUsers";
 import { useDisclosure } from "@nextui-org/react";
 import { useState } from "react";
-import { ChangeUser } from "@components/Admin/ChangeUser";
+import { ChangeUser } from "sections/Admin/ChangeUser";
 import { Header } from "@components/Common/Header";
 import { CustomTableHeader } from "@components/Common/CustomTableHeader";
-import { TableSchoolClass } from "@components/SchoolClass/TableSchoolClass";
+import { TableSchoolClass } from "sections/SchoolClass/TableSchoolClass";
 import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
 import { SideMenu } from "@components/Common/SideMenu";
-import { Calendar } from "@components/Admin/Calendar";
-import { Diary } from "@components/Admin/Diary";
-import { TableSchool } from "@components/School/TableSchool";
-import { Secretariat } from "@components/SuperAdmin/Secretariat";
-import { ChangeDiscipline } from "@components/Discipline/ChangeDiscipline";
-import { ChangeSchool } from "@components/School/ChangeSchool";
+import { Calendar } from "sections/Admin/Calendar";
+import { Diary } from "sections/Admin/Diary";
+import { TableSchool } from "sections/School/TableSchool";
+import { Secretariat } from "sections/SuperAdmin/Secretariat";
+import { ChangeSchool } from "sections/School/ChangeSchool";
+import { ChangeDiscipline } from "sections/Discipline/ChangeDiscipline";
+import { TableDiscipline } from "sections/Discipline/TableDiscipline";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void

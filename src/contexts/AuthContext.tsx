@@ -72,7 +72,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
 
     findUserSchoolById(user)
       ?.then((response) => {
-        setUserSchool(response.data);
+        setUserSchool(response);
       })
       .catch(() => {
         setUserSchool(null);

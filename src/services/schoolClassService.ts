@@ -3,12 +3,12 @@ import { api } from "./api";
 
 export const saveSchoolClass = async (schoolClass: SchoolClass) => {
   const response = await api.post("school-class/save", schoolClass);
-  return response;
+  return response.data;
 };
 
 export const assignStudentsToSchoolClass = async (schoolClass: SchoolClass) => {
   const response = await api.put("school-class/assign-students", schoolClass);
-  return response;
+  return response.data;
 };
 
 export const assignDisciplinesToSchoolClass = async (
@@ -18,34 +18,36 @@ export const assignDisciplinesToSchoolClass = async (
     "school-class/assign-disciplines",
     schoolClass
   );
-  return response;
+  return response.data;
 };
 
-export const findAllSchoolClasses = async () => {
+export const findAllSchoolClasses = async (): Promise<SchoolClass[]> => {
   const response = await api.get<SchoolClass[]>("school-class/all");
-  return response;
+  return response.data;
 };
 
 export const findSchoolClassByCode = async (code: string) => {
   const response = await api.get<SchoolClass>(`school-class/code/${code}`);
-  return response;
+  return response.data;
 };
 
-export const findSchoolClassBySchoolId = async (schoolId: string) => {
+export const findSchoolClassBySchoolId = async (
+  schoolId: string
+): Promise<SchoolClass[]> => {
   const response = await api.get<SchoolClass[]>(
     `school-class/school/${schoolId}`
   );
-  return response;
+  return response.data;
 };
 
 export const getSchoolClassStudentsByDisciplineCode = async (code: string) => {
   const response = await api.get<SchoolClass[]>(
     `school-class/students-discipline/${code}`
   );
-  return response;
+  return response.data;
 };
 
 export const findSchoolClassStudentId = async (id: string) => {
   const response = await api.get<SchoolClass>(`school-class/student/${id}`);
-  return response;
+  return response.data;
 };

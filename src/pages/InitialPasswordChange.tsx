@@ -37,8 +37,8 @@ export function InitialPasswordChange() {
 
         handleLogin({ ...user, ...response.data });
       })
-      .catch((error) => {
-        enqueueNotification(error.response.data, "error");
+      .catch(() => {
+        enqueueNotification("Erro ao alterar senha.", "error");
       });
   };
 

@@ -6,6 +6,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { emailPattern } from "utils/validations";
 import logo from "@assets/logo.png";
 import { enqueueNotification } from "utils/enqueueNotification";
+import { useState } from "react";
 
 type Inputs = {
   email: string;
@@ -15,6 +16,7 @@ type Inputs = {
 export function Login() {
   const { handleLogin } = useAuth();
   const disclosure = useDisclosure();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -30,6 +32,8 @@ export function Login() {
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setLoading(true);
+
     authLogin(data.email, data.password)
       .then((response) => {
         handleLogin(response.data);
@@ -38,7 +42,8 @@ export function Login() {
       .catch((error) => {
         enqueueNotification(error.response.data, "error");
         disclosure.onOpenChange();
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -89,7 +94,12 @@ export function Login() {
           >
             Esqueceu sua senha?
           </Link>
-          <Button type="submit" color="primary" className="w-full rounded-md">
+          <Button
+            type="submit"
+            color="primary"
+            className="w-full rounded-md"
+            isLoading={loading}
+          >
             Entrar
           </Button>
         </form>

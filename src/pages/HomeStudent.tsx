@@ -1,20 +1,20 @@
 import { Header } from "@components/Common/Header";
-import { StudentProfile } from "@components/Student/StudentProfile";
+import { StudentProfile } from "sections/Student/StudentProfile";
 import { UserProfile } from "@components/Common/UserProfile";
 import { useDisclosure } from "@nextui-org/react";
-import { StudentSchoolClass } from "@components/Student/StudentSchoolClass";
+import { StudentSchoolClass } from "sections/Student/StudentSchoolClass";
 import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
 import { useEffect, useState } from "react";
 import { SideMenu } from "@components/Common/SideMenu";
 import { useAuth } from "@hooks/useAuth";
 import { Discipline } from "types/discipline";
-import { DisciplinesSchedule } from "@components/Discipline/DisciplinesSchedule";
 import { SchoolClass } from "types/schoolClass";
 import { LoadingPage } from "./LoadingPage";
 import { findSchoolClassStudentId } from "services/schoolClassService";
 import { findDisciplineBySchoolClassCode } from "services/disciplineService";
-import { Report } from "@components/Student/Report";
+import { Report } from "sections/Student/Report";
+import { DisciplinesSchedule } from "sections/Discipline/DisciplinesSchedule";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -51,9 +51,9 @@ export function HomeStudent() {
     if (schoolClass) {
       findDisciplineBySchoolClassCode(schoolClass.code)
         .then((response) => {
-          setDisciplines(response.data);
+          setDisciplines(response);
         })
-        .catch((error) => console.log(error.response.data))
+        .catch((error) => console.log(error.response))
         .finally(() => setLoadingDisciplines(false));
     }
   }, [schoolClass]);
@@ -62,7 +62,7 @@ export function HomeStudent() {
     if (user) {
       findSchoolClassStudentId(user.id)
         .then((response) => {
-          setSchoolClass(response.data);
+          setSchoolClass(response);
         })
         .catch((error) => console.log(error.response.data))
         .finally(() => setLoadingClass(false));

@@ -4,42 +4,44 @@ import { Report } from "types/report";
 
 export const saveStudent = async (student: Student) => {
   const response = await api.post<Student>("student/save", student);
-  return response;
+  return response.data;
 };
 
 export const updateStudent = async (student: Student) => {
   const response = await api.put<Student>("student/update", student);
-  return response;
+  return response.data;
 };
 
 export const findStudentByMatriculation = async (matriculation: string) => {
   const response = await api.get<Student>(
     `student/matriculation/${matriculation}`
   );
-  return response;
+  return response.data;
 };
 
 export const findStudentByEmail = async (email: string) => {
   const response = await api.get<Student>(`student/email/${email}`);
-  return response;
+  return response.data;
 };
 
 export const findAllStudents = async () => {
   const response = await api.get<Student[]>("student/all");
-  return response;
+  return response.data;
 };
 
-export const findStudentBySchoolClassCode = async (code: string) => {
+export const findStudentBySchoolClassCode = async (
+  code: string
+): Promise<Student[]> => {
   const response = await api.get<Student[]>(`student/class/${code}`);
-  return response;
+  return response.data;
 };
 
-export const findStudentBySchoolId = async (id: string) => {
+export const findStudentBySchoolId = async (id: string): Promise<Student[]> => {
   const response = await api.get<Student[]>(`student/school/${id}`);
-  return response;
+  return response.data;
 };
 
 export const studentReport = async (id: string) => {
   const response = await api.get<Report>(`student/report/${id}`);
-  return response;
+  return response.data;
 };

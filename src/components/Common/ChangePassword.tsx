@@ -1,5 +1,6 @@
 import { useAuth } from "@hooks/useAuth";
 import { Button, Card, Input } from "@nextui-org/react";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { authChangePassword } from "services/authService";
 import { enqueueNotification } from "utils/enqueueNotification";
@@ -12,6 +13,8 @@ type Inputs = {
 
 export function ChangePassword() {
   const { user } = useAuth();
+
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -29,14 +32,18 @@ export function ChangePassword() {
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    setLoading(true);
+
     authChangePassword(user?.email as string, data.lastPassword, data.password)
       .then(() => {
         reset();
         enqueueNotification("Senha alterada com sucesso!", "success");
       })
       .catch((error) => {
-        enqueueNotification(error.response.data, "error");
-      });
+        const message = error.response.data || "Erro ao alterar senha.";
+        enqueueNotification(message, "error");
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -99,7 +106,12 @@ export function ChangePassword() {
           isRequired
         />
 
-        <Button type="submit" color="primary" className="w-full">
+        <Button
+          type="submit"
+          color="primary"
+          className="w-full"
+          isLoading={loading}
+        >
           Alterar Senha
         </Button>
       </form>

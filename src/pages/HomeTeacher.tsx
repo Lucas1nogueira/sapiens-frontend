@@ -1,6 +1,6 @@
 import { Header } from "@components/Common/Header";
-import { TeacherProfile } from "@components/Teacher/TeacherProfile";
-import { TeacherSchoolClass } from "@components/Teacher/TeacherSchoolClass";
+import { TeacherProfile } from "sections/Teacher/TeacherProfile";
+import { TeacherSchoolClass } from "sections/Teacher/TeacherSchoolClass";
 import { UserProfile } from "@components/Common/UserProfile";
 import { useDisclosure } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
@@ -9,8 +9,8 @@ import { useEffect, useState } from "react";
 import { SideMenu } from "@components/Common/SideMenu";
 import { Discipline } from "types/discipline";
 import { useAuth } from "@hooks/useAuth";
-import { DisciplinesSchedule } from "@components/Discipline/DisciplinesSchedule";
 import { findDisciplineByTeacherId } from "services/disciplineService";
+import { DisciplinesSchedule } from "sections/Discipline/DisciplinesSchedule";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -36,7 +36,7 @@ export function HomeTeacher() {
   useEffect(() => {
     if (user) {
       findDisciplineByTeacherId(user.id)
-        .then((response) => setDisciplines(response.data))
+        .then((response) => setDisciplines(response))
         .catch((error) => console.log(error));
     }
   }, [user]);

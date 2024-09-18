@@ -1,37 +1,41 @@
 import { Evaluation } from "types/evaluation";
 import { api } from "./api";
 
-export const findAllEvaluations = () => {
-  const response = api.get("/evaluation/all");
-  return response;
+export const findAllEvaluations = async (): Promise<Evaluation[]> => {
+  const response = await api.get("/evaluation/all");
+  return response.data;
 };
 
-export const findEvaluationsByDisciplineCode = (code: string) => {
-  const response = api.get(`/evaluation/discipline/${code}`);
-  return response;
+export const findEvaluationsByDisciplineCode = async (
+  code: string
+): Promise<Evaluation[]> => {
+  const response = await api.get(`/evaluation/discipline/${code}`);
+  return response.data;
 };
 
-export const findEvaluationsByGradeId = (id: string) => {
-  const response = api.get(`/evaluation/grade/${id}`);
-  return response;
+export const findEvaluationsByGradeId = async (
+  id: string
+): Promise<Evaluation[]> => {
+  const response = await api.get(`/evaluation/grade/${id}`);
+  return response.data;
 };
 
-export const saveEvaluation = (evaluation: Evaluation) => {
-  const response = api.post("/evaluation/save", evaluation);
-  return response;
+export const saveEvaluation = async (evaluation: Evaluation) => {
+  const response = await api.post("/evaluation/save", evaluation);
+  return response.data;
 };
 
-export const updateEvaluation = (evaluation: Evaluation) => {
-  const response = api.put("/evaluation/update", evaluation);
-  return response;
+export const updateEvaluation = async (evaluation: Evaluation) => {
+  const response = await api.put("/evaluation/update", evaluation);
+  return response.data;
 };
 
-export const deleteEvaluation = (code: string) => {
-  const response = api.delete(`/evaluation/delete/${code}`);
-  return response;
+export const deleteEvaluation = async (code: string) => {
+  const response = await api.delete(`/evaluation/delete/${code}`);
+  return response.data;
 };
 
-export const findEvaluationById = (id: string) => {
-  const response = api.get(`/evaluation/${id}`);
-  return response;
+export const findEvaluationById = async (id: string): Promise<Evaluation> => {
+  const response = await api.get(`/evaluation/${id}`);
+  return response.data;
 };

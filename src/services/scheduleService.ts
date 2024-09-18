@@ -3,22 +3,24 @@ import { api } from "./api";
 
 export const saveOneSchedule = async (schedule: Schedule) => {
   const response = await api.post("schedule/save-one", schedule);
-  return response;
+  return response.data;
 };
 
 export const saveManySchedules = async (schedules: Schedule[]) => {
   const response = await api.post("schedule/save-many", schedules);
-  return response;
+  return response.data;
 };
 
-export const findAllSchedules = async () => {
+export const findAllSchedules = async (): Promise<Schedule[]> => {
   const response = await api.get<Schedule[]>("schedule/all");
-  return response;
+  return response.data;
 };
 
-export const findScheduleByDisciplineCode = async (code: string) => {
+export const findScheduleByDisciplineCode = async (
+  code: string
+): Promise<Schedule[]> => {
   const response = await api.get<Schedule[]>(`schedule/discipline/${code}`);
-  return response;
+  return response.data;
 };
 
 export const saveSchedulesForDiscipline = async (
@@ -29,15 +31,15 @@ export const saveSchedulesForDiscipline = async (
     `schedule/save-many/discipline/${code}`,
     schedules
   );
-  return response;
+  return response.data;
 };
 
 export const updateSchedule = async (schedule: Schedule) => {
   const response = await api.put("schedule/update", schedule);
-  return response;
+  return response.data;
 };
 
 export const deleteSchedule = async (id: string) => {
   const response = await api.delete(`schedule/delete/${id}`);
-  return response;
+  return response.data;
 };

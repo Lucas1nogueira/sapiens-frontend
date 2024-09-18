@@ -26,7 +26,7 @@ export const authChangePassword = async (
   return response;
 };
 
-export const authUpdateUserRistred = async (user: User) => {
+export const authUpdateUserRegistered = async (user: User) => {
   const response = await api.put("auth/update", user);
   return response;
 };

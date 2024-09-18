@@ -11,7 +11,7 @@ export function FilterBySchool() {
   useEffect(() => {
     findAllSchools()
       .then((response) => {
-        const allSchools = response.data;
+        const allSchools = response;
 
         allSchools.unshift({
           id: Date.now().toString(),

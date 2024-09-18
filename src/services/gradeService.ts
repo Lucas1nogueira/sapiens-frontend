@@ -3,30 +3,34 @@ import { api } from "./api";
 
 export const saveOneGrade = async (grade: Grade) => {
   const response = await api.post("grade/save-one", grade);
-  return response;
+  return response.data;
 };
 
 export const saveManyGrades = async (grades: Grade[]) => {
   const response = await api.post("grade/save-many", grades);
-  return response;
+  return response.data;
 };
 
-export const findGradesByEvaluation = async (evaluationId: string) => {
+export const findGradesByEvaluation = async (
+  evaluationId: string
+): Promise<Grade[]> => {
   const response = await api.get<Grade[]>(`grade/evaluation/${evaluationId}`);
-  return response;
+  return response.data;
 };
 
-export const findAllGrades = async () => {
+export const findAllGrades = async (): Promise<Grade[]> => {
   const response = await api.get<Grade[]>("grade/all");
-  return response;
+  return response.data;
 };
 
-export const findGradesByStudentId = async (studentId: string) => {
+export const findGradesByStudentId = async (
+  studentId: string
+): Promise<Grade[]> => {
   const response = await api.get<Grade[]>(`grade/student/${studentId}`);
-  return response;
+  return response.data;
 };
 
-export const findGradeById = async (id: string) => {
+export const findGradeById = async (id: string): Promise<Grade> => {
   const response = await api.get<Grade>(`grade/${id}`);
-  return response;
+  return response.data;
 };
