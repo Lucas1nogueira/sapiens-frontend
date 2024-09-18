@@ -22,7 +22,7 @@ export function ReportDetails({ subject }: Props) {
           Faltas: <span className="font-normal">{subject.lessonsMissed}</span>
         </p>
         <p className="text-lg font-medium">
-          Presença:{" "}
+          Presenças:{" "}
           <span className="font-normal">{subject.lessonsAttended}</span>
         </p>
         <p className="text-lg font-medium">

@@ -47,7 +47,7 @@ export function Login() {
         <img src={logo} alt="Sapiens Logo." className="drop-shadow-2xl" />
         <h1 className="text-4xl font-bold ">Sapiens Educação</h1>
       </div>
-      <div className="w-1/2">
+      <div className="w-full md:w-1/2">
         <div className="mb-10">
           <h1 className="text-3xl font-bold mb-2">Fazer Login</h1>
           <p className="mb-4">Bem-vindo ao Sapiens Educação!</p>

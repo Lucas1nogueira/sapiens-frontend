@@ -20,7 +20,7 @@ export function Logo({ className }: Props) {
 
   return (
     <div className="flex justify-center items-center gap-2">
-      <div className="p-1 rounded-full bg-indigo-200 animate-appearance-in">
+      <div className="p-1 rounded-full bg-indigo-200 animate-appearance-in min-w-12 min-h-12">
         <img src={logo} alt="Sapiens Logo" className={className} />
       </div>
       <div className="flex flex-col text-sm sm:flex-row sm:text-xl">

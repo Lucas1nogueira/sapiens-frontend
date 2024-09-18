@@ -8,6 +8,7 @@ export type Subject = {
   disciplineCode: string;
   disciplineName: string;
   manyLessons: number;
+  completedLessons: number;
   lessonsAttended: number;
   lessonsMissed: number;
   attendancePercentage: number;

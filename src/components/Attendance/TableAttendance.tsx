@@ -168,9 +168,7 @@ export function TableAttendance({ lessons, sortedStudents }: Props) {
                           value ? lesson.manyLessons : 0
                         );
                       }}
-                    >
-                      {attendance?.isPresent ? "Presente" : "Ausente"}
-                    </Checkbox>
+                    />
                   </div>
                 );
               })}
