@@ -1,3 +1,4 @@
+import { Loading } from "@components/Common/Loading";
 import { useAuth } from "@hooks/useAuth";
 import { Icon } from "@iconify/react";
 import {
@@ -12,11 +13,12 @@ import {
   Tab,
   Tabs,
 } from "@nextui-org/react";
-import { useEffect, useState } from "react";
-import { api } from "services/api";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { findEvaluationsByDisciplineCode } from "services/evaluationService";
+import { findGradesByStudentId } from "services/gradeService";
 import { Discipline } from "types/discipline";
 import { Evaluation } from "types/evaluation";
-import { Grade } from "types/grade";
 import { formatDate, formatDateWithHour } from "utils/formatDate";
 
 type Props = {
@@ -26,26 +28,33 @@ type Props = {
 
 export function DisciplineContent({ discipline, setDiscipline }: Props) {
   const { user } = useAuth();
-  const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
-  const [grades, setGrades] = useState<Grade[]>([]);
 
-  useEffect(() => {
-    api
-      .get<Evaluation[]>(`evaluation/discipline/${discipline.code}`)
-      .then((response) => setEvaluations(response.data))
-      .catch((error) => console.log(error.response.data));
-  }, [discipline.code]);
+  const { data: evaluationsData, isLoading: evaluationsLoading } = useQuery({
+    queryKey: ["evaluations", discipline.code],
+    queryFn: () => findEvaluationsByDisciplineCode(discipline.code),
+  });
 
-  useEffect(() => {
-    api
-      .get<Grade[]>(`grade/student/${user?.id}`)
-      .then((response) => setGrades(response.data))
-      .catch((error) => console.log(error.response.data));
-  }, [user?.id]);
+  const evaluations = useMemo(() => evaluationsData || [], [evaluationsData]);
+
+  const { data: gradesData, isLoading: gradesLoading } = useQuery({
+    queryKey: ["grades", user?.id],
+    queryFn: () => findGradesByStudentId(user?.id as string),
+    enabled: !!user?.id,
+  });
+
+  const grades = useMemo(() => gradesData || [], [gradesData]);
 
   const getGradeByEvaluation = (evaluation: Evaluation) => {
     return grades.find((grade) => grade.evaluation.id === evaluation.id);
   };
+
+  if (evaluationsLoading || gradesLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <Card>

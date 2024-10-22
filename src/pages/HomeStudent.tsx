@@ -5,7 +5,7 @@ import { useDisclosure } from "@nextui-org/react";
 import { StudentSchoolClass } from "sections/Student/StudentSchoolClass";
 import { Icon } from "@iconify/react";
 import { MenuItem } from "types/menu";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SideMenu } from "@components/Common/SideMenu";
 import { useAuth } from "@hooks/useAuth";
 import { Discipline } from "types/discipline";
@@ -15,6 +15,7 @@ import { findSchoolClassStudentId } from "services/schoolClassService";
 import { findDisciplineBySchoolClassCode } from "services/disciplineService";
 import { Report } from "sections/Student/Report";
 import { DisciplinesSchedule } from "sections/Discipline/DisciplinesSchedule";
+import { useQuery } from "@tanstack/react-query";
 
 const generateMenuItems = (
   setSelectedTab: (tabIndex: number) => void
@@ -39,37 +40,29 @@ const generateMenuItems = (
 export function HomeStudent() {
   const { user } = useAuth();
   const disclosure = useDisclosure();
-  const [disciplines, setDisciplines] = useState<Discipline[]>([]);
-  const [schoolClass, setSchoolClass] = useState<SchoolClass>(
-    {} as SchoolClass
-  );
   const [selectedTab, setSelectedTab] = useState(0);
-  const [loadingClass, setLoadingClass] = useState(true);
-  const [loadingDisciplines, setLoadingDisciplines] = useState(true);
 
-  useEffect(() => {
-    if (schoolClass) {
-      findDisciplineBySchoolClassCode(schoolClass.code)
-        .then((response) => {
-          setDisciplines(response);
-        })
-        .catch((error) => console.log(error.response))
-        .finally(() => setLoadingDisciplines(false));
-    }
-  }, [schoolClass]);
+  const { data: schoolClassData, isLoading: schoolClassLoading } = useQuery({
+    queryKey: ["schoolClass", user?.id],
+    queryFn: () => {
+      return findSchoolClassStudentId(user?.id as string);
+    },
+    enabled: !!user?.id,
+  });
 
-  useEffect(() => {
-    if (user) {
-      findSchoolClassStudentId(user.id)
-        .then((response) => {
-          setSchoolClass(response);
-        })
-        .catch((error) => console.log(error.response.data))
-        .finally(() => setLoadingClass(false));
-    }
-  }, [user]);
+  const schoolClass = (schoolClassData as SchoolClass) || {};
 
-  if (loadingClass && loadingDisciplines) return <LoadingPage />;
+  const { data: disciplinesData, isLoading: disciplinesLoading } = useQuery({
+    queryKey: ["disciplines"],
+    queryFn: () => {
+      return findDisciplineBySchoolClassCode(schoolClass.code);
+    },
+    enabled: !!schoolClass.code,
+  });
+
+  const disciplines = (disciplinesData as Discipline[]) || [];
+
+  if (schoolClassLoading || disciplinesLoading) return <LoadingPage />;
 
   const tabs = [
     <StudentSchoolClass schoolClass={schoolClass} disciplines={disciplines} />,
